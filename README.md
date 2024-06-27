@@ -1,93 +1,80 @@
 # Merlin
 
+Merlin is a Java library that provides a unified interface to interact with LLMs.
 
+## User stories
 
-## Getting started
+| 1. Basic Integration                                                                                                              | Must have                                                                                                                                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "As a developer, I want to integrate various LLMs into my Java application using Merlin, so I can use multiple AI models easily." | **Acceptance Criteria:** The library should provide a simple API to connect to at least three different LLM providers (e.g., OpenAI, Google Gemini, Ollama). The API should be well-documented with usage examples." |
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+| 2. Sending Requests                                                                                                                        | Must have                                                                                                                                                                                                               |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "As a developer, I want to send text queries to an LLM and receive responses, so I can utilize the AI capabilities within my application." | **Acceptance Criteria:** The library should support sending a text query to a connected LLM. The library should return the LLM’s response in a standard format. The response time should be optimized for performance." |
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+3. Handling Multiple Models Must have
 
-## Add your files
+   "As a developer, I want to switch between different LLMs seamlessly, so I can choose the best model for my needs.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+   **Acceptance Criteria:**
 
-```
-cd existing_repo
-git remote add origin https://stgit.dcs.gla.ac.uk/msc-project-for-information-technology/2023/it-project-2940985x/merlin.git
-git branch -M main
-git push -uf origin main
-```
+   The library should support switching between different LLM providers without major code changes."
 
-## Integrate with your tools
+4. Error Handling Must have
 
-- [ ] [Set up project integrations](https://stgit.dcs.gla.ac.uk/msc-project-for-information-technology/2023/it-project-2940985x/merlin/-/settings/integrations)
+   "As a developer, I want robust error handling when making API calls, so I can ensure my application handles failures
+   gracefully.
 
-## Collaborate with your team
+   **Acceptance Criteria:**
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+   The library should provide clear error messages for different failure scenarios (e.g., network issues, API rate
+   limits).
+   The library should offer retry mechanisms and fallback options."
 
-## Test and Deploy
+5. Logging and Monitoring Must have
 
-Use the built-in continuous integration in GitLab.
+   "As a developer, I want to log API requests and responses, so I can monitor the usage and performance of the LLM
+   integrations.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+   **Acceptance Criteria:**
 
-***
+   The library should integrate with a logging framework log4j to log all API interactions.
+   The logs should include relevant information like request timestamps, response times, and any errors encountered."
 
-# Editing this README
+6. Security Must have
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+   "As a developer, I want to securely handle API keys and credentials, so I can protect sensitive information.
 
-## Suggestions for a good README
+   **Acceptance Criteria:**
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+   The library should provide secure methods to store and use API keys.
+   The library should ensure that sensitive information is not logged or exposed in error messages."
 
-## Name
-Choose a self-explaining name for your project.
+7. Configuration Management Must have
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+   "As a developer, I want to configure the library easily, so I can adjust settings without modifying code.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+   **Acceptance Criteria:**
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+   The library should support configuration through properties files or environment variables.
+   The configuration options should be well-documented."
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+8. Documentation Must have
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+   "As a developer, I want comprehensive documentation and example receipes, so I can understand how to use the library
+   effectively.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+   **Acceptance Criteria:**
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+   The library should include a detailed README file with installation instructions.
+   There should be example projects demonstrating common use cases.
+   The API should be well-documented with usage examples for each method."
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+9. Asynchronous Operations Must have
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+   "As a developer, I want to perform asynchronous API calls, so I can improve the responsiveness of my application.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+   **Acceptance Criteria:**
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+   The library should support asynchronous requests and provide callback mechanisms.
+   The library should allow for easy integration with Java’s CompletableFuture or similar concurrency utilities."
