@@ -4,6 +4,8 @@ Merlin is a Java library that provides a unified interface to interact with LLMs
 
 ## User stories
 
+> Expected to change during development. Some user stories might be broken down into smaller user stories.
+
 | 1. Basic Integration                                                                                                              | Must have                                                                                                                                                                                                            |
 | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | "As a developer, I want to integrate various LLMs into my Java application using Merlin, so I can use multiple AI models easily." | **Acceptance Criteria:** The library should provide a simple API to connect to at least three different LLM providers (e.g., OpenAI, Google Gemini, Ollama). The API should be well-documented with usage examples." |
@@ -39,3 +41,14 @@ Merlin is a Java library that provides a unified interface to interact with LLMs
 | 9. Asynchronous Operations                                                                                         | Must have                                                                                                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | "As a developer, I want to perform asynchronous API calls, so I can improve the responsiveness of my application." | **Acceptance Criteria:** The library should support asynchronous requests and provide callback mechanisms. The library should allow for easy integration with Java’s CompletableFuture or similar concurrency utilities." |
+
+## UML Diagram
+
+```mermaid
+flowchart TD
+    A[Christmas] -->|Get money| B(Go shopping)
+    B --> C{Let me think}
+    C -->|One| D[Laptop]
+    C -->|Two| E[iPhone]
+    C -->|Three| F[fa:fa-car Car]
+```
