@@ -2,6 +2,20 @@
 
 Merlin is a Java library that provides a unified interface to interact with LLMs.
 
+## Project Overview
+
+| Libraries used                                           | Description                                                                        |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [okhttp](https://github.com/square/okhttp)               | OkHttp is an HTTP client.                                                          |
+| [log4j](https://logging.apache.org/log4j/2.x/index.html) | Apache Log4j is a versatile, industrial-grade Java logging framework.              |
+| [Moshi](https://github.com/square/moshi)                 | A handy API for converting between JSON and Java objects.                          |
+| [lombok](https://projectlombok.org/)                     | Lombok is a java library that automatically plugs into the editor and build tools. |
+| [JUnit5](https://junit.org/junit5/)                      | JUnit is a simple framework to write repeatable tests.                             |
+| [Mockito](https://site.mockito.org/)                     | Mockito is a mocking framework that tastes really good.                            |
+
+- OpenAI notice:
+    - Deprecated and legacy features are not supported.
+
 ## User stories
 
 > Expected to change during development. Some user stories might be broken down into smaller user stories.
@@ -45,10 +59,22 @@ Merlin is a Java library that provides a unified interface to interact with LLMs
 ## UML Diagram
 
 ```mermaid
-flowchart TD
-    A[Christmas] -->|Get money| B(Go shopping)
-    B --> C{Let me think}
-    C -->|One| D[Laptop]
-    C -->|Two| E[iPhone]
-    C -->|Three| F[fa:fa-car Car]
+classDiagram
+    namespace client{
+        class Merlin{
+
+        }
+    }
+    namespace service{
+        class Vendor
+    }
+
+    namespace model{
+        class Request{
+            <<interface>>
+        }
+        class Response{
+            <<interface>>
+        }
+    }
 ```
