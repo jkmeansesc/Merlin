@@ -4,17 +4,17 @@ Merlin is a Java library that provides a unified interface to interact with LLMs
 
 ## Project Overview
 
-| Libraries used                                           | Description                                                                        |
-| -------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| [okhttp](https://github.com/square/okhttp)               | OkHttp is an HTTP client.                                                          |
-| [log4j](https://logging.apache.org/log4j/2.x/index.html) | Apache Log4j is a versatile, industrial-grade Java logging framework.              |
-| [Moshi](https://github.com/square/moshi)                 | A handy API for converting between JSON and Java objects.                          |
-| [lombok](https://projectlombok.org/)                     | Lombok is a java library that automatically plugs into the editor and build tools. |
-| [JUnit5](https://junit.org/junit5/)                      | JUnit is a simple framework to write repeatable tests.                             |
-| [Mockito](https://site.mockito.org/)                     | Mockito is a mocking framework that tastes really good.                            |
+| Libraries used                                           | Description                                                                           |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| [okhttp](https://github.com/square/okhttp)               | OkHttp is an HTTP client.                                                             |
+| [log4j](https://logging.apache.org/log4j/2.x/index.html) | Apache Log4j is a versatile, industrial-grade Java logging framework.                 |
+| [jackson](https://github.com/FasterXML/jackson)          | Jackson has been known as "the Java JSON library" or "the best JSON parser for Java". |
+| [lombok](https://projectlombok.org/)                     | Lombok is a java library that automatically plugs into the editor and build tools.    |
+| [JUnit5](https://junit.org/junit5/)                      | JUnit is a simple framework to write repeatable tests.                                |
+| [Mockito](https://site.mockito.org/)                     | Mockito is a mocking framework that tastes really good.                               |
 
 - OpenAI notice:
-    - Deprecated and legacy features are not supported.
+  - Deprecated and legacy features are not supported.
 
 ## User stories
 
@@ -60,21 +60,70 @@ Merlin is a Java library that provides a unified interface to interact with LLMs
 
 ```mermaid
 classDiagram
+    direction TD
+
+    note for OpenAiApi "Only example listed"
+    namespace api{
+        class OpenAiApi {
+            Call ~OpenAiResponse~Model~~ listModels();
+        }
+    }
+
+    note for Merlin "TBD"
     namespace client{
-        class Merlin{
+        class Merlin {
+            -Provider currentProvider
+            +Merlin useProvider(Provider provider)
+            +OpenAiService service
+        }
 
+        class Provider {
+            <<enumeration>>
+            OPENAI
+            GOOGLE_GEMINI
         }
     }
+    Merlin *-- Provider
+    Merlin --> OpenAiResponse
+
+    note for OpenAiService "Only example endpoint listed"
     namespace service{
-        class Vendor
+        class LlmService {
+            <<abstract>>
+            - Retrofit retrofit
+            + LlmService(String baseUrl, String apiKey)
+            # ~T~ CompletableFuture~T~ executeCall(Call~T~ call)
+        }
+        class OpenAiService {
+            <<service>>
+            - OpenAiApi api
+            + OpenAiService(String baseUrl, String apiKey)
+            + CompletableFuture~OpenAiResponse~Model~~ listModels()
+        }
+    }
+    OpenAiService --|> LlmService
+    OpenAiApi --o OpenAiService
+
+
+    note for OpenAiResponse "Only example listed"
+    namespace model{
+        class OpenAiResponse~T~ {
+        +List~T~ data
+        +String object
+        +String firstId
+        +String lastId
+        +boolean hasMore
+        }
     }
 
-    namespace model{
-        class Request{
-            <<interface>>
-        }
-        class Response{
-            <<interface>>
+    note for Config "TBD"
+    namespace config {
+        class Config
+    }
+
+    namespace util {
+        class JsonPrinter {
+            + print(Object obj)
         }
     }
 ```

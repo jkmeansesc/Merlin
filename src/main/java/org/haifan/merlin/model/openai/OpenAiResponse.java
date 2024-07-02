@@ -5,6 +5,10 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * TODO: add javadoc
+ * @param <T>
+ */
 @Data
 public class OpenAiResponse<T> {
     /**
@@ -13,7 +17,7 @@ public class OpenAiResponse<T> {
     public List<T> data;
 
     /**
-     * The type of object returned, should be "list"
+     * The type of object returned
      */
     public String object;
 
