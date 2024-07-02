@@ -18,4 +18,8 @@ public class OpenAiService extends LlmService {
     public CompletableFuture<OpenAiResponse<Model>> listModels() {
         return super.executeCall(api.listModels());
     }
+
+    public CompletableFuture<Model> getModel(String model) {
+        return super.executeCall(api.getModel(model));
+    }
 }

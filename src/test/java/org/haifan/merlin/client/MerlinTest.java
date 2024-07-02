@@ -16,4 +16,11 @@ public class MerlinTest extends TestCase {
         OpenAiResponse<Model> merlinResponse = response.join();
         JsonPrinter.print(merlinResponse);
     }
+
+    public void testGetModel() throws JsonProcessingException {
+        Merlin merlin = new Merlin().useProvider(Merlin.Provider.OPENAI);
+        CompletableFuture<Model> response = merlin.service.getModel("gpt-3.5-turbo-instruct");
+        Model model = response.join();
+        JsonPrinter.print(model);
+    }
 }
