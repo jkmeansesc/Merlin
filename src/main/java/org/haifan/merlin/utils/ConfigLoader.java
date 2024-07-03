@@ -22,7 +22,7 @@ public class ConfigLoader {
             }
             properties.load(input);
         } catch (Exception e) {
-            throw new RuntimeException("Error loading configuration", e);
+            throw new ConfigLoaderException("Error loading configuration", e);
         }
     }
 

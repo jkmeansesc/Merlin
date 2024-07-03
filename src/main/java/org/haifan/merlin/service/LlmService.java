@@ -23,7 +23,7 @@ public abstract class LlmService {
 
     public abstract LlmConfig getConfig();
 
-    public LlmService(LlmConfig llmConfig) {
+    protected LlmService(LlmConfig llmConfig) {
         this.llmConfig = llmConfig;
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(chain -> {
             Request original = chain.request();

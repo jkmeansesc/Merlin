@@ -3,6 +3,7 @@ package org.haifan.merlin.service;
 import org.haifan.merlin.api.OpenAiApi;
 import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.config.OpenAiConfig;
+import org.haifan.merlin.model.openai.DeletionStatus;
 import org.haifan.merlin.model.openai.OpenAiResponse;
 import org.haifan.merlin.model.openai.models.Model;
 
@@ -34,7 +35,11 @@ public class OpenAiService extends LlmService {
         return super.executeCall(api.listModels());
     }
 
-    public CompletableFuture<Model> getModel(String model) {
-        return super.executeCall(api.getModel(model));
+    public CompletableFuture<Model> retrieveModel(String model) {
+        return super.executeCall(api.retrieveModel(model));
+    }
+
+    public CompletableFuture<DeletionStatus> deleteAFineTunedModel(String model) {
+        return super.executeCall(api.deleteAFineTunedModel(model));
     }
 }

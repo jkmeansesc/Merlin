@@ -7,13 +7,12 @@ import org.haifan.merlin.model.openai.OpenAiResponse;
 import org.haifan.merlin.service.OpenAiService;
 import org.haifan.merlin.utils.JsonPrinter;
 
-public class MerlinTest extends TestCase {
+public class OpenAiModelsTest extends TestCase {
 
     public void testOpenAiListModels() throws JsonProcessingException {
-        Merlin<OpenAiService> merlin = Merlin.<OpenAiService>builder()
+        OpenAiResponse<Model> merlinResponse = Merlin.<OpenAiService>builder()
                 .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
-                .build();
-        OpenAiResponse<Model> merlinResponse = merlin
+                .build()
                 .getService()
                 .listModels()
                 .join();
@@ -21,12 +20,11 @@ public class MerlinTest extends TestCase {
     }
 
     public void testOpenAiGetModel() throws JsonProcessingException {
-        Merlin<OpenAiService> merlin = Merlin.<OpenAiService>builder()
+        Model model = Merlin.<OpenAiService>builder()
                 .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
-                .build();
-        Model model = merlin
+                .build()
                 .getService()
-                .getModel("gpt-3.5-turbo-instruct")
+                .retrieveModel("gpt-3.5-turbo-instruct")
                 .join();
         JsonPrinter.print(model);
     }

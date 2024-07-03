@@ -13,6 +13,11 @@ Merlin is a Java library that provides a unified interface to interact with LLMs
 | [JUnit5](https://junit.org/junit5/)                      | JUnit is a simple framework to write repeatable tests.                                |
 | [Mockito](https://site.mockito.org/)                     | Mockito is a mocking framework that tastes really good.                               |
 
+| Build tools                             |
+| --------------------------------------- |
+| [Maven](https://maven.apache.org/)      |
+| [SonarQube](https://www.sonarqube.org/) |
+
 - OpenAI notice:
   - Deprecated and legacy features are not supported.
 
