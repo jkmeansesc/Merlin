@@ -8,7 +8,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 public interface OpenAiApi {
-    @GET("v1/models")
+    @GET("/v1/models")
     Call<OpenAiResponse<Model>> listModels();
 
     @GET("/v1/models/{model}")

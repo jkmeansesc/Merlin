@@ -1,19 +1,22 @@
 package org.haifan.merlin.client;
 
-import org.haifan.merlin.service.OpenAiService;
+import lombok.Builder;
+import lombok.Getter;
+import org.haifan.merlin.service.LlmService;
 
-public class Merlin {
+/**
+ * TODO: add javadoc
+ *
+ * @param <T>
+ */
+@Getter
+@Builder
+public class Merlin<T extends LlmService> {
 
-    private Provider currentProvider;
+    private final T service;
 
-    public enum Provider {
-        OPENAI, GOOGLE_GEMINI
+    @SuppressWarnings("unused")
+    public static class MerlinBuilder<T extends LlmService> {
+        // Lombok will generate the builder methods
     }
-
-    public Merlin useProvider(Provider provider) {
-        this.currentProvider = provider;
-        return this;
-    }
-
-    OpenAiService service = new OpenAiService("https://api.openai.com", "sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8");
 }
