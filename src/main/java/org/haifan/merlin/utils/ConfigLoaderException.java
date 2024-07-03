@@ -1,15 +1,11 @@
 package org.haifan.merlin.utils;
 
 /**
- * Exception thrown to indicate errors during configuration loading.
- * <p>
- * {@code ConfigLoaderException} is a runtime exception thrown when there is a failure
- * to load or parse configuration data. This exception is unchecked.
- * </p>
+ * Custom Exception thrown to indicate errors during configuration loading.
  */
 public class ConfigLoaderException extends RuntimeException {
 
-    public ConfigLoaderException(String message, Throwable cause) {
-        super(message, cause);
+    public ConfigLoaderException(String message, Throwable t) {
+        super(message, t);
     }
 }
