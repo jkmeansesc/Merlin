@@ -3,10 +3,13 @@ package org.haifan.merlin.service;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.MultipartBody;
+import okhttp3.ResponseBody;
 import org.haifan.merlin.api.OpenAiApi;
 import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.config.OpenAiConfig;
+import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.DeletionStatus;
+import org.haifan.merlin.model.openai.files.FileResponse;
 import org.haifan.merlin.model.openai.images.CreateImageEditRequest;
 import org.haifan.merlin.model.openai.images.CreateImageRequest;
 import org.haifan.merlin.model.openai.images.CreateImageVariationRequest;
@@ -15,7 +18,7 @@ import org.haifan.merlin.model.openai.models.Model;
 import org.haifan.merlin.model.openai.models.ModelResponse;
 import org.haifan.merlin.model.openai.moderations.ModerationResponse;
 import org.haifan.merlin.model.openai.moderations.ModerationRequest;
-import org.haifan.merlin.utils.Constants;
+import org.haifan.merlin.constants.FileType;
 
 import java.io.File;
 import java.util.concurrent.CompletableFuture;
@@ -43,6 +46,40 @@ public class OpenAiService extends LlmService {
     }
 
     // ===============================
+    // ENDPOINTS - Files
+    // ===============================
+
+    public CompletableFuture<org.haifan.merlin.model.openai.files.File> uploadFile(String purpose, String filePath) {
+        java.io.File file = new java.io.File(filePath);
+        return uploadFile(purpose, file);
+    }
+
+    private CompletableFuture<org.haifan.merlin.model.openai.files.File> uploadFile(String purpose, File file) {
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(Fields.PURPOSE, purpose)
+                .addFormDataPart(Fields.FILE, file.getName(), RequestBody.create(file, MediaType.parse(FileType.OCTET_STREAM)));
+
+        return super.executeCall(api.uploadFile(builder.build()));
+    }
+
+    public CompletableFuture<FileResponse> listFiles() {
+        return super.executeCall(api.listFiles());
+    }
+
+    public CompletableFuture<org.haifan.merlin.model.openai.files.File> retrieveFile(String fileId) {
+        return super.executeCall(api.retrieveFile(fileId));
+    }
+
+    public CompletableFuture<DeletionStatus> deleteFile(String fileId) {
+        return super.executeCall(api.deleteFile(fileId));
+    }
+
+    public CompletableFuture<ResponseBody> retrieveFileContent(String fileId) {
+        return super.executeCall(api.retrieveFileContent(fileId));
+    }
+
+    // ===============================
     // ENDPOINTS - Images
     // ===============================
 
@@ -57,23 +94,23 @@ public class OpenAiService extends LlmService {
         return createImageEdit(request, image, mask);
     }
 
-    public CompletableFuture<ImageResponse> createImageEdit(CreateImageEditRequest request, File image, File mask) {
+    private CompletableFuture<ImageResponse> createImageEdit(CreateImageEditRequest request, File image, File mask) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("n", request.getN().toString()) // integer or null
-                .addFormDataPart("size", request.getSize()) // string or null
-                .addFormDataPart("response_format", request.getResponseFormat()) //string or null
-                .addFormDataPart("prompt", request.getPrompt())
-                .addFormDataPart("image", image.getName(), RequestBody.create(image, MediaType.parse(Constants.ALL_IMAGE)));
+                .addFormDataPart(Fields.N, request.getN().toString()) // integer or null
+                .addFormDataPart(Fields.SIZE, request.getSize()) // string or null
+                .addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat()) //string or null
+                .addFormDataPart(Fields.PROMPT, request.getPrompt())
+                .addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(FileType.IMAGE_ALL)));
 
         if (mask != null) {
-            builder.addFormDataPart("mask", mask.getName(), RequestBody.create(mask, MediaType.parse(Constants.ALL_IMAGE)));
+            builder.addFormDataPart(Fields.MASK, mask.getName(), RequestBody.create(mask, MediaType.parse(FileType.IMAGE_ALL)));
         }
         if (request.getModel() != null) {
-            builder.addFormDataPart("model", request.getModel());
+            builder.addFormDataPart(Fields.MODEL, request.getModel());
         }
         if (request.getUser() != null) {
-            builder.addFormDataPart("user", request.getUser());
+            builder.addFormDataPart(Fields.USER, request.getUser());
         }
 
         return super.executeCall(api.createImageEdit(builder.build()));
@@ -87,17 +124,17 @@ public class OpenAiService extends LlmService {
     public CompletableFuture<ImageResponse> createImageVariation(CreateImageVariationRequest request, File image) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("n", request.getN().toString()) // integer or null
-                .addFormDataPart("size", request.getSize()) // string or null
-                .addFormDataPart("response_format", request.getResponseFormat()) // string or null
-                .addFormDataPart("image", image.getName(), RequestBody.create(image, MediaType.parse(Constants.ALL_IMAGE)));
+                .addFormDataPart(Fields.N, request.getN().toString()) // integer or null
+                .addFormDataPart(Fields.SIZE, request.getSize()) // string or null
+                .addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat()) // string or null
+                .addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(FileType.IMAGE_ALL)));
 
         if (request.getModel() != null) {
-            builder.addFormDataPart("model", request.getModel());
+            builder.addFormDataPart(Fields.MODEL, request.getModel());
         }
 
         if (request.getUser() != null) {
-            builder.addFormDataPart("user", request.getUser());
+            builder.addFormDataPart(Fields.USER, request.getUser());
         }
 
         return super.executeCall(api.createImageVariation(null));

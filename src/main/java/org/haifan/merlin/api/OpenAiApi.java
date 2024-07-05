@@ -1,7 +1,11 @@
 package org.haifan.merlin.api;
 
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.DeletionStatus;
+import org.haifan.merlin.model.openai.files.File;
+import org.haifan.merlin.model.openai.files.FileResponse;
 import org.haifan.merlin.model.openai.images.CreateImageRequest;
 import org.haifan.merlin.model.openai.images.ImageResponse;
 import org.haifan.merlin.model.openai.models.Model;
@@ -16,6 +20,26 @@ import retrofit2.http.*;
  * TODO: add javadoc
  */
 public interface OpenAiApi {
+
+    // ===============================
+    // ENDPOINTS - Files
+    // ===============================
+
+    @POST("/v1/files")
+    Call<File> uploadFile(@Body RequestBody requestBody);
+
+    @GET("/v1/files")
+    Call<FileResponse> listFiles();
+
+    @GET("/v1/files/{file_id}")
+    Call<File> retrieveFile(@Path(Fields.FILE_ID) String fileId);
+
+    @DELETE("/v1/files/{file_id}")
+    Call<DeletionStatus> deleteFile(@Path(Fields.FILE_ID) String fileId);
+
+    @Streaming
+    @GET("/v1/files/{file_id}/content")
+    Call<ResponseBody> retrieveFileContent(@Path(Fields.FILE_ID) String fileId);
 
     // ===============================
     // ENDPOINTS - Images
@@ -37,10 +61,10 @@ public interface OpenAiApi {
     Call<ModelResponse> listModels();
 
     @GET("/v1/models/{model}")
-    Call<Model> retrieveModel(@Path("model") String model);
+    Call<Model> retrieveModel(@Path(Fields.MODEL) String model);
 
     @DELETE("/v1/models/{model}")
-    Call<DeletionStatus> deleteAFineTunedModel(@Path("model") String model);
+    Call<DeletionStatus> deleteAFineTunedModel(@Path(Fields.MODEL) String model);
 
     // ===============================
     // ENDPOINTS - Moderation

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * Lists the currently available models, and provides basic information about each one such as the owner and availability.
+ * The model response object that contains a list of {@link Model} results.
  * <a href="https://platform.openai.com/docs/api-reference/models/list">...</a>
  */
 @Data
