@@ -11,32 +11,13 @@ import java.util.List;
  * @param <T>
  */
 @Data
-public class OpenAiResponse<T> {
-    /**
-     * A list containing the actual results
-     */
+public class AssistantsListResponse<T> {
     private List<T> data;
-
-    /**
-     * The type of object returned
-     */
     private String object;
-
-    /**
-     * The first id included
-     */
     @JsonProperty("first_id")
     private String firstId;
-
-    /**
-     * The last id included
-     */
     @JsonProperty("last_id")
     private String lastId;
-
-    /**
-     * True if there are objects after lastId
-     */
     @JsonProperty("has_more")
     private boolean hasMore;
 }

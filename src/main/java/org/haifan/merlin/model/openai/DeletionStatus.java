@@ -7,7 +7,7 @@ import lombok.Data;
  */
 @Data
 public class DeletionStatus {
-    String id;
-    String object;
-    boolean deleted;
+    private String id;
+    private String object;
+    private boolean deleted;
 }
