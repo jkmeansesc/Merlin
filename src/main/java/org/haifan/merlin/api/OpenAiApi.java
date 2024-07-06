@@ -34,7 +34,7 @@ public interface OpenAiApi {
     // ===============================
 
     @POST("/v1/files")
-//    @Headers("Accept-Encoding: identity")
+    @Headers("Accept-Encoding: identity")
         // HACK: https://stackoverflow.com/a/48532617
     Call<File> uploadFile(@Body RequestBody requestBody);
 
