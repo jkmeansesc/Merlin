@@ -25,6 +25,7 @@ public class SecureLoggingInterceptor implements Interceptor {
         Request request = chain.request();
         logSecurely(request);
         long startTime = System.nanoTime();
+        logger.info("");
         Response response = chain.proceed(request);
         long endTime = System.nanoTime();
         logSecurely(response, endTime - startTime);

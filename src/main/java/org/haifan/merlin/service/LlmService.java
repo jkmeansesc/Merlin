@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import okhttp3.OkHttpClient;
 
+import okhttp3.logging.HttpLoggingInterceptor;
 import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.interceptors.LlmInterceptor;
+import org.haifan.merlin.interceptors.SLF4JHttpLogger;
 import org.haifan.merlin.interceptors.SecureLoggingInterceptor;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,9 +38,14 @@ public abstract class LlmService {
     protected LlmService(LlmConfig llmConfig, LlmInterceptor llmInterceptor) {
         this.llmConfig = llmConfig;
         logger.info("Initializing LlmService with base URL: {}", llmConfig.getBaseUrl());
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new SLF4JHttpLogger());
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        logging.redactHeader("Authorization");
+        logging.redactHeader("Cookie");
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(llmInterceptor)
-                .addNetworkInterceptor(new SecureLoggingInterceptor())
+                .addNetworkInterceptor(logging)
+//                .addNetworkInterceptor(new SecureLoggingInterceptor())
                 .build();
 
         ObjectMapper mapper = new ObjectMapper();
@@ -60,6 +67,7 @@ public abstract class LlmService {
             @Override
             public void onResponse(@NotNull Call<T> call, @NotNull Response<T> response) {
                 if (response.isSuccessful()) {
+                    logger.info("Call successful");
                     future.complete(response.body());
                 } else {
                     future.completeExceptionally(new Exception("API call failed: " + response.code()));
