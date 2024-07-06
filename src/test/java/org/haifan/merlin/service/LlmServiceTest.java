@@ -15,7 +15,7 @@ class LlmServiceTest {
     }
 
     @Test
-    void executeCall() {
+    void call() {
         assertTrue(true);
     }
 }

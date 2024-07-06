@@ -1,6 +1,6 @@
 package org.haifan.merlin.config;
 
-import org.haifan.merlin.Provider;
+import org.haifan.merlin.constants.Provider;
 import org.haifan.merlin.utils.ApiKeyManager;
 import org.haifan.merlin.utils.ConfigLoader;
 

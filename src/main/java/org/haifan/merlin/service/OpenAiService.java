@@ -9,6 +9,7 @@ import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.config.OpenAiConfig;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.DeletionStatus;
+import org.haifan.merlin.model.openai.audio.CreateSpeechRequest;
 import org.haifan.merlin.model.openai.files.FileResponse;
 import org.haifan.merlin.model.openai.images.CreateImageEditRequest;
 import org.haifan.merlin.model.openai.images.CreateImageRequest;
@@ -19,6 +20,7 @@ import org.haifan.merlin.model.openai.models.ModelResponse;
 import org.haifan.merlin.model.openai.moderations.ModerationResponse;
 import org.haifan.merlin.model.openai.moderations.ModerationRequest;
 import org.haifan.merlin.constants.FileType;
+import org.haifan.merlin.interceptors.OpenAiInterceptor;
 
 import java.io.File;
 import java.util.concurrent.CompletableFuture;
@@ -31,18 +33,29 @@ public class OpenAiService extends LlmService {
     private final OpenAiApi api;
 
     public OpenAiService() {
-        super(new OpenAiConfig());
-        this.api = super.retrofit.create(OpenAiApi.class);
+        this(new OpenAiConfig());
     }
 
     public OpenAiService(String apiKey) {
-        super(new OpenAiConfig(apiKey));
+        this(new OpenAiConfig(apiKey));
+    }
+
+    private OpenAiService(OpenAiConfig config) {
+        super(config, new OpenAiInterceptor(config.getApiKey()));
         this.api = super.retrofit.create(OpenAiApi.class);
     }
 
     @Override
     public LlmConfig getConfig() {
         return super.llmConfig;
+    }
+
+    // ===============================
+    // ENDPOINTS - Audio
+    // ===============================
+
+    public CompletableFuture<ResponseBody> createSpeech(CreateSpeechRequest request) {
+        return super.call(api.createSpeech(request));
     }
 
     // ===============================
@@ -60,23 +73,23 @@ public class OpenAiService extends LlmService {
                 .addFormDataPart(Fields.PURPOSE, purpose)
                 .addFormDataPart(Fields.FILE, file.getName(), RequestBody.create(file, MediaType.parse(FileType.OCTET_STREAM)));
 
-        return super.executeCall(api.uploadFile(builder.build()));
+        return super.call(api.uploadFile(builder.build()));
     }
 
     public CompletableFuture<FileResponse> listFiles() {
-        return super.executeCall(api.listFiles());
+        return super.call(api.listFiles());
     }
 
     public CompletableFuture<org.haifan.merlin.model.openai.files.File> retrieveFile(String fileId) {
-        return super.executeCall(api.retrieveFile(fileId));
+        return super.call(api.retrieveFile(fileId));
     }
 
     public CompletableFuture<DeletionStatus> deleteFile(String fileId) {
-        return super.executeCall(api.deleteFile(fileId));
+        return super.call(api.deleteFile(fileId));
     }
 
     public CompletableFuture<ResponseBody> retrieveFileContent(String fileId) {
-        return super.executeCall(api.retrieveFileContent(fileId));
+        return super.call(api.retrieveFileContent(fileId));
     }
 
     // ===============================
@@ -84,7 +97,7 @@ public class OpenAiService extends LlmService {
     // ===============================
 
     public CompletableFuture<ImageResponse> createImage(CreateImageRequest createImageRequest) {
-        return super.executeCall(api.createImage(createImageRequest));
+        return super.call(api.createImage(createImageRequest));
     }
 
 
@@ -113,7 +126,7 @@ public class OpenAiService extends LlmService {
             builder.addFormDataPart(Fields.USER, request.getUser());
         }
 
-        return super.executeCall(api.createImageEdit(builder.build()));
+        return super.call(api.createImageEdit(builder.build()));
     }
 
     public CompletableFuture<ImageResponse> createImageVariation(CreateImageVariationRequest request, String imagePath) {
@@ -137,7 +150,7 @@ public class OpenAiService extends LlmService {
             builder.addFormDataPart(Fields.USER, request.getUser());
         }
 
-        return super.executeCall(api.createImageVariation(null));
+        return super.call(api.createImageVariation(null));
     }
 
     // ===============================
@@ -151,7 +164,7 @@ public class OpenAiService extends LlmService {
      * @see ModelResponse
      */
     public CompletableFuture<ModelResponse> listModels() {
-        return super.executeCall(api.listModels());
+        return super.call(api.listModels());
     }
 
     /**
@@ -162,7 +175,7 @@ public class OpenAiService extends LlmService {
      * @see Model
      */
     public CompletableFuture<Model> retrieveModel(String model) {
-        return super.executeCall(api.retrieveModel(model));
+        return super.call(api.retrieveModel(model));
     }
 
     /**
@@ -173,7 +186,7 @@ public class OpenAiService extends LlmService {
      * @see DeletionStatus
      */
     public CompletableFuture<DeletionStatus> deleteAFineTunedModel(String model) {
-        return super.executeCall(api.deleteAFineTunedModel(model));
+        return super.call(api.deleteAFineTunedModel(model));
     }
 
     // ===============================
@@ -181,7 +194,7 @@ public class OpenAiService extends LlmService {
     // ===============================
 
     public CompletableFuture<ModerationResponse> createModeration(ModerationRequest moderationRequest) {
-        return super.executeCall(api.createModeration(moderationRequest));
+        return super.call(api.createModeration(moderationRequest));
     }
 
 }

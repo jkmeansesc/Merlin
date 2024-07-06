@@ -1,6 +1,7 @@
 package org.haifan.merlin.service;
 
 import org.haifan.merlin.client.Merlin;
+import org.haifan.merlin.model.openai.images.CreateImageRequest;
 import org.haifan.merlin.model.openai.moderations.ModerationRequest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,23 @@ class OpenAiServiceTest {
 
     @Test
     void testGetConfig() {
+    }
+
+    @Nested
+    class TestImages {
+
+        @Test
+        void createImage() {
+            Merlin.<OpenAiService>builder()
+                    .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
+                    .build()
+                    .getService()
+                    .createImage(CreateImageRequest.builder()
+                            .prompt("A cute baby sea otter")
+                            .n(1)
+                            .build())
+                    .join();
+        }
     }
 
     @Nested
@@ -46,7 +64,7 @@ class OpenAiServiceTest {
     }
 
     @Nested
-    class ModerationResponseTest {
+    class ModerationTest {
         @Test
         void testCreateModeration() {
             Merlin.<OpenAiService>builder()

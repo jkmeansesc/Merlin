@@ -3,14 +3,14 @@ package org.haifan.merlin.utils;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO: add javadoc
  */
 public class ConfigLoader {
-    private static final Logger logger = LogManager.getLogger(ConfigLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigLoader.class);
     private static final String DEFAULT_CONFIG_FILE = "config/default.properties";
     private final Properties properties;
 

@@ -4,6 +4,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.DeletionStatus;
+import org.haifan.merlin.model.openai.audio.CreateSpeechRequest;
 import org.haifan.merlin.model.openai.files.File;
 import org.haifan.merlin.model.openai.files.FileResponse;
 import org.haifan.merlin.model.openai.images.CreateImageRequest;
@@ -20,6 +21,14 @@ import retrofit2.http.*;
  * TODO: add javadoc
  */
 public interface OpenAiApi {
+
+    // ===============================
+    // ENDPOINTS - Audio
+    // ===============================
+
+    @POST("/v1/audio/speech")
+    @Headers(org.haifan.merlin.constants.Headers.APPLICATION_JSON)
+    Call<ResponseBody> createSpeech(@Body CreateSpeechRequest requestBody);
 
     // ===============================
     // ENDPOINTS - Files
@@ -46,6 +55,7 @@ public interface OpenAiApi {
     // ===============================
 
     @POST("v1/images/generations")
+    @Headers(org.haifan.merlin.constants.Headers.APPLICATION_JSON)
     Call<ImageResponse> createImage(@Body CreateImageRequest createImageRequest);
 
     @POST("/v1/images/edits")
@@ -70,6 +80,7 @@ public interface OpenAiApi {
     // ENDPOINTS - Moderation
     // ===============================
     @POST("v1/moderations")
+    @Headers(org.haifan.merlin.constants.Headers.APPLICATION_JSON)
     Call<ModerationResponse> createModeration(@Body ModerationRequest moderationRequest);
 
 }

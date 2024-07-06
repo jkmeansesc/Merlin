@@ -21,11 +21,16 @@ public class JsonPrinter {
      * @throws JsonPrinterException if there is an error during JSON serialization
      */
     public static String print(Object obj) throws JsonPrinterException {
-        ObjectMapper mapper = new ObjectMapper()
-                .enable(SerializationFeature.INDENT_OUTPUT)
-                .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.writeValueAsString(obj);
+            if (obj instanceof String) {
+                // If it's already a string, parse and pretty print it
+                Object json = mapper.readValue((String) obj, Object.class);
+                return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+            } else {
+                // If it's an object, pretty print it
+                return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+            }
         } catch (JsonProcessingException e) {
             throw new JsonPrinterException("Error printing object as JSON", e);
         }

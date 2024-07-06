@@ -1,5 +1,6 @@
 package org.haifan.merlin.model.openai.moderations;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 /**
@@ -10,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ModerationRequest {
 
     @NonNull
