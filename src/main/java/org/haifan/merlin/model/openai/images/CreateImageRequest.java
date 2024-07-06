@@ -12,7 +12,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreateImageRequest {
     @NonNull
     private String prompt;

@@ -27,7 +27,6 @@ public interface OpenAiApi {
     // ===============================
 
     @POST("/v1/audio/speech")
-    @Headers(org.haifan.merlin.constants.Headers.APPLICATION_JSON)
     Call<ResponseBody> createSpeech(@Body CreateSpeechRequest requestBody);
 
     // ===============================
@@ -35,6 +34,8 @@ public interface OpenAiApi {
     // ===============================
 
     @POST("/v1/files")
+//    @Headers("Accept-Encoding: identity")
+        // HACK: https://stackoverflow.com/a/48532617
     Call<File> uploadFile(@Body RequestBody requestBody);
 
     @GET("/v1/files")
@@ -55,7 +56,6 @@ public interface OpenAiApi {
     // ===============================
 
     @POST("v1/images/generations")
-    @Headers(org.haifan.merlin.constants.Headers.APPLICATION_JSON)
     Call<ImageResponse> createImage(@Body CreateImageRequest createImageRequest);
 
     @POST("/v1/images/edits")
@@ -80,7 +80,6 @@ public interface OpenAiApi {
     // ENDPOINTS - Moderation
     // ===============================
     @POST("v1/moderations")
-    @Headers(org.haifan.merlin.constants.Headers.APPLICATION_JSON)
     Call<ModerationResponse> createModeration(@Body ModerationRequest moderationRequest);
 
 }

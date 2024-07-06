@@ -2,7 +2,6 @@ package org.haifan.merlin.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * Utility class for printing Java objects as JSON strings.

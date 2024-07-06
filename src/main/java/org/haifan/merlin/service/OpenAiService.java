@@ -19,8 +19,9 @@ import org.haifan.merlin.model.openai.models.Model;
 import org.haifan.merlin.model.openai.models.ModelResponse;
 import org.haifan.merlin.model.openai.moderations.ModerationResponse;
 import org.haifan.merlin.model.openai.moderations.ModerationRequest;
-import org.haifan.merlin.constants.FileType;
+import org.haifan.merlin.constants.IanaMediaType;
 import org.haifan.merlin.interceptors.OpenAiInterceptor;
+import org.haifan.merlin.utils.FileParser;
 
 import java.io.File;
 import java.util.concurrent.CompletableFuture;
@@ -71,7 +72,7 @@ public class OpenAiService extends LlmService {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(Fields.PURPOSE, purpose)
-                .addFormDataPart(Fields.FILE, file.getName(), RequestBody.create(file, MediaType.parse(FileType.OCTET_STREAM)));
+                .addFormDataPart(Fields.FILE, file.getName(), FileParser.parseFile(file));
 
         return super.call(api.uploadFile(builder.build()));
     }
@@ -114,10 +115,10 @@ public class OpenAiService extends LlmService {
                 .addFormDataPart(Fields.SIZE, request.getSize()) // string or null
                 .addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat()) //string or null
                 .addFormDataPart(Fields.PROMPT, request.getPrompt())
-                .addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(FileType.IMAGE_ALL)));
+                .addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(IanaMediaType.IMAGE_ALL)));
 
         if (mask != null) {
-            builder.addFormDataPart(Fields.MASK, mask.getName(), RequestBody.create(mask, MediaType.parse(FileType.IMAGE_ALL)));
+            builder.addFormDataPart(Fields.MASK, mask.getName(), RequestBody.create(mask, MediaType.parse(IanaMediaType.IMAGE_ALL)));
         }
         if (request.getModel() != null) {
             builder.addFormDataPart(Fields.MODEL, request.getModel());
@@ -140,7 +141,7 @@ public class OpenAiService extends LlmService {
                 .addFormDataPart(Fields.N, request.getN().toString()) // integer or null
                 .addFormDataPart(Fields.SIZE, request.getSize()) // string or null
                 .addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat()) // string or null
-                .addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(FileType.IMAGE_ALL)));
+                .addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(IanaMediaType.IMAGE_ALL)));
 
         if (request.getModel() != null) {
             builder.addFormDataPart(Fields.MODEL, request.getModel());

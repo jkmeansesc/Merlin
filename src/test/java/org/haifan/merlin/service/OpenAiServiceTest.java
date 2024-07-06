@@ -1,16 +1,55 @@
 package org.haifan.merlin.service;
 
 import org.haifan.merlin.client.Merlin;
+import org.haifan.merlin.model.openai.audio.CreateSpeechRequest;
 import org.haifan.merlin.model.openai.images.CreateImageRequest;
 import org.haifan.merlin.model.openai.moderations.ModerationRequest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import java.net.URL;
+import java.nio.file.Paths;
 
 class OpenAiServiceTest {
 
     @Test
     void testGetConfig() {
     }
+
+    @Nested
+    class TestAudio {
+        @Test
+        void createSpeech() {
+            Merlin.<OpenAiService>builder()
+                    .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
+                    .build()
+                    .getService()
+                    .createSpeech(CreateSpeechRequest
+                            .builder()
+                            .model("tts-1")
+                            .input("The quick brown fox jumped over the lazy dog.")
+                            .voice("alloy")
+                            .build())
+                    .join();
+        }
+    }
+
+    @Nested
+    class TestFiles{
+        @Test
+        void uploadFile () {
+            URL resourceUrl = OpenAiServiceTest.class.getClassLoader().getResource("log4j2.xml");
+            assert resourceUrl != null;
+            String filePath = Paths.get(resourceUrl.getPath()).toFile().getAbsolutePath();
+            Merlin.<OpenAiService>builder()
+                    .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
+                    .build()
+                    .getService()
+                    .uploadFile("fine-tune", filePath)
+                    .join();
+        }
+    }
+
 
     @Nested
     class TestImages {

@@ -1,10 +1,14 @@
 package org.haifan.merlin.service;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import okhttp3.OkHttpClient;
 
 import org.haifan.merlin.config.LlmConfig;
+import org.haifan.merlin.interceptors.GzipInterceptor;
 import org.haifan.merlin.interceptors.LlmInterceptor;
 import org.haifan.merlin.interceptors.SecureLoggingInterceptor;
 import org.jetbrains.annotations.NotNull;
@@ -36,13 +40,18 @@ public abstract class LlmService {
         logger.info("Initializing LlmService with base URL: {}", llmConfig.getBaseUrl());
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(llmInterceptor)
+                .addInterceptor(new GzipInterceptor())
                 .addNetworkInterceptor(new SecureLoggingInterceptor())
                 .build();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         this.retrofit = new Retrofit.Builder()
                 .baseUrl(llmConfig.getBaseUrl())
                 .client(client)
-                .addConverterFactory(JacksonConverterFactory.create(new ObjectMapper()))
+                .addConverterFactory(JacksonConverterFactory.create(mapper))
                 .build();
         logger.info("LlmService initialized");
     }

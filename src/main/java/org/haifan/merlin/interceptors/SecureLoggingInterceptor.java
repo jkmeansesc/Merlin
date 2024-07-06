@@ -12,7 +12,8 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
- * TODO: add javadoc
+ * An interceptor for securely logging HTTP requests and responses.
+ * This interceptor masks sensitive data and prettifies JSON content.
  */
 public class SecureLoggingInterceptor implements Interceptor {
     private static final Logger logger = LoggerFactory.getLogger(SecureLoggingInterceptor.class);
@@ -33,29 +34,68 @@ public class SecureLoggingInterceptor implements Interceptor {
     private void logSecurely(Request request) throws IOException {
         logger.info("Sending request to: {}", request.url());
         logger.debug("Request method: {}", request.method());
+        logger.debug("Request Headers:");
         logHeaders(request.headers());
-        if (request.body() != null) {
-            Buffer buffer = new Buffer();
-            request.body().writeTo(buffer);
-            String body = buffer.readUtf8();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Request Body:\n{}", JsonPrinter.print(body));
-            }
-        }
+        logRequestBody(request);
     }
 
     private void logSecurely(Response response, long duration) throws IOException {
         logger.info("Received response for {} in {}ms", response.request().url(), duration / 1_000_000);
         logger.debug("Response Code: {}", response.code());
+        logger.debug("Response Headers:");
         logHeaders(response.headers());
-        if (response.body() != null && logger.isDebugEnabled()) {
-            String body = response.peekBody(Long.MAX_VALUE).string();
-            logger.debug("Response Body:\n{}", JsonPrinter.print(body));
+        logResponseBody(response);
+    }
+
+    private void logRequestBody(Request request) throws IOException {
+        RequestBody body = request.body();
+        if (body == null) return;
+
+        MediaType mediaType = body.contentType();
+        if (mediaType != null && mediaType.type().equals("multipart")) {
+            logger.debug("Request Body: [multipart form data]");
+            return;
+        }
+
+        Buffer buffer = new Buffer();
+        body.writeTo(buffer);
+        String bodyString = buffer.readUtf8();
+
+        if (isJsonContent(mediaType)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Request Body:\n{}", JsonPrinter.print(bodyString));
+            }
+        } else {
+            logger.debug("Request Body: [binary data]");
+            logger.trace("Raw Request Body:\n{}", bodyString);
+        }
+    }
+
+    private void logResponseBody(Response response) throws IOException {
+        ResponseBody body = response.body();
+        if (body == null) return;
+
+        MediaType mediaType = body.contentType();
+        if (mediaType != null && mediaType.type().equals("multipart")) {
+            logger.debug("Response Body: [multipart form data]");
+            return;
+        }
+
+        // Use peekBody with a reasonable maximum size to avoid reading the entire response into memory
+        ResponseBody peekBody = response.peekBody(1024L * 1024); // 1MB limit
+        String bodyString = peekBody.string();
+
+        if (isJsonContent(mediaType)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Response Body:\n{}", JsonPrinter.print(bodyString));
+            }
+        } else {
+            logger.debug("Response Body: [binary data]");
+            logger.trace("Raw Response Body:\n{}", bodyString);
         }
     }
 
     private void logHeaders(Headers headers) {
-        logger.debug("Headers:");
         headers.forEach(header -> {
             String headerName = header.getFirst();
             String headerValue = SENSITIVE_HEADERS.contains(headerName) ?
@@ -69,5 +109,11 @@ public class SecureLoggingInterceptor implements Interceptor {
             return "****";
         }
         return data.substring(0, 4) + "****";
+    }
+
+    private boolean isJsonContent(MediaType mediaType) {
+        return mediaType != null &&
+                (mediaType.subtype().toLowerCase().contains("json") ||
+                        mediaType.subtype().equalsIgnoreCase("javascript"));
     }
 }

@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreateImageVariationRequest {
 
     private String model;
