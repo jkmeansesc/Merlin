@@ -10,7 +10,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.interceptors.LlmInterceptor;
 import org.haifan.merlin.interceptors.SLF4JHttpLogger;
-import org.haifan.merlin.interceptors.SecureLoggingInterceptor;
 import org.jetbrains.annotations.NotNull;
 
 import org.slf4j.Logger;
@@ -45,7 +44,6 @@ public abstract class LlmService {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(llmInterceptor)
                 .addNetworkInterceptor(logging)
-//                .addNetworkInterceptor(new SecureLoggingInterceptor())
                 .build();
 
         ObjectMapper mapper = new ObjectMapper();

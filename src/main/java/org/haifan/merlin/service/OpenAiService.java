@@ -9,7 +9,7 @@ import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.config.OpenAiConfig;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.DeletionStatus;
-import org.haifan.merlin.model.openai.audio.CreateSpeechRequest;
+import org.haifan.merlin.model.openai.audio.*;
 import org.haifan.merlin.model.openai.files.FileResponse;
 import org.haifan.merlin.model.openai.images.CreateImageEditRequest;
 import org.haifan.merlin.model.openai.images.CreateImageRequest;
@@ -24,6 +24,7 @@ import org.haifan.merlin.interceptors.OpenAiInterceptor;
 import org.haifan.merlin.utils.FileParser;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -59,6 +60,60 @@ public class OpenAiService extends LlmService {
         return super.call(api.createSpeech(request));
     }
 
+    public CompletableFuture<Transcription> createTranscription(CreateTranscriptionRequest request, String audioPath) {
+        java.io.File file = new java.io.File(audioPath);
+        return createTranscription(request, file);
+    }
+
+    public CompletableFuture<Transcription> createTranscription(CreateTranscriptionRequest request, File audio) {
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio))
+                .addFormDataPart(Fields.MODEL, request.getModel());
+
+        if (request.getPrompt() != null) {
+            builder.addFormDataPart(Fields.PROMPT, request.getPrompt());
+        }
+        if (request.getLanguage() != null) {
+            builder.addFormDataPart(Fields.LANGUAGE, request.getLanguage());
+        }
+        if (request.getResponseFormat() != null) {
+            builder.addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat());
+        }
+        if (request.getTemperature() != null) {
+            builder.addFormDataPart(Fields.TEMPERATURE, request.getTemperature().toString());
+        }
+        if (request.getTimestampGranularities() != null) {
+            builder.addFormDataPart(Fields.TIMESTAMP_GRANULARITIES, Arrays.toString(request.getTimestampGranularities()));
+        }
+
+        return super.call(api.createTranscription(builder.build()));
+    }
+
+    public CompletableFuture<Translation> createTranslation(CreateTranslationRequest request, String audioPath) {
+        java.io.File file = new java.io.File(audioPath);
+        return createTranslation(request, file);
+    }
+
+    public CompletableFuture<Translation> createTranslation(CreateTranslationRequest request, File audio) {
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio))
+                .addFormDataPart(Fields.MODEL, request.getModel());
+
+        if (request.getPrompt() != null) {
+            builder.addFormDataPart(Fields.PROMPT, request.getPrompt());
+        }
+        if (request.getResponseFormat() != null) {
+            builder.addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat());
+        }
+        if (request.getTemperature() != null) {
+            builder.addFormDataPart(Fields.TEMPERATURE, request.getTemperature().toString());
+        }
+
+        return super.call(api.createTranslation(builder.build()));
+    }
+
     // ===============================
     // ENDPOINTS - Files
     // ===============================
@@ -68,7 +123,7 @@ public class OpenAiService extends LlmService {
         return uploadFile(purpose, file);
     }
 
-    private CompletableFuture<org.haifan.merlin.model.openai.files.File> uploadFile(String purpose, File file) {
+    public CompletableFuture<org.haifan.merlin.model.openai.files.File> uploadFile(String purpose, File file) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(Fields.PURPOSE, purpose)

@@ -5,6 +5,8 @@ import okhttp3.ResponseBody;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.DeletionStatus;
 import org.haifan.merlin.model.openai.audio.CreateSpeechRequest;
+import org.haifan.merlin.model.openai.audio.Transcription;
+import org.haifan.merlin.model.openai.audio.Translation;
 import org.haifan.merlin.model.openai.files.File;
 import org.haifan.merlin.model.openai.files.FileResponse;
 import org.haifan.merlin.model.openai.images.CreateImageRequest;
@@ -28,6 +30,12 @@ public interface OpenAiApi {
 
     @POST("/v1/audio/speech")
     Call<ResponseBody> createSpeech(@Body CreateSpeechRequest requestBody);
+
+    @POST("/v1/audio/transcriptions")
+    Call<Transcription> createTranscription(@Body RequestBody requestBody);
+
+    @POST("/v1/audio/translations")
+    Call<Translation> createTranslation(@Body RequestBody requestBody);
 
     // ===============================
     // ENDPOINTS - Files

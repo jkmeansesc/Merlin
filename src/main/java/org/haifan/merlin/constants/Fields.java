@@ -5,8 +5,6 @@ public class Fields {
         throw new IllegalStateException("Utility class");
     }
 
-    public static final String CONTENT_ENCODING = "Content-Encoding";
-    public static final String CONTENT_TYPE = "Content-Type";
     public static final String MODEL = "model";
     public static final String N = "n";
     public static final String PURPOSE = "purpose";
@@ -18,4 +16,7 @@ public class Fields {
     public static final String MASK = "mask";
     public static final String USER = "user";
     public static final String FILE_ID = "file_id";
+    public static final String LANGUAGE = "language";
+    public static final String TEMPERATURE = "temperature";
+    public static final String TIMESTAMP_GRANULARITIES = "timestamp_granularities";
 }
