@@ -4,18 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
- * The request object for creating transcription from audio.
- * <a href="https://platform.openai.com/docs/api-reference/audio/createTranscription">...</a>
+ * The request object to create translation from an audio file for OpenAI
+ * <a href="https://platform.openai.com/docs/api-reference/audio/createTranslation">...</a>
  */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CreateTranscriptionRequest {
+public class TranslationRequest {
+
     @NonNull
     private String model;
-
-    private String language;
 
     private String prompt;
 
@@ -24,6 +23,4 @@ public class CreateTranscriptionRequest {
 
     private Double temperature;
 
-    @JsonProperty("timestamp_granularities")
-    private Long[] timestampGranularities;
 }

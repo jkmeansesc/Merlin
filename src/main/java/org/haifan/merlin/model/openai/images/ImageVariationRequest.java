@@ -1,6 +1,5 @@
 package org.haifan.merlin.model.openai.images;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CreateImageVariationRequest {
+public class ImageVariationRequest {
 
     private String model;
 

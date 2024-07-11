@@ -1,18 +1,18 @@
 package org.haifan.merlin.model.openai.images;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
- * The request object to create an image from OpenAI.
- * <a href="https://platform.openai.com/docs/api-reference/images">...</a>
+ * The request object to create an edited or extended image from OpenAI.
+ * <a href="https://platform.openai.com/docs/api-reference/images/createEdit">...</a>
  */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CreateImageRequest {
+public class ImageEditRequest {
+
     @NonNull
     private String prompt;
 
@@ -20,14 +20,11 @@ public class CreateImageRequest {
 
     private Integer n;
 
-    private String quality;
+    private String size;
 
     @JsonProperty("response_format")
     private String responseFormat;
 
-    private String size;
-
-    private String style;
-
     private String user;
+
 }

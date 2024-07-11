@@ -4,12 +4,12 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.DeletionStatus;
-import org.haifan.merlin.model.openai.audio.CreateSpeechRequest;
+import org.haifan.merlin.model.openai.audio.SpeechRequest;
 import org.haifan.merlin.model.openai.audio.Transcription;
 import org.haifan.merlin.model.openai.audio.Translation;
 import org.haifan.merlin.model.openai.files.File;
 import org.haifan.merlin.model.openai.files.FileResponse;
-import org.haifan.merlin.model.openai.images.CreateImageRequest;
+import org.haifan.merlin.model.openai.images.ImageRequest;
 import org.haifan.merlin.model.openai.images.ImageResponse;
 import org.haifan.merlin.model.openai.models.Model;
 
@@ -29,13 +29,17 @@ public interface OpenAiApi {
     // ===============================
 
     @POST("/v1/audio/speech")
-    Call<ResponseBody> createSpeech(@Body CreateSpeechRequest requestBody);
+    Call<ResponseBody> createSpeech(@Body SpeechRequest requestBody);
 
     @POST("/v1/audio/transcriptions")
     Call<Transcription> createTranscription(@Body RequestBody requestBody);
 
     @POST("/v1/audio/translations")
     Call<Translation> createTranslation(@Body RequestBody requestBody);
+
+    // ===============================
+    // ENDPOINTS - Chat
+    // ===============================
 
     // ===============================
     // ENDPOINTS - Files
@@ -62,7 +66,7 @@ public interface OpenAiApi {
     // ===============================
 
     @POST("v1/images/generations")
-    Call<ImageResponse> createImage(@Body CreateImageRequest createImageRequest);
+    Call<ImageResponse> createImage(@Body ImageRequest imageRequest);
 
     @POST("/v1/images/edits")
     Call<ImageResponse> createImageEdit(@Body RequestBody requestBody);

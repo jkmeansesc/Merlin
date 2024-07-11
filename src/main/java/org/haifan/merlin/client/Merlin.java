@@ -7,7 +7,6 @@ import org.haifan.merlin.service.LlmService;
 /**
  * TODO: add javadoc
  *
- * @param <T>
  */
 @Getter
 @Builder

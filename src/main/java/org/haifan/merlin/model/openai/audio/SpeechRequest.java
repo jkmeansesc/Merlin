@@ -4,23 +4,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
- * The request object to create translation from an audio file for OpenAI
- * <a href="https://platform.openai.com/docs/api-reference/audio/createTranslation">...</a>
+ * The request object to generate audio from OpenAI.
+ * <a href="https://platform.openai.com/docs/api-reference/audio/createSpeech">...</a>
  */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CreateTranslationRequest {
+public class SpeechRequest {
 
     @NonNull
     private String model;
 
-    private String prompt;
+    @NonNull
+    private String input;
+
+    @NonNull
+    private String voice;
 
     @JsonProperty("response_format")
     private String responseFormat;
 
-    private Double temperature;
-
+    private Double speed;
 }

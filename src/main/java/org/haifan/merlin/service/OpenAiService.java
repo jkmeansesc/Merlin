@@ -11,9 +11,9 @@ import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.DeletionStatus;
 import org.haifan.merlin.model.openai.audio.*;
 import org.haifan.merlin.model.openai.files.FileResponse;
-import org.haifan.merlin.model.openai.images.CreateImageEditRequest;
-import org.haifan.merlin.model.openai.images.CreateImageRequest;
-import org.haifan.merlin.model.openai.images.CreateImageVariationRequest;
+import org.haifan.merlin.model.openai.images.ImageEditRequest;
+import org.haifan.merlin.model.openai.images.ImageRequest;
+import org.haifan.merlin.model.openai.images.ImageVariationRequest;
 import org.haifan.merlin.model.openai.images.ImageResponse;
 import org.haifan.merlin.model.openai.models.Model;
 import org.haifan.merlin.model.openai.models.ModelResponse;
@@ -56,16 +56,16 @@ public class OpenAiService extends LlmService {
     // ENDPOINTS - Audio
     // ===============================
 
-    public CompletableFuture<ResponseBody> createSpeech(CreateSpeechRequest request) {
+    public CompletableFuture<ResponseBody> createSpeech(SpeechRequest request) {
         return super.call(api.createSpeech(request));
     }
 
-    public CompletableFuture<Transcription> createTranscription(CreateTranscriptionRequest request, String audioPath) {
+    public CompletableFuture<Transcription> createTranscription(TranscriptionRequest request, String audioPath) {
         java.io.File file = new java.io.File(audioPath);
         return createTranscription(request, file);
     }
 
-    public CompletableFuture<Transcription> createTranscription(CreateTranscriptionRequest request, File audio) {
+    public CompletableFuture<Transcription> createTranscription(TranscriptionRequest request, File audio) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio))
@@ -90,12 +90,12 @@ public class OpenAiService extends LlmService {
         return super.call(api.createTranscription(builder.build()));
     }
 
-    public CompletableFuture<Translation> createTranslation(CreateTranslationRequest request, String audioPath) {
+    public CompletableFuture<Translation> createTranslation(TranslationRequest request, String audioPath) {
         java.io.File file = new java.io.File(audioPath);
         return createTranslation(request, file);
     }
 
-    public CompletableFuture<Translation> createTranslation(CreateTranslationRequest request, File audio) {
+    public CompletableFuture<Translation> createTranslation(TranslationRequest request, File audio) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio))
@@ -113,6 +113,10 @@ public class OpenAiService extends LlmService {
 
         return super.call(api.createTranslation(builder.build()));
     }
+
+    // ===============================
+    // ENDPOINTS - Chat
+    // ===============================
 
     // ===============================
     // ENDPOINTS - Files
@@ -152,18 +156,18 @@ public class OpenAiService extends LlmService {
     // ENDPOINTS - Images
     // ===============================
 
-    public CompletableFuture<ImageResponse> createImage(CreateImageRequest createImageRequest) {
-        return super.call(api.createImage(createImageRequest));
+    public CompletableFuture<ImageResponse> createImage(ImageRequest imageRequest) {
+        return super.call(api.createImage(imageRequest));
     }
 
 
-    public CompletableFuture<ImageResponse> createImageEdit(CreateImageEditRequest request, String imagePath, String maskPath) {
+    public CompletableFuture<ImageResponse> createImageEdit(ImageEditRequest request, String imagePath, String maskPath) {
         File image = new File(imagePath);
         File mask = maskPath != null ? new File(maskPath) : null;
         return createImageEdit(request, image, mask);
     }
 
-    private CompletableFuture<ImageResponse> createImageEdit(CreateImageEditRequest request, File image, File mask) {
+    private CompletableFuture<ImageResponse> createImageEdit(ImageEditRequest request, File image, File mask) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(Fields.N, request.getN().toString()) // integer or null
@@ -185,12 +189,12 @@ public class OpenAiService extends LlmService {
         return super.call(api.createImageEdit(builder.build()));
     }
 
-    public CompletableFuture<ImageResponse> createImageVariation(CreateImageVariationRequest request, String imagePath) {
+    public CompletableFuture<ImageResponse> createImageVariation(ImageVariationRequest request, String imagePath) {
         java.io.File image = new java.io.File(imagePath);
         return createImageVariation(request, image);
     }
 
-    public CompletableFuture<ImageResponse> createImageVariation(CreateImageVariationRequest request, File image) {
+    public CompletableFuture<ImageResponse> createImageVariation(ImageVariationRequest request, File image) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(Fields.N, request.getN().toString()) // integer or null
