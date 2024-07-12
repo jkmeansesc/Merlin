@@ -17,7 +17,6 @@ import org.haifan.merlin.model.openai.chat.ChatCompletionChunk;
 import org.haifan.merlin.model.openai.chat.ChatCompletionRequest;
 import org.haifan.merlin.model.openai.embeddings.Embedding;
 import org.haifan.merlin.model.openai.embeddings.EmbeddingRequest;
-import org.haifan.merlin.model.openai.files.FileResponse;
 import org.haifan.merlin.model.openai.finetune.FineTuningCheckpoint;
 import org.haifan.merlin.model.openai.finetune.FineTuningEvent;
 import org.haifan.merlin.model.openai.finetune.FineTuningJob;
@@ -25,10 +24,9 @@ import org.haifan.merlin.model.openai.finetune.FineTuningJobRequest;
 import org.haifan.merlin.model.openai.images.ImageEditRequest;
 import org.haifan.merlin.model.openai.images.ImageRequest;
 import org.haifan.merlin.model.openai.images.ImageVariationRequest;
-import org.haifan.merlin.model.openai.images.ImageResponse;
+import org.haifan.merlin.model.openai.images.ImageList;
 import org.haifan.merlin.model.openai.models.Model;
-import org.haifan.merlin.model.openai.models.ModelList;
-import org.haifan.merlin.model.openai.moderations.ModerationResponse;
+import org.haifan.merlin.model.openai.moderations.ModerationList;
 import org.haifan.merlin.model.openai.moderations.ModerationRequest;
 import org.haifan.merlin.constants.IanaMediaType;
 import org.haifan.merlin.interceptors.OpenAiInterceptor;
@@ -211,7 +209,7 @@ public class OpenAiService extends LlmService {
         return super.call(api.uploadFile(builder.build()));
     }
 
-    public CompletableFuture<FileResponse> listFiles() {
+    public CompletableFuture<OpenAiList<org.haifan.merlin.model.openai.files.File>> listFiles() {
         return super.call(api.listFiles());
     }
 
@@ -231,18 +229,18 @@ public class OpenAiService extends LlmService {
     // ENDPOINTS - Images
     // ===============================
 
-    public CompletableFuture<ImageResponse> createImage(ImageRequest imageRequest) {
+    public CompletableFuture<ImageList> createImage(ImageRequest imageRequest) {
         return super.call(api.createImage(imageRequest));
     }
 
 
-    public CompletableFuture<ImageResponse> createImageEdit(ImageEditRequest request, String imagePath, String maskPath) {
+    public CompletableFuture<ImageList> createImageEdit(ImageEditRequest request, String imagePath, String maskPath) {
         File image = new File(imagePath);
         File mask = maskPath != null ? new File(maskPath) : null;
         return createImageEdit(request, image, mask);
     }
 
-    private CompletableFuture<ImageResponse> createImageEdit(ImageEditRequest request, File image, File mask) {
+    private CompletableFuture<ImageList> createImageEdit(ImageEditRequest request, File image, File mask) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(Fields.N, request.getN().toString()) // integer or null
@@ -264,12 +262,12 @@ public class OpenAiService extends LlmService {
         return super.call(api.createImageEdit(builder.build()));
     }
 
-    public CompletableFuture<ImageResponse> createImageVariation(ImageVariationRequest request, String imagePath) {
+    public CompletableFuture<ImageList> createImageVariation(ImageVariationRequest request, String imagePath) {
         java.io.File image = new java.io.File(imagePath);
         return createImageVariation(request, image);
     }
 
-    public CompletableFuture<ImageResponse> createImageVariation(ImageVariationRequest request, File image) {
+    public CompletableFuture<ImageList> createImageVariation(ImageVariationRequest request, File image) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(Fields.N, request.getN().toString()) // integer or null
@@ -296,9 +294,9 @@ public class OpenAiService extends LlmService {
      * Lists the currently available models, and provides basic information about each one such as the owner and availability.
      *
      * @return a list of model object.
-     * @see ModelList
+     * @see Model
      */
-    public CompletableFuture<ModelList> listModels() {
+    public CompletableFuture<OpenAiList<Model>> listModels() {
         return super.call(api.listModels());
     }
 
@@ -328,7 +326,7 @@ public class OpenAiService extends LlmService {
     // ENDPOINTS - Moderation
     // ===============================
 
-    public CompletableFuture<ModerationResponse> createModeration(ModerationRequest moderationRequest) {
+    public CompletableFuture<ModerationList> createModeration(ModerationRequest moderationRequest) {
         return super.call(api.createModeration(moderationRequest));
     }
 

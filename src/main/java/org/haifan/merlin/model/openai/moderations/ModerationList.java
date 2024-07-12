@@ -9,7 +9,7 @@ import java.util.List;
  * <a href="https://platform.openai.com/docs/api-reference/moderations/object">...</a>
  */
 @Data
-public class ModerationResponse {
+public class ModerationList {
     private String id;
     private String model;
     private List<Moderation> results;

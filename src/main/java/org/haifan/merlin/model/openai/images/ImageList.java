@@ -9,7 +9,7 @@ import java.util.List;
  * <a href="https://platform.openai.com/docs/api-reference/images/create">...</a>
  */
 @Data
-public class ImageResponse {
+public class ImageList {
     private String created;
     private List<Image> data;
 }

@@ -13,17 +13,15 @@ import org.haifan.merlin.model.openai.chat.ChatCompletionRequest;
 import org.haifan.merlin.model.openai.embeddings.Embedding;
 import org.haifan.merlin.model.openai.embeddings.EmbeddingRequest;
 import org.haifan.merlin.model.openai.files.File;
-import org.haifan.merlin.model.openai.files.FileResponse;
 import org.haifan.merlin.model.openai.finetune.FineTuningCheckpoint;
 import org.haifan.merlin.model.openai.finetune.FineTuningEvent;
 import org.haifan.merlin.model.openai.finetune.FineTuningJob;
 import org.haifan.merlin.model.openai.finetune.FineTuningJobRequest;
 import org.haifan.merlin.model.openai.images.ImageRequest;
-import org.haifan.merlin.model.openai.images.ImageResponse;
+import org.haifan.merlin.model.openai.images.ImageList;
 import org.haifan.merlin.model.openai.models.Model;
 
-import org.haifan.merlin.model.openai.models.ModelList;
-import org.haifan.merlin.model.openai.moderations.ModerationResponse;
+import org.haifan.merlin.model.openai.moderations.ModerationList;
 import org.haifan.merlin.model.openai.moderations.ModerationRequest;
 import retrofit2.Call;
 import retrofit2.http.*;
@@ -107,7 +105,7 @@ public interface OpenAiApi {
     Call<File> uploadFile(@Body RequestBody requestBody);
 
     @GET("/v1/files")
-    Call<FileResponse> listFiles();
+    Call<OpenAiList<File>> listFiles();
 
     @GET("/v1/files/{file_id}")
     Call<File> retrieveFile(@Path(Fields.FILE_ID) String fileId);
@@ -124,19 +122,19 @@ public interface OpenAiApi {
     // ===============================
 
     @POST("v1/images/generations")
-    Call<ImageResponse> createImage(@Body ImageRequest imageRequest);
+    Call<ImageList> createImage(@Body ImageRequest imageRequest);
 
     @POST("/v1/images/edits")
-    Call<ImageResponse> createImageEdit(@Body RequestBody requestBody);
+    Call<ImageList> createImageEdit(@Body RequestBody requestBody);
 
     @POST("/v1/images/variations")
-    Call<ImageResponse> createImageVariation(@Body RequestBody requestBody);
+    Call<ImageList> createImageVariation(@Body RequestBody requestBody);
 
     // ===============================
     // ENDPOINTS - Models
     // ===============================
     @GET("/v1/models")
-    Call<ModelList> listModels();
+    Call<OpenAiList<Model>> listModels();
 
     @GET("/v1/models/{model}")
     Call<Model> retrieveModel(@Path(Fields.MODEL) String model);
@@ -148,6 +146,6 @@ public interface OpenAiApi {
     // ENDPOINTS - Moderation
     // ===============================
     @POST("v1/moderations")
-    Call<ModerationResponse> createModeration(@Body ModerationRequest moderationRequest);
+    Call<ModerationList> createModeration(@Body ModerationRequest moderationRequest);
 
 }
