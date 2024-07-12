@@ -9,7 +9,7 @@ import java.util.List;
  * <a href="https://platform.openai.com/docs/api-reference/models/list">...</a>
  */
 @Data
-public class ModelResponse {
+public class ModelList {
     private String object;
     private List<Model> data;
 }

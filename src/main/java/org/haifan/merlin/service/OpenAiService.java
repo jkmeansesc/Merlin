@@ -9,18 +9,25 @@ import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.config.OpenAiConfig;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.DeletionStatus;
+import org.haifan.merlin.model.openai.OpenAiList;
 import org.haifan.merlin.model.openai.StreamingResponse;
 import org.haifan.merlin.model.openai.audio.*;
 import org.haifan.merlin.model.openai.chat.ChatCompletion;
 import org.haifan.merlin.model.openai.chat.ChatCompletionChunk;
 import org.haifan.merlin.model.openai.chat.ChatCompletionRequest;
+import org.haifan.merlin.model.openai.embeddings.Embedding;
+import org.haifan.merlin.model.openai.embeddings.EmbeddingRequest;
 import org.haifan.merlin.model.openai.files.FileResponse;
+import org.haifan.merlin.model.openai.finetune.FineTuningCheckpoint;
+import org.haifan.merlin.model.openai.finetune.FineTuningEvent;
+import org.haifan.merlin.model.openai.finetune.FineTuningJob;
+import org.haifan.merlin.model.openai.finetune.FineTuningJobRequest;
 import org.haifan.merlin.model.openai.images.ImageEditRequest;
 import org.haifan.merlin.model.openai.images.ImageRequest;
 import org.haifan.merlin.model.openai.images.ImageVariationRequest;
 import org.haifan.merlin.model.openai.images.ImageResponse;
 import org.haifan.merlin.model.openai.models.Model;
-import org.haifan.merlin.model.openai.models.ModelResponse;
+import org.haifan.merlin.model.openai.models.ModelList;
 import org.haifan.merlin.model.openai.moderations.ModerationResponse;
 import org.haifan.merlin.model.openai.moderations.ModerationRequest;
 import org.haifan.merlin.constants.IanaMediaType;
@@ -137,6 +144,55 @@ public class OpenAiService extends LlmService {
         // Use Jackson or Gson to parse JSON into ChatCompletionChunk
         return null;
     }
+
+    // ===============================
+    // ENDPOINTS - Embeddings
+    // ===============================
+
+    public CompletableFuture<Embedding> createEmbeddings(EmbeddingRequest request) {
+        return super.call(api.createEmbeddings(request));
+    }
+
+    // ===============================
+    // ENDPOINTS - Fine-tuning
+    // ===============================
+
+    public CompletableFuture<FineTuningJob> createFineTuningJob(FineTuningJobRequest request) {
+        return super.call(api.createFineTuningJob(request));
+    }
+
+    public CompletableFuture<OpenAiList<FineTuningJob>> listFineTuningJobs() {
+        return super.call(api.listFineTuningJobs());
+    }
+
+    public CompletableFuture<OpenAiList<FineTuningJob>> listFineTuningJobs(String after, Integer limit) {
+        return super.call(api.listFineTuningJobs(after, limit));
+    }
+
+    public CompletableFuture<OpenAiList<FineTuningEvent>> listFineTuningEvents(String fineTuningJobId) {
+        return super.call(api.listFineTuningEvents(fineTuningJobId));
+    }
+
+    public CompletableFuture<OpenAiList<FineTuningEvent>> listFineTuningEvents(String fineTuningJobId, String after, Integer limit) {
+        return super.call(api.listFineTuningEvents(fineTuningJobId, after, limit));
+    }
+
+    public CompletableFuture<OpenAiList<FineTuningCheckpoint>> listFineTuningCheckpoints(String fineTuningJobId) {
+        return super.call(api.listFineTuningCheckpoints(fineTuningJobId));
+    }
+
+    public CompletableFuture<OpenAiList<FineTuningCheckpoint>> listFineTuningCheckpoints(String fineTuningJobId, String after, Integer limit) {
+        return super.call(api.listFineTuningCheckpoints(fineTuningJobId, after, limit));
+    }
+
+    public CompletableFuture<FineTuningJob> retrieveFineTuningJob(String fineTuningJobId) {
+        return super.call(api.retrieveFineTuningJob(fineTuningJobId));
+    }
+
+    public CompletableFuture<FineTuningJob> cancelFineTuningJob(String fineTuningJobId) {
+        return super.call(api.cancelFineTuningJob(fineTuningJobId));
+    }
+
     // ===============================
     // ENDPOINTS - Files
     // ===============================
@@ -240,9 +296,9 @@ public class OpenAiService extends LlmService {
      * Lists the currently available models, and provides basic information about each one such as the owner and availability.
      *
      * @return a list of model object.
-     * @see ModelResponse
+     * @see ModelList
      */
-    public CompletableFuture<ModelResponse> listModels() {
+    public CompletableFuture<ModelList> listModels() {
         return super.call(api.listModels());
     }
 

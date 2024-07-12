@@ -4,6 +4,7 @@ import org.haifan.merlin.client.Merlin;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.audio.SpeechRequest;
 import org.haifan.merlin.model.openai.chat.*;
+import org.haifan.merlin.model.openai.embeddings.EmbeddingRequest;
 import org.haifan.merlin.model.openai.images.ImageRequest;
 import org.haifan.merlin.model.openai.moderations.ModerationRequest;
 import org.haifan.merlin.utils.JsonPrinter;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 class OpenAiServiceTest {
@@ -27,12 +29,6 @@ class OpenAiServiceTest {
     class TestChat {
         @Test
         void testChatCompletionRequest() {
-//            ToolChoiceObject toolChoiceObject = new ToolChoiceObject();
-//            ChatCompletionRequest request = ChatCompletionRequest.builder()
-//                    .toolChoiceString("123")
-//                    .toolChoiceObject(toolChoiceObject)
-//                    .build();
-//            System.out.println(request);
 
         }
 
@@ -108,6 +104,108 @@ class OpenAiServiceTest {
             void testAssistantMessage() {
 
             }
+        }
+    }
+
+    @Nested
+    class TestEmbedding {
+        @Test
+        void createEmbeddings() {
+
+            // Single string
+            EmbeddingRequest request1 = EmbeddingRequest.builder()
+                    .input("This is a test string")
+                    .dimensions(1)
+                    .encodingFormat("base64")
+                    .model("text-embedding-3")
+                    .build();
+            System.out.println(JsonPrinter.print(request1));
+
+            // Array of strings
+            List<String> stringList = Arrays.asList("String 1", "String 2", "String 3");
+            EmbeddingRequest request2 = EmbeddingRequest.builder()
+                    .input(stringList)
+                    .model("text-embedding-ada-002")
+                    .build();
+
+            System.out.println(JsonPrinter.print(request2));
+
+            // Array of integers
+            List<Integer> intList = Arrays.asList(1, 2, 3, 4, 5);
+            EmbeddingRequest request3 = EmbeddingRequest.builder()
+                    .input(intList)
+                    .model("text-embedding-ada-002")
+                    .build();
+
+            System.out.println(JsonPrinter.print(request3));
+
+            // Array of arrays of integers
+            List<List<Integer>> nestedList = Arrays.asList(
+                    Arrays.asList(1, 2, 3),
+                    Arrays.asList(4, 5, 6),
+                    Arrays.asList(7, 8, 9)
+            );
+
+            EmbeddingRequest request4 = EmbeddingRequest.builder()
+                    .input(nestedList)
+                    .model("text-embedding-ada-002")
+                    .build();
+
+            System.out.println(JsonPrinter.print(request4));
+
+            EmbeddingRequest request5 = EmbeddingRequest.builder()
+                    .input(new Integer[]{1, 2, 3})
+                    .model("text-embedding-ada-002")
+                    .build();
+
+            System.out.println(JsonPrinter.print(request5));
+
+            EmbeddingRequest request6 = EmbeddingRequest.builder()
+                    .input(new String[]{"string1", "string2", "string3"})
+                    .model("text-embedding-ada-002")
+                    .build();
+
+            System.out.println(JsonPrinter.print(request6));
+
+            Merlin.<OpenAiService>builder()
+                    .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
+                    .build()
+                    .getService()
+                    .createEmbeddings(request1)
+                    .join();
+        }
+    }
+
+    @Nested
+    class TestFineTuning {
+        @Test
+        void createFineTuning() {
+
+        }
+
+        @Test
+        void listFineTuningJobs() {
+
+        }
+
+        @Test
+        void listFineTuningEvents() {
+
+        }
+
+        @Test
+        void listFineTuningCheckpoints() {
+
+        }
+
+        @Test
+        void retrieveFineTuningJob() {
+
+        }
+
+        @Test
+        void cancelFineTuningJob() {
+
         }
     }
 
