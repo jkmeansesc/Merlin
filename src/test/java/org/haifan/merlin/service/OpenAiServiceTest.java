@@ -210,6 +210,11 @@ class OpenAiServiceTest {
     }
 
     @Nested
+    class TestBatch{
+
+    }
+
+    @Nested
     class TestAudio {
         @Test
         void createSpeech() {

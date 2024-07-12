@@ -8,6 +8,8 @@ import org.haifan.merlin.model.openai.OpenAiList;
 import org.haifan.merlin.model.openai.audio.SpeechRequest;
 import org.haifan.merlin.model.openai.audio.Transcription;
 import org.haifan.merlin.model.openai.audio.Translation;
+import org.haifan.merlin.model.openai.batch.Batch;
+import org.haifan.merlin.model.openai.batch.BatchRequest;
 import org.haifan.merlin.model.openai.chat.ChatCompletion;
 import org.haifan.merlin.model.openai.chat.ChatCompletionRequest;
 import org.haifan.merlin.model.openai.embeddings.Embedding;
@@ -94,8 +96,23 @@ public interface OpenAiApi {
     Call<FineTuningJob> cancelFineTuningJob(@Path("fine_tuning_job_id") String fineTuningJobId);
 
     // ===============================
-    // ENDPOINTS - Files
+    // ENDPOINTS - Batch
     // ===============================
+
+    @POST("/v1/batches")
+    Call<Batch> createBatch(@Body BatchRequest request);
+
+    @GET("/v1/batches/{batch_id}")
+    Call<Batch> retrieveBatch(@Path("batch_id") String batchId);
+
+    @POST("/v1/batches/{batch_id}/cancel")
+    Call<Batch> cancelBatch(@Path("batch_id") String batchId);
+
+    @GET("/v1/batches")
+    Call<OpenAiList<Batch>> listBatches();
+
+    @GET("/v1/batches")
+    Call<OpenAiList<Batch>> listBatches(@Query("after") String after, @Query("limit") Integer limit);
 
     // ===============================
     // ENDPOINTS - Files

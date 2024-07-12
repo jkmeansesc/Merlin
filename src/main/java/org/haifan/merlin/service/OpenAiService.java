@@ -12,6 +12,8 @@ import org.haifan.merlin.model.openai.DeletionStatus;
 import org.haifan.merlin.model.openai.OpenAiList;
 import org.haifan.merlin.model.openai.StreamingResponse;
 import org.haifan.merlin.model.openai.audio.*;
+import org.haifan.merlin.model.openai.batch.Batch;
+import org.haifan.merlin.model.openai.batch.BatchRequest;
 import org.haifan.merlin.model.openai.chat.ChatCompletion;
 import org.haifan.merlin.model.openai.chat.ChatCompletionChunk;
 import org.haifan.merlin.model.openai.chat.ChatCompletionRequest;
@@ -189,6 +191,30 @@ public class OpenAiService extends LlmService {
 
     public CompletableFuture<FineTuningJob> cancelFineTuningJob(String fineTuningJobId) {
         return super.call(api.cancelFineTuningJob(fineTuningJobId));
+    }
+
+    // ===============================
+    // ENDPOINTS - Batch
+    // ===============================
+
+    public CompletableFuture<Batch> createBatch(BatchRequest request) {
+        return super.call(api.createBatch(request));
+    }
+
+    public CompletableFuture<Batch> retrieveBatch(String batchId) {
+        return super.call(api.retrieveBatch(batchId));
+    }
+
+    public CompletableFuture<Batch> cancelBatch(String batchId) {
+        return super.call(api.cancelBatch(batchId));
+    }
+
+    public CompletableFuture<OpenAiList<Batch>> listBatches() {
+        return super.call(api.listBatches());
+    }
+
+    public CompletableFuture<OpenAiList<Batch>> listBatches(String after, Integer limit) {
+        return super.call(api.listBatches(after, limit));
     }
 
     // ===============================
