@@ -7,7 +7,6 @@ import lombok.NonNull;
 import org.haifan.merlin.constants.Fields;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

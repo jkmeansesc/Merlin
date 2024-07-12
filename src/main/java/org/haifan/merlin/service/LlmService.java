@@ -1,11 +1,7 @@
 package org.haifan.merlin.service;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import okhttp3.OkHttpClient;
-
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.interceptors.LlmInterceptor;
@@ -60,7 +56,7 @@ public abstract class LlmService {
     protected <T> CompletableFuture<T> call(Call<T> call) {
         CompletableFuture<T> future = new CompletableFuture<>();
         logger.info("Calling");
-        call.enqueue(new Callback<T>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NotNull Call<T> call, @NotNull Response<T> response) {
                 if (response.isSuccessful()) {
