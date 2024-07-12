@@ -8,10 +8,7 @@ import lombok.NonNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class Message {
+public abstract class ContentPart {
     @NonNull
-    protected String role;
-    protected String name;
-
-    public abstract Object getContent();
+    private String type;
 }

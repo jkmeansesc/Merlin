@@ -10,6 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.interceptors.LlmInterceptor;
 import org.haifan.merlin.interceptors.SLF4JHttpLogger;
+import org.haifan.merlin.utils.DefaultObjectMapper;
 import org.jetbrains.annotations.NotNull;
 
 import org.slf4j.Logger;
@@ -46,9 +47,7 @@ public abstract class LlmService {
                 .addNetworkInterceptor(logging)
                 .build();
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        ObjectMapper mapper = DefaultObjectMapper.create();
 
         this.retrofit = new Retrofit.Builder()
                 .baseUrl(llmConfig.getBaseUrl())

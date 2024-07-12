@@ -9,7 +9,11 @@ import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.config.OpenAiConfig;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.DeletionStatus;
+import org.haifan.merlin.model.openai.StreamingResponse;
 import org.haifan.merlin.model.openai.audio.*;
+import org.haifan.merlin.model.openai.chat.ChatCompletion;
+import org.haifan.merlin.model.openai.chat.ChatCompletionChunk;
+import org.haifan.merlin.model.openai.chat.ChatCompletionRequest;
 import org.haifan.merlin.model.openai.files.FileResponse;
 import org.haifan.merlin.model.openai.images.ImageEditRequest;
 import org.haifan.merlin.model.openai.images.ImageRequest;
@@ -22,6 +26,7 @@ import org.haifan.merlin.model.openai.moderations.ModerationRequest;
 import org.haifan.merlin.constants.IanaMediaType;
 import org.haifan.merlin.interceptors.OpenAiInterceptor;
 import org.haifan.merlin.utils.FileParser;
+import retrofit2.Call;
 
 import java.io.File;
 import java.util.Arrays;
@@ -118,6 +123,20 @@ public class OpenAiService extends LlmService {
     // ENDPOINTS - Chat
     // ===============================
 
+    public CompletableFuture<ChatCompletion> createChatCompletion(ChatCompletionRequest request) {
+        return super.call(api.createChatCompletion(request));
+    }
+
+    public StreamingResponse<ChatCompletionChunk> streamChatCompletion(ChatCompletionRequest request) {
+        Call<ResponseBody> call = api.streamChatCompletion(request);
+        return new StreamingResponse<>(call, this::parseChunk);
+    }
+
+    // TODO: implement this
+    private ChatCompletionChunk parseChunk(String json) {
+        // Use Jackson or Gson to parse JSON into ChatCompletionChunk
+        return null;
+    }
     // ===============================
     // ENDPOINTS - Files
     // ===============================

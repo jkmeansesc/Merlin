@@ -20,7 +20,7 @@ public class JsonPrinter {
      * @throws JsonPrinterException if there is an error during JSON serialization
      */
     public static String print(Object obj) throws JsonPrinterException {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = DefaultObjectMapper.create();
         try {
             if (obj instanceof String) {
                 // If it's already a string, parse and pretty print it

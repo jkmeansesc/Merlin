@@ -19,4 +19,11 @@ public class Fields {
     public static final String LANGUAGE = "language";
     public static final String TEMPERATURE = "temperature";
     public static final String TIMESTAMP_GRANULARITIES = "timestamp_granularities";
+    public static final String SYSTEM = "system";
+    public static final String ASSISTANT = "assistant";
+    public static final String TOOL = "tool";
+    public static final String TEXT = "text";
+    public static final String IMAGE_URL = "image_url";
+    public static final String MESSAGE = "message";
+    public static final String DELTA = "delta";
 }

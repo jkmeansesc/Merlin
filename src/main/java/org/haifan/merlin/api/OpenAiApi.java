@@ -7,6 +7,8 @@ import org.haifan.merlin.model.openai.DeletionStatus;
 import org.haifan.merlin.model.openai.audio.SpeechRequest;
 import org.haifan.merlin.model.openai.audio.Transcription;
 import org.haifan.merlin.model.openai.audio.Translation;
+import org.haifan.merlin.model.openai.chat.ChatCompletion;
+import org.haifan.merlin.model.openai.chat.ChatCompletionRequest;
 import org.haifan.merlin.model.openai.files.File;
 import org.haifan.merlin.model.openai.files.FileResponse;
 import org.haifan.merlin.model.openai.images.ImageRequest;
@@ -40,6 +42,13 @@ public interface OpenAiApi {
     // ===============================
     // ENDPOINTS - Chat
     // ===============================
+
+    @POST("/v1/chat/completions")
+    Call<ChatCompletion> createChatCompletion(@Body ChatCompletionRequest request);
+
+    @Streaming
+    @POST("v1/chat/completions")
+    Call<ResponseBody> streamChatCompletion(@Body ChatCompletionRequest request);
 
     // ===============================
     // ENDPOINTS - Files
