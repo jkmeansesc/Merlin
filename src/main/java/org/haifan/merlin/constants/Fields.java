@@ -26,4 +26,10 @@ public class Fields {
     public static final String IMAGE_URL = "image_url";
     public static final String MESSAGE = "message";
     public static final String DELTA = "delta";
+    public static final String CODE_INTERPRETER = "code_interpreter";
+    public static final String FILE_SEARCH = "file_search";
+    public static final String FUNCTION = "function";
+    public static final String AUTO = "auto";
+    public static final String STATIC = "static";
+    public static final String OTHER = "other";
 }

@@ -8,32 +8,39 @@ import org.haifan.merlin.api.OpenAiApi;
 import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.config.OpenAiConfig;
 import org.haifan.merlin.constants.Fields;
+import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
+import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
+import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileBatch;
+import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreRequest;
 import org.haifan.merlin.model.openai.DeletionStatus;
 import org.haifan.merlin.model.openai.OpenAiList;
 import org.haifan.merlin.model.openai.StreamingResponse;
-import org.haifan.merlin.model.openai.audio.*;
-import org.haifan.merlin.model.openai.batch.Batch;
-import org.haifan.merlin.model.openai.batch.BatchRequest;
-import org.haifan.merlin.model.openai.chat.ChatCompletion;
-import org.haifan.merlin.model.openai.chat.ChatCompletionChunk;
-import org.haifan.merlin.model.openai.chat.ChatCompletionRequest;
-import org.haifan.merlin.model.openai.embeddings.Embedding;
-import org.haifan.merlin.model.openai.embeddings.EmbeddingRequest;
-import org.haifan.merlin.model.openai.finetune.FineTuningCheckpoint;
-import org.haifan.merlin.model.openai.finetune.FineTuningEvent;
-import org.haifan.merlin.model.openai.finetune.FineTuningJob;
-import org.haifan.merlin.model.openai.finetune.FineTuningJobRequest;
-import org.haifan.merlin.model.openai.images.ImageEditRequest;
-import org.haifan.merlin.model.openai.images.ImageRequest;
-import org.haifan.merlin.model.openai.images.ImageVariationRequest;
-import org.haifan.merlin.model.openai.images.ImageList;
-import org.haifan.merlin.model.openai.models.Model;
-import org.haifan.merlin.model.openai.moderations.ModerationList;
-import org.haifan.merlin.model.openai.moderations.ModerationRequest;
+import org.haifan.merlin.model.openai.endpoints.audio.*;
+import org.haifan.merlin.model.openai.endpoints.batch.Batch;
+import org.haifan.merlin.model.openai.endpoints.batch.BatchRequest;
+import org.haifan.merlin.model.openai.endpoints.chat.ChatCompletion;
+import org.haifan.merlin.model.openai.endpoints.chat.ChatCompletionChunk;
+import org.haifan.merlin.model.openai.endpoints.chat.ChatCompletionRequest;
+import org.haifan.merlin.model.openai.endpoints.embeddings.Embedding;
+import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
+import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningCheckpoint;
+import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningEvent;
+import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningJob;
+import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningJobRequest;
+import org.haifan.merlin.model.openai.endpoints.images.ImageEditRequest;
+import org.haifan.merlin.model.openai.endpoints.images.ImageRequest;
+import org.haifan.merlin.model.openai.endpoints.images.ImageVariationRequest;
+import org.haifan.merlin.model.openai.endpoints.images.ImageList;
+import org.haifan.merlin.model.openai.endpoints.models.Model;
+import org.haifan.merlin.model.openai.endpoints.moderations.ModerationList;
+import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
 import org.haifan.merlin.constants.IanaMediaType;
 import org.haifan.merlin.interceptors.OpenAiInterceptor;
 import org.haifan.merlin.utils.FileParser;
 import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 import java.io.File;
 import java.util.Arrays;
@@ -221,12 +228,12 @@ public class OpenAiService extends LlmService {
     // ENDPOINTS - Files
     // ===============================
 
-    public CompletableFuture<org.haifan.merlin.model.openai.files.File> uploadFile(String purpose, String filePath) {
+    public CompletableFuture<org.haifan.merlin.model.openai.endpoints.files.File> uploadFile(String purpose, String filePath) {
         java.io.File file = new java.io.File(filePath);
         return uploadFile(purpose, file);
     }
 
-    public CompletableFuture<org.haifan.merlin.model.openai.files.File> uploadFile(String purpose, File file) {
+    public CompletableFuture<org.haifan.merlin.model.openai.endpoints.files.File> uploadFile(String purpose, File file) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(Fields.PURPOSE, purpose)
@@ -235,11 +242,11 @@ public class OpenAiService extends LlmService {
         return super.call(api.uploadFile(builder.build()));
     }
 
-    public CompletableFuture<OpenAiList<org.haifan.merlin.model.openai.files.File>> listFiles() {
+    public CompletableFuture<OpenAiList<org.haifan.merlin.model.openai.endpoints.files.File>> listFiles() {
         return super.call(api.listFiles());
     }
 
-    public CompletableFuture<org.haifan.merlin.model.openai.files.File> retrieveFile(String fileId) {
+    public CompletableFuture<org.haifan.merlin.model.openai.endpoints.files.File> retrieveFile(String fileId) {
         return super.call(api.retrieveFile(fileId));
     }
 
@@ -356,4 +363,115 @@ public class OpenAiService extends LlmService {
         return super.call(api.createModeration(moderationRequest));
     }
 
+    // ===============================
+    // ASSISTANTS - Assistants
+    // ===============================
+
+    // ===============================
+    // ASSISTANTS - Threads
+    // ===============================
+
+    // ===============================
+    // ASSISTANTS - Messages
+    // ===============================
+
+    // ===============================
+    // ASSISTANTS - Runs
+    // ===============================
+
+    // ===============================
+    // ASSISTANTS - Run Steps
+    // ===============================
+
+    // ===============================
+    // ASSISTANTS - Vector Stores
+    // ===============================
+
+    public CompletableFuture<VectorStore> createVectorStore(VectorStoreRequest vectorStoreRequest) {
+        return super.call(api.createVectorStore(vectorStoreRequest));
+    }
+
+    public CompletableFuture<OpenAiList<VectorStore>> listVectorStores() {
+        return super.call(api.listVectorStores());
+    }
+
+    public CompletableFuture<OpenAiList<VectorStore>> listVectorStores(String order, String before, String after, Integer limit) {
+        return super.call(api.listVectorStores(order, before, after, limit));
+    }
+
+    public CompletableFuture<VectorStore> retrieveVectorStore(String vectorStoreId) {
+        return super.call(api.retrieveVectorStore(vectorStoreId));
+    }
+
+    /**
+     * only these fields are supported for this particular endpoint: name, expires_after, metadata
+     * <a href="https://platform.openai.com/docs/api-reference/vector-stores/modify">...</a>
+     */
+    public CompletableFuture<VectorStore> modifyVectorStore(String vectorStoreId, VectorStoreRequest vectorStoreRequest) {
+        return super.call(api.modifyVectorStore(vectorStoreId, vectorStoreRequest));
+    }
+
+    public CompletableFuture<DeletionStatus> deleteVectorStore(String vectorStoreId) {
+        return super.call(api.deleteVectorStore(vectorStoreId));
+    }
+
+
+    // ===============================
+    // ASSISTANTS - Vector Stores Files
+    // ===============================
+
+    public CompletableFuture<VectorStoreFile> createVectorStoreFile(String vectorStoreId, VectorStoreRequest request) {
+        return super.call(api.createVectorStoreFile(vectorStoreId, request));
+    }
+
+    public CompletableFuture<OpenAiList<VectorStoreFile>> listVectorStoreFiles(String vectorStoreId) {
+        return super.call(api.listVectorStoreFiles(vectorStoreId));
+    }
+
+    public CompletableFuture<OpenAiList<VectorStoreFile>> listVectorStoreFiles(
+            String vectorStoreId,
+            Integer limit,
+            String order,
+            String before,
+            String after,
+            String filter
+    ) {
+        return super.call(api.listVectorStoreFiles(vectorStoreId, limit, order, before, after, filter));
+    }
+
+    public CompletableFuture<VectorStoreFile> retrieveVectorStoreFile(String vectorStoreId, String fileId) {
+        return super.call(api.retrieveVectorStoreFile(vectorStoreId, fileId));
+    }
+
+    public CompletableFuture<DeletionStatus> deleteVectorStoreFile(String vectorStoreId, String fileId) {
+        return super.call(api.deleteVectorStoreFile(vectorStoreId, fileId));
+    }
+
+    // ===============================
+    // ASSISTANTS - Vector Stores File Batches
+    // ===============================
+
+    public CompletableFuture<VectorStoreFile> createVectorStoreFileBatch(String vectorStoreId, VectorStoreRequest request) {
+        return super.call(api.createVectorStoreFileBatch(vectorStoreId, request));
+    }
+
+    public CompletableFuture<VectorStoreFileBatch> retrieveVectorStoreFileBatch(String vectorStoreId, String batchId) {
+        return super.call(api.retrieveVectorStoreFileBatch(vectorStoreId, batchId));
+    }
+
+    public CompletableFuture<VectorStoreFileBatch> cancelVectorStoreFileBatch(String vectorStoreId, String batchId) {
+        return super.call(api.cancelVectorStoreFileBatch(vectorStoreId, batchId));
+    }
+
+    public CompletableFuture<OpenAiList<VectorStoreFileBatch>> listVectorStoreFileBatch(String vectorStoreId, String batchId) {
+        return super.call(api.listVectorStoreFileBatch(vectorStoreId, batchId));
+    }
+
+    public CompletableFuture<OpenAiList<VectorStoreFileBatch>> listVectorStoreFileBatch(String vectorStoreId, String batchId, Integer limit, String order, String before, String after, String filter) {
+        return super.call(api.listVectorStoreFileBatch(vectorStoreId, batchId, limit, order, before, after, filter));
+    }
+
+    // ===============================
+    // ASSISTANTS - Streaming
+    // ===============================
 }

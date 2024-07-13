@@ -1,0 +1,89 @@
+package org.haifan.merlin.utils;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.haifan.merlin.model.openai.ResponseFormat;
+import org.haifan.merlin.model.openai.endpoints.chat.Tool;
+import org.haifan.merlin.model.openai.endpoints.chat.ToolChoice;
+
+import java.io.IOException;
+
+public class Serializers {
+    private Serializers() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static class ResponseFormatSerializer extends JsonSerializer<ResponseFormat> {
+        @Override
+        public void serialize(ResponseFormat value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            if ("auto".equals(value.getType())) {
+                gen.writeString("auto");
+            } else {
+                gen.writeStartObject();
+                gen.writeStringField("type", value.getType());
+                gen.writeEndObject();
+            }
+        }
+    }
+
+    public static class ResponseFormatDeserializer extends JsonDeserializer<ResponseFormat> {
+        @Override
+        public ResponseFormat deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            if (p.getCurrentToken().isScalarValue()) {
+                String value = p.getValueAsString();
+                if ("auto".equals(value)) {
+                    return new ResponseFormat("auto");
+                }
+            } else if (p.getCurrentToken().isStructStart()) {
+                p.nextToken(); // Move to the "type" field
+                if ("type".equals(p.currentName())) {
+                    p.nextToken(); // Move to the value of "type"
+                    return new ResponseFormat(p.getValueAsString());
+                }
+            }
+            throw new IOException("Invalid ResponseFormat");
+        }
+    }
+
+    public static class ToolChoiceSerializer extends JsonSerializer<ToolChoice> {
+        @Override
+        public void serialize(ToolChoice value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+
+            // values other than "none", "auto", "required" will be ignored and serialized as null
+            switch (value.getType().toLowerCase()) {
+                case "none":
+                case "auto":
+                case "required":
+                    gen.writeString(value.getType());
+                    break;
+                default:
+                    if (value.getTool() != null) {
+                        gen.writeObject(value.getTool());
+                    } else {
+                        gen.writeNull();
+                    }
+                    break;
+            }
+        }
+    }
+
+    public static class ToolChoiceDeserializer extends JsonDeserializer<ToolChoice> {
+        @Override
+        public ToolChoice deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            if (p.getCurrentToken().isScalarValue()) {
+                String value = p.getValueAsString();
+                return new ToolChoice(value);
+            } else if (p.getCurrentToken().isStructStart()) {
+                ObjectNode node = p.readValueAsTree();
+                Tool tool = ctxt.readValue(node.traverse(p.getCodec()), Tool.class);
+                return new ToolChoice(tool);
+            }
+            return null;
+        }
+    }
+}

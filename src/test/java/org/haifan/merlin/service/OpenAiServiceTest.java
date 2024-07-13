@@ -2,11 +2,12 @@ package org.haifan.merlin.service;
 
 import org.haifan.merlin.client.Merlin;
 import org.haifan.merlin.constants.Fields;
-import org.haifan.merlin.model.openai.audio.SpeechRequest;
-import org.haifan.merlin.model.openai.chat.*;
-import org.haifan.merlin.model.openai.embeddings.EmbeddingRequest;
-import org.haifan.merlin.model.openai.images.ImageRequest;
-import org.haifan.merlin.model.openai.moderations.ModerationRequest;
+import org.haifan.merlin.model.openai.endpoints.Function;
+import org.haifan.merlin.model.openai.endpoints.audio.SpeechRequest;
+import org.haifan.merlin.model.openai.endpoints.chat.*;
+import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
+import org.haifan.merlin.model.openai.endpoints.images.ImageRequest;
+import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
 import org.haifan.merlin.utils.JsonPrinter;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,27 @@ class OpenAiServiceTest {
         @Test
         void testChatCompletionRequest() {
 
+            List<Message> messages = new ArrayList<>();
+            messages.add(new SystemMessage("system message"));
+            messages.add(new UserMessage("user message"));
+            messages.add(new ToolMessage("tool message", "toolCallId"));
+            messages.add(new AssistantMessage("assistant message", "assistant name"));
+
+            ChatCompletionRequest request_1 = ChatCompletionRequest.builder()
+                    .model("model")
+                    .messages(messages)
+                    .toolChoice(new ToolChoice(new Tool("auto", new Function("function name"))))
+                    .build();
+
+            System.out.println(JsonPrinter.print(request_1));
+
+            ChatCompletionRequest request_2 = ChatCompletionRequest.builder()
+                    .model("model")
+                    .messages(messages)
+                    .toolChoice(new ToolChoice("123"))
+                    .build();
+
+            System.out.println(JsonPrinter.print(request_2));
         }
 
         @Nested
@@ -210,7 +232,7 @@ class OpenAiServiceTest {
     }
 
     @Nested
-    class TestBatch{
+    class TestBatch {
 
     }
 
@@ -314,5 +336,10 @@ class OpenAiServiceTest {
                             .build())
                     .join();
         }
+    }
+
+    @Nested
+    class AssistantTest {
+
     }
 }

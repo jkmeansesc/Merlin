@@ -3,28 +3,32 @@ package org.haifan.merlin.api;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.constants.Fields;
+import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
+import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
+import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileBatch;
+import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreRequest;
 import org.haifan.merlin.model.openai.DeletionStatus;
 import org.haifan.merlin.model.openai.OpenAiList;
-import org.haifan.merlin.model.openai.audio.SpeechRequest;
-import org.haifan.merlin.model.openai.audio.Transcription;
-import org.haifan.merlin.model.openai.audio.Translation;
-import org.haifan.merlin.model.openai.batch.Batch;
-import org.haifan.merlin.model.openai.batch.BatchRequest;
-import org.haifan.merlin.model.openai.chat.ChatCompletion;
-import org.haifan.merlin.model.openai.chat.ChatCompletionRequest;
-import org.haifan.merlin.model.openai.embeddings.Embedding;
-import org.haifan.merlin.model.openai.embeddings.EmbeddingRequest;
-import org.haifan.merlin.model.openai.files.File;
-import org.haifan.merlin.model.openai.finetune.FineTuningCheckpoint;
-import org.haifan.merlin.model.openai.finetune.FineTuningEvent;
-import org.haifan.merlin.model.openai.finetune.FineTuningJob;
-import org.haifan.merlin.model.openai.finetune.FineTuningJobRequest;
-import org.haifan.merlin.model.openai.images.ImageRequest;
-import org.haifan.merlin.model.openai.images.ImageList;
-import org.haifan.merlin.model.openai.models.Model;
+import org.haifan.merlin.model.openai.endpoints.audio.SpeechRequest;
+import org.haifan.merlin.model.openai.endpoints.audio.Transcription;
+import org.haifan.merlin.model.openai.endpoints.audio.Translation;
+import org.haifan.merlin.model.openai.endpoints.batch.Batch;
+import org.haifan.merlin.model.openai.endpoints.batch.BatchRequest;
+import org.haifan.merlin.model.openai.endpoints.chat.ChatCompletion;
+import org.haifan.merlin.model.openai.endpoints.chat.ChatCompletionRequest;
+import org.haifan.merlin.model.openai.endpoints.embeddings.Embedding;
+import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
+import org.haifan.merlin.model.openai.endpoints.files.File;
+import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningCheckpoint;
+import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningEvent;
+import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningJob;
+import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningJobRequest;
+import org.haifan.merlin.model.openai.endpoints.images.ImageRequest;
+import org.haifan.merlin.model.openai.endpoints.images.ImageList;
+import org.haifan.merlin.model.openai.endpoints.models.Model;
 
-import org.haifan.merlin.model.openai.moderations.ModerationList;
-import org.haifan.merlin.model.openai.moderations.ModerationRequest;
+import org.haifan.merlin.model.openai.endpoints.moderations.ModerationList;
+import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
 import retrofit2.Call;
 import retrofit2.http.*;
 
@@ -165,4 +169,103 @@ public interface OpenAiApi {
     @POST("v1/moderations")
     Call<ModerationList> createModeration(@Body ModerationRequest moderationRequest);
 
+    // ===============================
+    // ASSISTANTS - Assistants
+    // ===============================
+
+    // ===============================
+    // ASSISTANTS - Threads
+    // ===============================
+
+    // ===============================
+    // ASSISTANTS - Messages
+    // ===============================
+
+    // ===============================
+    // ASSISTANTS - Runs
+    // ===============================
+
+    // ===============================
+    // ASSISTANTS - Run Steps
+    // ===============================
+
+    // ===============================
+    // ASSISTANTS - Vector Stores
+    // ===============================
+
+    @POST("/v1/vector_stores")
+    Call<VectorStore> createVectorStore(@Body VectorStoreRequest vectorStoreRequest);
+
+    @GET("/v1/vector_stores")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<VectorStore>> listVectorStores();
+
+    @GET("/v1/vector_stores")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<VectorStore>> listVectorStores(@Query("order") String order, @Query("before") String before, @Query("after") String after, @Query("limit") Integer limit);
+
+    @GET("/v1/vector_stores/{vector_store_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<VectorStore> retrieveVectorStore(@Path("vector_store_id") String vectorStoreId);
+
+    @POST("/v1/vector_stores/{vector_store_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<VectorStore> modifyVectorStore(@Path("vector_store_id") String vectorStoreId, @Body VectorStoreRequest request);
+
+    @DELETE("/v1/vector_stores/{vector_store_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<DeletionStatus> deleteVectorStore(@Path("vector_store_id") String vectorStoreId);
+
+
+    // ===============================
+    // ASSISTANTS - Vector Stores Files
+    // ===============================
+
+    @POST("/v1/vector_stores/{vector_store_id}/files")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<VectorStoreFile> createVectorStoreFile(@Path("vector_store_id") String vectorStoreId, @Body VectorStoreRequest request);
+
+    @GET("/v1/vector_stores/{vector_store_id}/files")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<VectorStoreFile>> listVectorStoreFiles(@Path("vector_store_id") String vectorStoreId);
+
+    @GET("/v1/vector_stores/{vector_store_id}/files")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<VectorStoreFile>> listVectorStoreFiles(@Path("vector_store_id") String vectorStoreId, @Query("limit") Integer limit, @Query("order") String order, @Query("before") String before, @Query("after") String after, @Query("filter") String filter);
+
+    @GET("/v1/vector_stores/{vector_store_id}/files/{file_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<VectorStoreFile> retrieveVectorStoreFile(@Path("vector_store_id") String vectorStoreId, @Path("file_id") String fileId);
+
+    @DELETE("/v1/vector_stores/{vector_store_id}/files/{file_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<DeletionStatus> deleteVectorStoreFile(@Path("vector_store_id") String vectorStoreId, @Path("file_id") String fileId);
+
+    // ===============================
+    // ASSISTANTS - Vector Stores File Batches
+    // ===============================
+
+    @POST("/v1/vector_stores/{vector_store_id}/file_batches")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<VectorStoreFile> createVectorStoreFileBatch(@Path("vector_store_id") String vectorStoreId, @Body VectorStoreRequest request);
+
+    @GET("/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<VectorStoreFileBatch> retrieveVectorStoreFileBatch(@Path("vector_store_id") String vectorStoreId, @Path("batch_id") String batchId);
+
+    @POST("/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<VectorStoreFileBatch> cancelVectorStoreFileBatch(@Path("vector_store_id") String vectorStoreId, @Path("batch_id") String batchId);
+
+    @GET("/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}/files")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<VectorStoreFileBatch>> listVectorStoreFileBatch(@Path("vector_store_id") String vectorStoreId, @Path("batch_id") String batchId);
+
+    @GET("/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}/files")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<VectorStoreFileBatch>> listVectorStoreFileBatch(@Path("vector_store_id") String vectorStoreId, @Path("batch_id") String batchId, @Query("limit") Integer limit, @Query("order") String order, @Query("before") String before, @Query("after") String after, @Query("filter") String filter);
+
+    // ===============================
+    // ASSISTANTS - Streaming
+    // ===============================
 }
