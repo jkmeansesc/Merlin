@@ -3,6 +3,7 @@ package org.haifan.merlin.model.openai.assistants.vectorstores;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.haifan.merlin.model.openai.ChunkingStrategy;
+import org.haifan.merlin.model.openai.LastError;
 
 @Data
 public class VectorStoreFile {
@@ -18,11 +19,5 @@ public class VectorStoreFile {
     @JsonProperty("last_error")
     private LastError lastError;
     @JsonProperty("chunking_strategy")
-    private Class<? extends ChunkingStrategy> chunkingStrategy;
-
-    @Data
-    public static class LastError {
-        private String code;
-        private String message;
-    }
+    private Class<ChunkingStrategy> chunkingStrategy;
 }

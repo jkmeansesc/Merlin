@@ -2,7 +2,9 @@ package org.haifan.merlin.model.openai;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @JsonTypeInfo(
@@ -16,6 +18,8 @@ import lombok.NonNull;
         @JsonSubTypes.Type(value = FunctionTool.class, name = "function")
 })
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class AssistantTool {
     @NonNull
     private String type;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.haifan.merlin.model.openai.Attachment;
 import org.haifan.merlin.model.openai.ContentPart;
+import org.haifan.merlin.model.openai.IncompleteDetails;
 
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,4 @@ public class MessageObject {
     private String runId;
     private List<Attachment> attachments;
     private Map<String, Object> metadata;
-
-    @Data
-    public static class IncompleteDetails {
-        private String reason;
-    }
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.Logprobs;
 import org.haifan.merlin.model.openai.Message;
+import org.haifan.merlin.model.openai.Usage;
 
 import java.util.List;
 
@@ -42,18 +43,5 @@ public class BaseChatCompletion {
         private String finishReason;
 
         private Integer index;
-    }
-
-    @Data
-    public static class Usage {
-
-        @JsonProperty("completion_tokens")
-        private Integer completionTokens;
-
-        @JsonProperty("prompt_tokens")
-        private Integer promptTokens;
-
-        @JsonProperty("total_tokens")
-        private Integer totalTokens;
     }
 }

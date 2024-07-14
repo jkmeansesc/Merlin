@@ -12,6 +12,9 @@ import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
 import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
 import org.haifan.merlin.model.openai.assistants.messages.MessageObject;
 import org.haifan.merlin.model.openai.assistants.messages.MessageRequest;
+import org.haifan.merlin.model.openai.assistants.runs.Run;
+import org.haifan.merlin.model.openai.assistants.runs.RunRequest;
+import org.haifan.merlin.model.openai.assistants.runs.ToolOutputRequest;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadObject;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
@@ -450,6 +453,38 @@ public class OpenAiService extends LlmService {
     // ===============================
     // ASSISTANTS - Runs
     // ===============================
+
+    public CompletableFuture<Run> createRun(String threadId, RunRequest request) {
+        return super.call(api.createRun(threadId, request));
+    }
+
+    public CompletableFuture<Run> createThreadAndRun(RunRequest request) {
+        return super.call(api.createThreadAndRun(request));
+    }
+
+    public CompletableFuture<OpenAiList<Run>> listRuns(String threadId) {
+        return super.call(api.listRuns(threadId));
+    }
+
+    public CompletableFuture<OpenAiList<Run>> listRuns(String threadId, Map<String, String> queryMap) {
+        return super.call(api.listRuns(threadId, queryMap));
+    }
+
+    public CompletableFuture<Run> retrieveRun(String threadId, String runId) {
+        return super.call(api.retrieveRun(threadId, runId));
+    }
+
+    public CompletableFuture<Run> modifyRun(String threadId, String runId, RunRequest request) {
+        return super.call(api.modifyRun(threadId, runId, request));
+    }
+
+    public CompletableFuture<Run> submitToolOutputsToRun(String threadId, String runId, ToolOutputRequest request) {
+        return super.call(api.submitToolOutputsToRun(threadId, runId, request));
+    }
+
+    public CompletableFuture<Run> cancelRun(String threadId, String runId) {
+        return super.call(api.cancelRun(threadId, runId));
+    }
 
     // ===============================
     // ASSISTANTS - Run Steps

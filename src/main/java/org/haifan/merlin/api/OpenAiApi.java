@@ -7,6 +7,9 @@ import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
 import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
 import org.haifan.merlin.model.openai.assistants.messages.MessageObject;
 import org.haifan.merlin.model.openai.assistants.messages.MessageRequest;
+import org.haifan.merlin.model.openai.assistants.runs.Run;
+import org.haifan.merlin.model.openai.assistants.runs.RunRequest;
+import org.haifan.merlin.model.openai.assistants.runs.ToolOutputRequest;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadObject;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
@@ -261,6 +264,38 @@ public interface OpenAiApi {
     // ===============================
     // ASSISTANTS - Runs
     // ===============================
+
+    @POST("/v1/threads/{thread_id}/runs")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<Run> createRun(@Path("thread_id") String threadId, @Body RunRequest request);
+
+    @POST("/v1/threads/runs")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<Run> createThreadAndRun(@Body RunRequest request);
+
+    @GET("/v1/threads/{thread_id}/runs")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<Run>> listRuns(@Path("thread_id") String threadId);
+
+    @GET("/v1/threads/{thread_id}/runs")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<Run>> listRuns(@Path("thread_id") String threadId, @QueryMap Map<String, String> queryMap);
+
+    @GET("/v1/threads/{thread_id}/runs/{run_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<Run> retrieveRun(@Path("thread_id") String threadId, @Path("run_id") String runId);
+
+    @POST("/v1/threads/{thread_id}/runs/{run_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<Run> modifyRun(@Path("thread_id") String threadId, @Path("run_id") String runId, @Body RunRequest request);
+
+    @POST("/v1/threads/{thread_id}/runs/{run_id}/submit_tool_outputs")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<Run> submitToolOutputsToRun(@Path("thread_id") String threadId, @Path("run_id") String runId, @Body ToolOutputRequest request);
+
+    @POST("/v1/threads/{thread_id}/runs/{run_id}/cancel")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<Run> cancelRun(@Path("thread_id") String threadId, @Path("run_id") String runId);
 
     // ===============================
     // ASSISTANTS - Run Steps
