@@ -1,4 +1,4 @@
-package org.haifan.merlin.model.openai.endpoints.chat;
+package org.haifan.merlin.model.openai;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -9,18 +9,18 @@ import org.jetbrains.annotations.NotNull;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ImageContentPart extends ContentPart {
+public class ImageUrlContentPart extends ContentPart {
 
     @NonNull
     @JsonProperty("image_url")
     private ImageUrl imageUrl;
 
-    public ImageContentPart(String url) {
+    public ImageUrlContentPart(String url) {
         super(Fields.IMAGE_URL);
         this.imageUrl = new ImageUrl(url);
     }
 
-    public ImageContentPart(String url, String detail) {
+    public ImageUrlContentPart(String url, String detail) {
         super(Fields.IMAGE_URL);
         this.imageUrl = new ImageUrl(url, detail);
     }

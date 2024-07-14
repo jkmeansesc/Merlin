@@ -2,8 +2,8 @@ package org.haifan.merlin.model.openai.endpoints.finetune;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import org.haifan.merlin.model.openai.endpoints.chat.Message;
-import org.haifan.merlin.model.openai.endpoints.chat.Tool;
+import org.haifan.merlin.model.openai.Message;
+import org.haifan.merlin.model.openai.Tool;
 
 import java.util.List;
 

@@ -4,8 +4,8 @@ package org.haifan.merlin.model.openai.assistants.assistants;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.haifan.merlin.model.openai.ResponseFormat;
-import org.haifan.merlin.model.openai.assistants.AssistantTool;
-import org.haifan.merlin.model.openai.assistants.ToolResources;
+import org.haifan.merlin.model.openai.AssistantTool;
+import org.haifan.merlin.model.openai.ToolResources;
 
 import java.util.List;
 import java.util.Map;

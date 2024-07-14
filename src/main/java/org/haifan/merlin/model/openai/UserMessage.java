@@ -1,4 +1,4 @@
-package org.haifan.merlin.model.openai.endpoints.chat;
+package org.haifan.merlin.model.openai;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -72,13 +72,13 @@ public class UserMessage extends Message {
 
     @JsonIgnore
     public UserMessage addImageContent(String url) {
-        this.content.contentParts.add(new ImageContentPart(url));
+        this.content.contentParts.add(new ImageUrlContentPart(url));
         return this;
     }
 
     @JsonIgnore
     public UserMessage addImageContent(String url, String detail) {
-        this.content.contentParts.add(new ImageContentPart(url, detail));
+        this.content.contentParts.add(new ImageUrlContentPart(url, detail));
         return this;
     }
 }

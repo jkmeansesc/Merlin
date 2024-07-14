@@ -2,7 +2,7 @@ package org.haifan.merlin.model.openai.assistants.vectorstores;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import org.haifan.merlin.model.openai.assistants.ChunkingStrategy;
+import org.haifan.merlin.model.openai.ChunkingStrategy;
 
 @Data
 public class VectorStoreFile {

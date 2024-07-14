@@ -1,4 +1,4 @@
-package org.haifan.merlin.model.openai.endpoints.chat;
+package org.haifan.merlin.model.openai;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -13,7 +13,7 @@ import lombok.NonNull;
         property = "type"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ImageContentPart.class, name = "image_url"),
+        @JsonSubTypes.Type(value = ImageUrlContentPart.class, name = "image_url"),
         @JsonSubTypes.Type(value = TextContentPart.class, name = "text"),
 })
 @Data

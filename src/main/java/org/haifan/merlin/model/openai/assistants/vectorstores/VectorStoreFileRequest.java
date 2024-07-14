@@ -2,7 +2,7 @@ package org.haifan.merlin.model.openai.assistants.vectorstores;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.haifan.merlin.model.openai.assistants.ChunkingStrategy;
+import org.haifan.merlin.model.openai.ChunkingStrategy;
 
 /**
  * The request object to create vector store files and batches.

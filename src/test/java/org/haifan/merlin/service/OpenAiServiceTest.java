@@ -2,7 +2,8 @@ package org.haifan.merlin.service;
 
 import org.haifan.merlin.client.Merlin;
 import org.haifan.merlin.constants.Fields;
-import org.haifan.merlin.model.openai.endpoints.Function;
+import org.haifan.merlin.model.openai.*;
+import org.haifan.merlin.model.openai.Function;
 import org.haifan.merlin.model.openai.endpoints.audio.SpeechRequest;
 import org.haifan.merlin.model.openai.endpoints.chat.*;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;

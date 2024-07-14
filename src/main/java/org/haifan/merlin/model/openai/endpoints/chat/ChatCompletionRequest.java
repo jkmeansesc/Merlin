@@ -2,7 +2,10 @@ package org.haifan.merlin.model.openai.endpoints.chat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.haifan.merlin.model.openai.Message;
 import org.haifan.merlin.model.openai.ResponseFormat;
+import org.haifan.merlin.model.openai.Tool;
+import org.haifan.merlin.model.openai.ToolChoice;
 
 import java.util.List;
 import java.util.Map;

@@ -1,10 +1,9 @@
-package org.haifan.merlin.model.openai.assistants;
+package org.haifan.merlin.model.openai;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.haifan.merlin.constants.Fields;
-import org.haifan.merlin.model.openai.endpoints.Function;
 import org.jetbrains.annotations.NotNull;
 
 @EqualsAndHashCode(callSuper = true)

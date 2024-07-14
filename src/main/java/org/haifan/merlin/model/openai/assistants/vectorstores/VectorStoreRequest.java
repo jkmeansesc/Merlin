@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.haifan.merlin.model.openai.assistants.ChunkingStrategy;
-import org.haifan.merlin.model.openai.assistants.ExpiresAfter;
+import org.haifan.merlin.model.openai.ChunkingStrategy;
+import org.haifan.merlin.model.openai.ExpiresAfter;
 
 import java.util.List;
 import java.util.Map;

@@ -1,7 +1,6 @@
-package org.haifan.merlin.model.openai.endpoints.chat;
+package org.haifan.merlin.model.openai;
 
 import lombok.*;
-import org.haifan.merlin.model.openai.endpoints.Function;
 
 @Data
 public class Tool {

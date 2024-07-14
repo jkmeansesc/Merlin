@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.haifan.merlin.model.openai.ResponseFormat;
-import org.haifan.merlin.model.openai.endpoints.chat.ToolChoice;
-import org.haifan.merlin.model.openai.endpoints.chat.UserMessage;
+import org.haifan.merlin.model.openai.ToolChoice;
+import org.haifan.merlin.model.openai.UserMessage;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
 
 /**

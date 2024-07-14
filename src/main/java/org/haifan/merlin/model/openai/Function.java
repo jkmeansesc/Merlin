@@ -1,4 +1,4 @@
-package org.haifan.merlin.model.openai.endpoints;
+package org.haifan.merlin.model.openai;
 
 import lombok.Data;
 import lombok.NonNull;

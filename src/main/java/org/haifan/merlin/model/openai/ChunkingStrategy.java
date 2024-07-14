@@ -1,4 +1,4 @@
-package org.haifan.merlin.model.openai.assistants;
+package org.haifan.merlin.model.openai;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

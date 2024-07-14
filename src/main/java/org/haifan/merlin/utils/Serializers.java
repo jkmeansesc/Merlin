@@ -9,10 +9,10 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.haifan.merlin.model.openai.ResponseFormat;
-import org.haifan.merlin.model.openai.endpoints.chat.ContentPart;
-import org.haifan.merlin.model.openai.endpoints.chat.Tool;
-import org.haifan.merlin.model.openai.endpoints.chat.ToolChoice;
-import org.haifan.merlin.model.openai.endpoints.chat.UserMessage;
+import org.haifan.merlin.model.openai.ContentPart;
+import org.haifan.merlin.model.openai.Tool;
+import org.haifan.merlin.model.openai.ToolChoice;
+import org.haifan.merlin.model.openai.UserMessage;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
 
 import java.io.IOException;
