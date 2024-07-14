@@ -3,6 +3,8 @@ package org.haifan.merlin.api;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.constants.Fields;
+import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
+import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileBatch;
@@ -143,7 +145,7 @@ public interface OpenAiApi {
     // ===============================
 
     @POST("v1/images/generations")
-    Call<ImageList> createImage(@Body ImageRequest imageRequest);
+    Call<ImageList> createImage(@Body ImageRequest request);
 
     @POST("/v1/images/edits")
     Call<ImageList> createImageEdit(@Body RequestBody requestBody);
@@ -167,11 +169,40 @@ public interface OpenAiApi {
     // ENDPOINTS - Moderation
     // ===============================
     @POST("v1/moderations")
-    Call<ModerationList> createModeration(@Body ModerationRequest moderationRequest);
+    Call<ModerationList> createModeration(@Body ModerationRequest request);
 
     // ===============================
     // ASSISTANTS - Assistants
     // ===============================
+    @POST("/v1/assistants")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<Assistant> createAssistant(@Body AssistantRequest request);
+
+    @GET("/v1/assistants")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<Assistant>> listAssistants();
+
+    @GET("/v1/assistants")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<Assistant>> listAssistants(
+            @Query("limit") Integer limit,
+            @Query("order") String order,
+            @Query("before") String before,
+            @Query("after") String after
+    );
+
+    @GET("/v1/assistants/{assistant_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<Assistant> retrieveAssistant(@Path("assistant_id") String assistantId);
+
+    @POST("/v1/assistants/{assistant_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<Assistant> modifyAssistant(@Path("assistant_id") String assistantId, @Body AssistantRequest request);
+
+    @DELETE("/v1/assistants/{assistant_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<DeletionStatus> deleteAssistant(@Path("assistant_id") String assistantId);
+
 
     // ===============================
     // ASSISTANTS - Threads
@@ -194,6 +225,7 @@ public interface OpenAiApi {
     // ===============================
 
     @POST("/v1/vector_stores")
+    @Headers("OpenAI-Beta: assistants=v2")
     Call<VectorStore> createVectorStore(@Body VectorStoreRequest vectorStoreRequest);
 
     @GET("/v1/vector_stores")

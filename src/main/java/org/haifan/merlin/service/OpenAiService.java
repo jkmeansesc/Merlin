@@ -8,6 +8,8 @@ import org.haifan.merlin.api.OpenAiApi;
 import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.config.OpenAiConfig;
 import org.haifan.merlin.constants.Fields;
+import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
+import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileBatch;
@@ -366,6 +368,30 @@ public class OpenAiService extends LlmService {
     // ===============================
     // ASSISTANTS - Assistants
     // ===============================
+
+    public CompletableFuture<Assistant> createAssistant(AssistantRequest request) {
+        return super.call(api.createAssistant(request));
+    }
+
+    public CompletableFuture<OpenAiList<Assistant>> listAssistants() {
+        return super.call(api.listAssistants());
+    }
+
+    public CompletableFuture<OpenAiList<Assistant>> listAssistants(Integer limit, String order, String before, String after) {
+        return super.call(api.listAssistants(limit, order, before, after));
+    }
+
+    public CompletableFuture<Assistant> retrieveAssistant(String assistantId) {
+        return super.call(api.retrieveAssistant(assistantId));
+    }
+
+    public CompletableFuture<Assistant> modifyAssistant(String assistantId, AssistantRequest request) {
+        return super.call(api.modifyAssistant(assistantId, request));
+    }
+
+    public CompletableFuture<DeletionStatus> deleteAssistant(String assistantId) {
+        return super.call(api.deleteAssistant(assistantId));
+    }
 
     // ===============================
     // ASSISTANTS - Threads
