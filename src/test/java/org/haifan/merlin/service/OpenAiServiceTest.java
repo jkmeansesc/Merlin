@@ -100,9 +100,9 @@ class OpenAiServiceTest {
 
                 UserMessage userMessageWithContentPart = new UserMessage(contentParts)
                         .addTextContent("text content in TextContentPart")
-                        .addImageContent(imgUrl)
-                        .addImageContent(imgUrl_1, detail)
-                        .addImageContent(imgUrl_2);
+                        .addImageUrlContent(imgUrl)
+                        .addImageUrlContent(imgUrl_1, detail)
+                        .addImageUrlContent(imgUrl_2);
 
                 assertEquals(Fields.TEXT, contentParts.get(0).getType());
                 assertEquals(Fields.IMAGE_URL, contentParts.get(1).getType());
@@ -113,14 +113,19 @@ class OpenAiServiceTest {
 
                 UserMessage userMessageWithDefault = new UserMessage()
                         .addTextContent("text content")
-                        .addImageContent(imgUrl, "high")
-                        .addImageContent(imgUrl_1, "whatever");
+                        .addImageUrlContent(imgUrl, "high")
+                        .addImageUrlContent(imgUrl_1, "whatever");
                 messages.add(userMessageWithDefault);
                 assertNotNull(messages.get(3).getRole());
                 assertEquals(Fields.USER, messages.get(3).getRole());
 
                 UserMessage userMessageWithContentPartAndName = new UserMessage(new ArrayList<>(), "name");
                 messages.add(userMessageWithContentPartAndName);
+
+                UserMessage userMessageWithFileContent = new UserMessage()
+                        .addImageFileContent(imgUrl_2)
+                        .addImageFileContent(imgUrl, detail);
+                messages.add(userMessageWithFileContent);
 
                 System.out.println(JsonPrinter.print(messages));
             }

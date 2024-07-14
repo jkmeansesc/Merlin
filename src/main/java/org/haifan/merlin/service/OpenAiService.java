@@ -10,6 +10,8 @@ import org.haifan.merlin.config.OpenAiConfig;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
 import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
+import org.haifan.merlin.model.openai.assistants.threads.ThreadObject;
+import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileBatch;
@@ -396,6 +398,22 @@ public class OpenAiService extends LlmService {
     // ===============================
     // ASSISTANTS - Threads
     // ===============================
+
+    public CompletableFuture<ThreadObject> createThread(@Body ThreadRequest request) {
+        return super.call(api.createThread(request));
+    }
+
+    public CompletableFuture<ThreadObject> retrieveThread(String threadId) {
+        return super.call(api.retrieveThread(threadId));
+    }
+
+    public CompletableFuture<ThreadObject> modifyThread(String threadId, ThreadRequest request) {
+        return super.call(api.modifyThread(threadId, request));
+    }
+
+    public CompletableFuture<DeletionStatus> deleteThread(String threadId) {
+        return super.call(api.deleteThread(threadId));
+    }
 
     // ===============================
     // ASSISTANTS - Messages

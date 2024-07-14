@@ -14,6 +14,7 @@ import lombok.NonNull;
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ImageUrlContentPart.class, name = "image_url"),
+        @JsonSubTypes.Type(value = ImageFileContentPart.class, name = "image_file"),
         @JsonSubTypes.Type(value = TextContentPart.class, name = "text"),
 })
 @Data

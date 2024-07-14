@@ -71,14 +71,32 @@ public class UserMessage extends Message {
     }
 
     @JsonIgnore
-    public UserMessage addImageContent(String url) {
+    public UserMessage addImageUrlContent(String url) {
         this.content.contentParts.add(new ImageUrlContentPart(url));
         return this;
     }
 
     @JsonIgnore
-    public UserMessage addImageContent(String url, String detail) {
+    public UserMessage addImageUrlContent(String url, String detail) {
         this.content.contentParts.add(new ImageUrlContentPart(url, detail));
+        return this;
+    }
+
+    /**
+     * BETA: only for Assistants-Threads endpoints
+     */
+    @JsonIgnore
+    public UserMessage addImageFileContent(String url) {
+        this.content.contentParts.add(new ImageFileContentPart(url));
+        return this;
+    }
+
+    /**
+     * BETA: only for Assistants-Threads endpoints
+     */
+    @JsonIgnore
+    public UserMessage addImageFileContent(String url, String detail) {
+        this.content.contentParts.add(new ImageFileContentPart(url, detail));
         return this;
     }
 }

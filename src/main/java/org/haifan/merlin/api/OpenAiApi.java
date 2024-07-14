@@ -5,6 +5,8 @@ import okhttp3.ResponseBody;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
 import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
+import org.haifan.merlin.model.openai.assistants.threads.ThreadObject;
+import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileBatch;
@@ -207,6 +209,22 @@ public interface OpenAiApi {
     // ===============================
     // ASSISTANTS - Threads
     // ===============================
+
+    @POST("/v1/threads")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<ThreadObject> createThread(@Body ThreadRequest request);
+
+    @GET("/v1/threads/{thread_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<ThreadObject> retrieveThread(@Path("thread_id") String threadId);
+
+    @POST("/v1/threads/{thread_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<ThreadObject> modifyThread(@Path("thread_id") String threadId, @Body ThreadRequest request);
+
+    @DELETE("/v1/threads/{thread_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<DeletionStatus> deleteThread(@Path("thread_id") String threadId);
 
     // ===============================
     // ASSISTANTS - Messages

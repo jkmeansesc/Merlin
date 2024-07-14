@@ -24,7 +24,7 @@ public class Fields {
     public static final String TOOL = "tool";
     public static final String TEXT = "text";
     public static final String IMAGE_URL = "image_url";
-    public static final String MESSAGE = "message";
+    public static final String IMAGE_FILE = "image_file";
     public static final String DELTA = "delta";
     public static final String CODE_INTERPRETER = "code_interpreter";
     public static final String FILE_SEARCH = "file_search";
