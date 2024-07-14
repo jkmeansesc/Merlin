@@ -32,4 +32,6 @@ public class Fields {
     public static final String AUTO = "auto";
     public static final String STATIC = "static";
     public static final String OTHER = "other";
+    public static final String TOOL_CALLS = "tool_calls";
+    public static final String MESSAGE_CREATION = "message_creation";
 }

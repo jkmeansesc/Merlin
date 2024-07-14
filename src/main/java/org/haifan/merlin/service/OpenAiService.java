@@ -14,6 +14,7 @@ import org.haifan.merlin.model.openai.assistants.messages.MessageObject;
 import org.haifan.merlin.model.openai.assistants.messages.MessageRequest;
 import org.haifan.merlin.model.openai.assistants.runs.Run;
 import org.haifan.merlin.model.openai.assistants.runs.RunRequest;
+import org.haifan.merlin.model.openai.assistants.runs.RunStep;
 import org.haifan.merlin.model.openai.assistants.runs.ToolOutputRequest;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadObject;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
@@ -489,6 +490,18 @@ public class OpenAiService extends LlmService {
     // ===============================
     // ASSISTANTS - Run Steps
     // ===============================
+
+    public CompletableFuture<OpenAiList<RunStep>> listRunSteps(@Path("thread_id") String threadId, @Path("run_id") String runId) {
+        return super.call(api.listRunSteps(threadId, runId));
+    }
+
+    public CompletableFuture<OpenAiList<RunStep>> listRunSteps(@Path("thread_id") String threadId, @Path("run_id") String runId, @QueryMap Map<String, String> queryMap) {
+        return super.call(api.listRunSteps(threadId, runId, queryMap));
+    }
+
+    public CompletableFuture<RunStep> retrieveRunStep(@Path("thread_id") String threadId, @Path("run_id") String runId, @Path("step_id") String stepId) {
+        return super.call(api.retrieveRunStep(threadId, runId, stepId));
+    }
 
     // ===============================
     // ASSISTANTS - Vector Stores

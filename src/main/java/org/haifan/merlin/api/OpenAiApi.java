@@ -9,6 +9,7 @@ import org.haifan.merlin.model.openai.assistants.messages.MessageObject;
 import org.haifan.merlin.model.openai.assistants.messages.MessageRequest;
 import org.haifan.merlin.model.openai.assistants.runs.Run;
 import org.haifan.merlin.model.openai.assistants.runs.RunRequest;
+import org.haifan.merlin.model.openai.assistants.runs.RunStep;
 import org.haifan.merlin.model.openai.assistants.runs.ToolOutputRequest;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadObject;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
@@ -300,6 +301,18 @@ public interface OpenAiApi {
     // ===============================
     // ASSISTANTS - Run Steps
     // ===============================
+
+    @GET("/v1/threads/{thread_id}/runs/{run_id}/steps")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<RunStep>> listRunSteps(@Path("thread_id") String threadId, @Path("run_id") String runId);
+
+    @GET("/v1/threads/{thread_id}/runs/{run_id}/steps")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<RunStep>> listRunSteps(@Path("thread_id") String threadId, @Path("run_id") String runId, @QueryMap Map<String, String> queryMap);
+
+    @GET("/v1/threads/{thread_id}/runs/{run_id}/steps/{step_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<RunStep> retrieveRunStep(@Path("thread_id") String threadId, @Path("run_id") String runId, @Path("step_id") String stepId);
 
     // ===============================
     // ASSISTANTS - Vector Stores
