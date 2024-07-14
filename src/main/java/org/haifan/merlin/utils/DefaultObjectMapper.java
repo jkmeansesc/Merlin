@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.haifan.merlin.model.openai.ResponseFormat;
 import org.haifan.merlin.model.openai.endpoints.chat.ToolChoice;
+import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
 
 /**
  * TODO: add javadoc
@@ -27,6 +28,9 @@ public class DefaultObjectMapper {
 
         module.addSerializer(ToolChoice.class, new Serializers.ToolChoiceSerializer());
         module.addDeserializer(ToolChoice.class, new Serializers.ToolChoiceDeserializer());
+
+        module.addSerializer(EmbeddingRequest.Input.class, new Serializers.InputSerializer());
+        module.addDeserializer(EmbeddingRequest.Input.class, new Serializers.InputDeserializer());
 
         mapper.registerModule(module);
         return mapper;

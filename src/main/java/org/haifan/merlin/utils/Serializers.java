@@ -2,6 +2,7 @@ package org.haifan.merlin.utils;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -10,8 +11,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.haifan.merlin.model.openai.ResponseFormat;
 import org.haifan.merlin.model.openai.endpoints.chat.Tool;
 import org.haifan.merlin.model.openai.endpoints.chat.ToolChoice;
+import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Serializers {
     private Serializers() {
@@ -84,6 +88,42 @@ public class Serializers {
                 return new ToolChoice(tool);
             }
             return null;
+        }
+    }
+
+    public static class InputSerializer extends JsonSerializer<EmbeddingRequest.Input> {
+        @Override
+        public void serialize(EmbeddingRequest.Input value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            if (value.getInputStr() != null) {
+                gen.writeString(value.getInputStr());
+            } else if (value.getInputList() != null) {
+                gen.writeObject(value.getInputList());
+            } else {
+                gen.writeNull();
+            }
+        }
+    }
+
+    public static class InputDeserializer extends JsonDeserializer<EmbeddingRequest.Input> {
+        @Override
+        public EmbeddingRequest.Input deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            List<Object> list;
+            if (p.currentToken() == JsonToken.VALUE_STRING) {
+                return new EmbeddingRequest.Input(p.getText());
+            } else if (p.currentToken() == JsonToken.START_ARRAY) {
+                list = new ArrayList<>();
+                while (p.nextToken() != JsonToken.END_ARRAY) {
+                    if (p.currentToken() == JsonToken.VALUE_NUMBER_INT) {
+                        list.add(p.getIntValue());
+                    } else if (p.currentToken() == JsonToken.VALUE_STRING) {
+                        list.add(p.getText());
+                    } else {
+                        throw new IOException("Unexpected token in array: " + p.currentToken());
+                    }
+                }
+                return new EmbeddingRequest.Input(list);
+            }
+            throw new IOException("Invalid Input format");
         }
     }
 }
