@@ -31,9 +31,8 @@ public class BaseChatCompletion {
     @Data
     public static class Choice {
 
-        @JsonProperty(Fields.DELTA)
-        @JsonAlias(Fields.MESSAGE)
-        private ChatMessage content;
+        @JsonAlias(Fields.DELTA)
+        private Message message;
 
         private Logprobs logprobs;
 

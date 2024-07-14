@@ -1,10 +1,21 @@
 package org.haifan.merlin.model.openai.endpoints.chat;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ImageContentPart.class, name = "image_url"),
+        @JsonSubTypes.Type(value = TextContentPart.class, name = "text"),
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

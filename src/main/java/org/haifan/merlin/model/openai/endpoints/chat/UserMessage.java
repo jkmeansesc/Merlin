@@ -3,10 +3,12 @@ package org.haifan.merlin.model.openai.endpoints.chat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.haifan.merlin.constants.Fields;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,58 +16,69 @@ import java.util.List;
 public class UserMessage extends Message {
 
     @NonNull
-    private Object content;
+    private Content content;
+
+    @Data
+    @NoArgsConstructor
+    public static class Content {
+        private String contentStr;
+        private List<ContentPart> contentParts = new ArrayList<>();
+
+        public Content(String content) {
+            this.contentStr = content;
+        }
+
+        public Content(List<ContentPart> contentParts) {
+            this.contentParts = contentParts;
+        }
+    }
+
+    public UserMessage() {
+        super(Fields.USER, null);
+        this.content = new Content();
+    }
 
     public UserMessage(@NotNull String content) {
         super(Fields.USER, null);
-        this.content = content;
+        this.content = new Content(content);
     }
 
     public UserMessage(@NotNull String content, String name) {
         super(Fields.USER, name);
-        this.content = content;
+        this.content = new Content(content);
     }
 
     public UserMessage(@NotNull List<ContentPart> content) {
         super(Fields.USER, null);
-        this.content = content;
+        this.content = new Content(content);
     }
 
     public UserMessage(@NotNull List<ContentPart> content, String name) {
         super(Fields.USER, name);
-        this.content = content;
+        this.content = new Content(content);
     }
 
     @JsonIgnore
     public UserMessage setContentParts(List<ContentPart> contentParts) {
-        this.content = contentParts;
+        this.content = new Content(contentParts);
         return this;
     }
 
     @JsonIgnore
     public UserMessage addTextContent(String text) {
-        addContentPart(new TextContentPart(text));
+        this.content.contentParts.add(new TextContentPart(text));
         return this;
     }
 
     @JsonIgnore
     public UserMessage addImageContent(String url) {
-        addContentPart(new ImageContentPart(url));
+        this.content.contentParts.add(new ImageContentPart(url));
         return this;
     }
 
     @JsonIgnore
     public UserMessage addImageContent(String url, String detail) {
-        addContentPart(new ImageContentPart(url, detail));
+        this.content.contentParts.add(new ImageContentPart(url, detail));
         return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @JsonIgnore
-    private void addContentPart(ContentPart contentPart) {
-        if (!(this.content instanceof List)) {
-            throw new IllegalStateException("Content is not a list of content parts");
-        }
-        ((List<ContentPart>) this.content).add(contentPart);
     }
 }

@@ -3,6 +3,8 @@ package org.haifan.merlin.model.openai.endpoints.batch;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.Map;
+
 /**
  * The per-line object of the batch input file
  * <a href="https://platform.openai.com/docs/api-reference/batch/request-input">...</a>
@@ -15,5 +17,5 @@ public class RequestInput {
     private String customId;
     private String method;
     private String url;
-    private Object body;
+    private Map<String, Object> body;
 }

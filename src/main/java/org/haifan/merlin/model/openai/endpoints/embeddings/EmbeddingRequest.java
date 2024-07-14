@@ -28,6 +28,7 @@ public class EmbeddingRequest {
 
     private String user;
 
+    @SuppressWarnings("unused")
     public static class EmbeddingRequestBuilder {
         public EmbeddingRequestBuilder input(String input) {
             this.input = new Input(input);

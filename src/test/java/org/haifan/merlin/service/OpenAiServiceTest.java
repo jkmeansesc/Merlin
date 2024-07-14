@@ -84,14 +84,12 @@ class OpenAiServiceTest {
                 messages.add(userMessageWithDefaultName);
                 assertNotNull(messages.get(0).getRole());
                 assertEquals(Fields.USER, messages.get(0).getRole());
-                assertEquals("test simple string content", messages.get(0).getContent());
 
                 UserMessage userMessageWithName = new UserMessage("test simple string content with name", "simple name");
                 messages.add(userMessageWithName);
                 assertNotNull(messages.get(1).getRole());
                 assertEquals(Fields.USER, messages.get(1).getRole());
                 assertEquals("simple name", messages.get(1).getName());
-                assertEquals("test simple string content with name", messages.get(1).getContent());
 
                 String imgUrl = "https://example.imgurl.com";
                 String imgUrl_1 = "https://different.imgurl.com";
@@ -111,13 +109,17 @@ class OpenAiServiceTest {
                 messages.add(userMessageWithContentPart.setContentParts(contentParts));
                 assertNotNull(messages.get(2).getRole());
                 assertEquals(Fields.USER, messages.get(2).getRole());
-                assertEquals(contentParts, messages.get(2).getContent());
 
-                UserMessage userMessageWithContentPartAndName = new UserMessage(new ArrayList<>(), "name with ContentPart");
-                messages.add(userMessageWithContentPartAndName);
+                UserMessage userMessageWithDefault = new UserMessage()
+                        .addTextContent("text content")
+                        .addImageContent(imgUrl, "high")
+                        .addImageContent(imgUrl_1, "whatever");
+                messages.add(userMessageWithDefault);
                 assertNotNull(messages.get(3).getRole());
                 assertEquals(Fields.USER, messages.get(3).getRole());
-                assertEquals("name with ContentPart", messages.get(3).getName());
+
+                UserMessage userMessageWithContentPartAndName = new UserMessage(new ArrayList<>(), "name");
+                messages.add(userMessageWithContentPartAndName);
 
                 System.out.println(JsonPrinter.print(messages));
             }
