@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.haifan.merlin.model.openai.Content;
 import org.haifan.merlin.model.openai.ResponseFormat;
 import org.haifan.merlin.model.openai.ToolChoice;
-import org.haifan.merlin.model.openai.UserMessage;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
 
 /**
@@ -33,8 +33,8 @@ public class DefaultObjectMapper {
         module.addSerializer(EmbeddingRequest.Input.class, new Serializers.InputSerializer());
         module.addDeserializer(EmbeddingRequest.Input.class, new Serializers.InputDeserializer());
 
-        module.addSerializer(UserMessage.Content.class, new Serializers.ContentSerializer());
-        module.addDeserializer(UserMessage.Content.class, new Serializers.ContentDeserializer());
+        module.addSerializer(Content.class, new Serializers.ContentSerializer());
+        module.addDeserializer(Content.class, new Serializers.ContentDeserializer());
 
         mapper.registerModule(module);
         return mapper;

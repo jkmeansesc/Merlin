@@ -5,6 +5,8 @@ import okhttp3.ResponseBody;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
 import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
+import org.haifan.merlin.model.openai.assistants.messages.MessageObject;
+import org.haifan.merlin.model.openai.assistants.messages.MessageRequest;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadObject;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
@@ -35,6 +37,8 @@ import org.haifan.merlin.model.openai.endpoints.moderations.ModerationList;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
 import retrofit2.Call;
 import retrofit2.http.*;
+
+import java.util.Map;
 
 /**
  * TODO: add javadoc
@@ -229,6 +233,30 @@ public interface OpenAiApi {
     // ===============================
     // ASSISTANTS - Messages
     // ===============================
+
+    @POST("/v1/threads/{thread_id}/messages")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<MessageObject> createMessage(@Path("thread_id") String threadId, @Body MessageRequest request);
+
+    @GET("/v1/threads/{thread_id}/messages")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<MessageObject>> listMessages(@Path("thread_id") String threadId);
+
+    @GET("/v1/threads/{thread_id}/messages")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<OpenAiList<MessageObject>> listMessages(@Path("thread_id") String threadId, @QueryMap Map<String, String> queryMap);
+
+    @GET("/v1/threads/{thread_id}/messages/{message_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<MessageObject> retrieveMessage(@Path("thread_id") String threadId, @Path("message_id") String messageId);
+
+    @POST("/v1/threads/{thread_id}/messages/{message_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<MessageObject> modifyMessage(@Path("thread_id") String threadId, @Path("message_id") String messageId, @Body MessageRequest request);
+
+    @DELETE("/v1/threads/{thread_id}/messages/{message_id}")
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<DeletionStatus> deleteMessage(@Path("thread_id") String threadId, @Path("message_id") String messageId);
 
     // ===============================
     // ASSISTANTS - Runs

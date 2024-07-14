@@ -10,6 +10,8 @@ import org.haifan.merlin.config.OpenAiConfig;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
 import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
+import org.haifan.merlin.model.openai.assistants.messages.MessageObject;
+import org.haifan.merlin.model.openai.assistants.messages.MessageRequest;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadObject;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
@@ -45,9 +47,11 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -418,6 +422,30 @@ public class OpenAiService extends LlmService {
     // ===============================
     // ASSISTANTS - Messages
     // ===============================
+
+    public CompletableFuture<MessageObject> createMessage(String threadId, MessageRequest request) {
+        return super.call(api.createMessage(threadId, request));
+    }
+
+    public CompletableFuture<OpenAiList<MessageObject>> listMessages(String threadId) {
+        return super.call(api.listMessages(threadId));
+    }
+
+    public CompletableFuture<OpenAiList<MessageObject>> listMessages(String threadId, Map<String, String> queryMap) {
+        return super.call(api.listMessages(threadId, queryMap));
+    }
+
+    public CompletableFuture<MessageObject> retrieveMessage(String threadId, String messageId) {
+        return super.call(api.retrieveMessage(threadId, messageId));
+    }
+
+    public CompletableFuture<MessageObject> modifyMessage(String threadId, String messageId, MessageRequest request) {
+        return super.call(api.modifyMessage(threadId, messageId, request));
+    }
+
+    public CompletableFuture<DeletionStatus> deleteMessage(String threadId, String messageId) {
+        return super.call(api.deleteMessage(threadId, messageId));
+    }
 
     // ===============================
     // ASSISTANTS - Runs

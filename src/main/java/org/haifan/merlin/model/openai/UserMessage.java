@@ -3,12 +3,10 @@ package org.haifan.merlin.model.openai;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.haifan.merlin.constants.Fields;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,21 +15,6 @@ public class UserMessage extends Message {
 
     @NonNull
     private Content content;
-
-    @Data
-    @NoArgsConstructor
-    public static class Content {
-        private String contentStr;
-        private List<ContentPart> contentParts = new ArrayList<>();
-
-        public Content(String content) {
-            this.contentStr = content;
-        }
-
-        public Content(List<ContentPart> contentParts) {
-            this.contentParts = contentParts;
-        }
-    }
 
     public UserMessage() {
         super(Fields.USER, null);
@@ -66,19 +49,19 @@ public class UserMessage extends Message {
 
     @JsonIgnore
     public UserMessage addTextContent(String text) {
-        this.content.contentParts.add(new TextContentPart(text));
+        this.content.getContentParts().add(new TextContentPart(text));
         return this;
     }
 
     @JsonIgnore
     public UserMessage addImageUrlContent(String url) {
-        this.content.contentParts.add(new ImageUrlContentPart(url));
+        this.content.getContentParts().add(new ImageUrlContentPart(url));
         return this;
     }
 
     @JsonIgnore
     public UserMessage addImageUrlContent(String url, String detail) {
-        this.content.contentParts.add(new ImageUrlContentPart(url, detail));
+        this.content.getContentParts().add(new ImageUrlContentPart(url, detail));
         return this;
     }
 
@@ -87,7 +70,7 @@ public class UserMessage extends Message {
      */
     @JsonIgnore
     public UserMessage addImageFileContent(String url) {
-        this.content.contentParts.add(new ImageFileContentPart(url));
+        this.content.getContentParts().add(new ImageFileContentPart(url));
         return this;
     }
 
@@ -96,7 +79,7 @@ public class UserMessage extends Message {
      */
     @JsonIgnore
     public UserMessage addImageFileContent(String url, String detail) {
-        this.content.contentParts.add(new ImageFileContentPart(url, detail));
+        this.content.getContentParts().add(new ImageFileContentPart(url, detail));
         return this;
     }
 }

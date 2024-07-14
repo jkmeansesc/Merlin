@@ -8,11 +8,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.haifan.merlin.model.openai.ResponseFormat;
-import org.haifan.merlin.model.openai.ContentPart;
-import org.haifan.merlin.model.openai.Tool;
-import org.haifan.merlin.model.openai.ToolChoice;
-import org.haifan.merlin.model.openai.UserMessage;
+import org.haifan.merlin.model.openai.*;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
 
 import java.io.IOException;
@@ -129,9 +125,9 @@ public class Serializers {
         }
     }
 
-    public static class ContentSerializer extends JsonSerializer<UserMessage.Content> {
+    public static class ContentSerializer extends JsonSerializer<Content> {
         @Override
-        public void serialize(UserMessage.Content value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+        public void serialize(Content value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
             if (value.getContentStr() != null) {
                 gen.writeString(value.getContentStr());
             } else if (value.getContentParts() != null && !value.getContentParts().isEmpty()) {
@@ -142,15 +138,15 @@ public class Serializers {
         }
     }
 
-    public static class ContentDeserializer extends JsonDeserializer<UserMessage.Content> {
+    public static class ContentDeserializer extends JsonDeserializer<Content> {
         @Override
-        public UserMessage.Content deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        public Content deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             List<ContentPart> parts;
             if (p.currentToken() == JsonToken.VALUE_STRING) {
-                return new UserMessage.Content(p.getText());
+                return new Content(p.getText());
             } else if (p.currentToken() == JsonToken.START_ARRAY) {
                 parts = ctxt.readValue(p, ctxt.getTypeFactory().constructCollectionType(List.class, ContentPart.class));
-                return new UserMessage.Content(parts);
+                return new Content(parts);
             }
             throw new IOException("Invalid Content format");
         }
