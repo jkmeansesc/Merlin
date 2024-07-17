@@ -5,12 +5,13 @@ import org.haifan.merlin.api.GeminiApi;
 import org.haifan.merlin.config.GeminiConfig;
 import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.interceptors.GeminiInterceptor;
+import org.haifan.merlin.model.gemini.GenerateContentRequest;
 import org.haifan.merlin.model.gemini.GenerateContentResponse;
+import org.haifan.merlin.model.gemini.ListOperationsResponse;
+import org.haifan.merlin.model.gemini.Operation;
 import org.haifan.merlin.model.gemini.models.*;
-import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.Path;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class GeminiService extends LlmService {
@@ -36,7 +37,7 @@ public class GeminiService extends LlmService {
     }
 
     // ===============================
-    // v1 - models
+    // Google Gemini v1
     // ===============================
 
     public CompletableFuture<BatchEmbedContentsResponse> batchEmbedContents(String model, BatchEmbedContentsRequest request) {
@@ -70,5 +71,33 @@ public class GeminiService extends LlmService {
     // TODO: support streaming
     public CompletableFuture<ResponseBody> streamGenerateContent(String model, GenerateContentRequest request) {
         return super.call(api.streamGenerateContent(model, request));
+    }
+
+    public CompletableFuture<ListOperationsResponse> listOperations(String name) {
+        return super.call(api.listOperations(name));
+    }
+
+    public CompletableFuture<ListOperationsResponse> listOperations(String name, Map<String, Object> queryMap) {
+        return super.call(api.listOperations(name, queryMap));
+    }
+
+    public CompletableFuture<Void> deleteOperation(String name) {
+        return super.call(api.deleteOperation(name));
+    }
+
+    public CompletableFuture<Void> cancelTunedModelOperation(String name) {
+        return super.call(api.cancelTunedModelOperation(name));
+    }
+
+    public CompletableFuture<Operation> getTunedModelOperation(String name) {
+        return super.call(api.getTunedModelOperation(name));
+    }
+
+    public CompletableFuture<ListOperationsResponse> listTunedModelsOperations(String name) {
+        return super.call(api.listTunedModelsOperations(name));
+    }
+
+    public CompletableFuture<ListOperationsResponse> listTunedModelsOperations(String name, Map<String, Object> queryMap) {
+        return super.call(api.listTunedModelsOperations(name, queryMap));
     }
 }

@@ -1,13 +1,9 @@
-package org.haifan.merlin.model.gemini.models;
+package org.haifan.merlin.model.gemini;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.logging.log4j.core.tools.Generate;
-import org.haifan.merlin.model.gemini.Content;
-import org.haifan.merlin.model.gemini.GenerationConfig;
-import org.haifan.merlin.model.gemini.SafetySetting;
 
 import java.util.List;
 
