@@ -1,16 +1,14 @@
 package org.haifan.merlin.service;
 
 import org.haifan.merlin.client.Merlin;
-import org.haifan.merlin.model.gemini.models.ModelList;
+import org.haifan.merlin.model.gemini.ModelList;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class GeminiServiceTest {
 
     @Nested
-    class ModelTest {
+    class V1Test {
         @Test
         void listModels() {
             ModelList list = Merlin.<GeminiService>builder()
@@ -19,7 +17,6 @@ class GeminiServiceTest {
                     .getService()
                     .listModels()
                     .join();
-            System.out.println(list);
         }
     }
 }

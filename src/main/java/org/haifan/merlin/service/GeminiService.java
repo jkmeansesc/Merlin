@@ -5,11 +5,7 @@ import org.haifan.merlin.api.GeminiApi;
 import org.haifan.merlin.config.GeminiConfig;
 import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.interceptors.GeminiInterceptor;
-import org.haifan.merlin.model.gemini.GenerateContentRequest;
-import org.haifan.merlin.model.gemini.GenerateContentResponse;
-import org.haifan.merlin.model.gemini.ListOperationsResponse;
-import org.haifan.merlin.model.gemini.Operation;
-import org.haifan.merlin.model.gemini.models.*;
+import org.haifan.merlin.model.gemini.*;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;

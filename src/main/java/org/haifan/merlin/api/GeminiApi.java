@@ -1,11 +1,7 @@
 package org.haifan.merlin.api;
 
 import okhttp3.ResponseBody;
-import org.haifan.merlin.model.gemini.GenerateContentRequest;
-import org.haifan.merlin.model.gemini.GenerateContentResponse;
-import org.haifan.merlin.model.gemini.ListOperationsResponse;
-import org.haifan.merlin.model.gemini.Operation;
-import org.haifan.merlin.model.gemini.models.*;
+import org.haifan.merlin.model.gemini.*;
 import retrofit2.Call;
 import retrofit2.http.*;
 

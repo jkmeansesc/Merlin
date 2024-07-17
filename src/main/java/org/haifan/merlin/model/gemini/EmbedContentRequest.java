@@ -1,11 +1,9 @@
-package org.haifan.merlin.model.gemini.models;
+package org.haifan.merlin.model.gemini;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.haifan.merlin.model.gemini.Content;
-import org.haifan.merlin.model.gemini.TaskType;
 
 @Builder
 @NoArgsConstructor

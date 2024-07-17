@@ -1,4 +1,4 @@
-package org.haifan.merlin.model.gemini.models;
+package org.haifan.merlin.model.gemini;
 
 import lombok.Data;
 

@@ -1,5 +1,7 @@
 package org.haifan.merlin.utils;
 
+import org.haifan.merlin.constants.Provider;
+
 /**
  * TODO: add javadoc
  */
@@ -14,6 +16,8 @@ public class ApiKeyManager {
         String envKey = System.getenv(envVarName);
         if (envKey != null && !envKey.trim().isEmpty()) {
             return envKey;
+        } else if (providerName.equals(Provider.OLLAMA.name())) {
+            return null;
         }
 
         throw new IllegalStateException("No API key provided for " + providerName +

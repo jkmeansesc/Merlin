@@ -17,6 +17,10 @@ public abstract class LlmInterceptor implements Interceptor {
         this.apiKey = apiKey;
     }
 
+    protected LlmInterceptor() {
+        this.apiKey = null;
+    }
+
     @NotNull
     @Override
     public Response intercept(Chain chain) throws IOException {

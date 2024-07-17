@@ -1,5 +1,5 @@
 package org.haifan.merlin.constants;
 
 public enum Provider {
-    OPENAI, GOOGLE_GEMINI
+    OPENAI, GOOGLE_GEMINI, OLLAMA
 }
