@@ -194,12 +194,7 @@ public interface OpenAiApi {
 
     @GET("/v1/assistants")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<Assistant>> listAssistants(
-            @Query("limit") Integer limit,
-            @Query("order") String order,
-            @Query("before") String before,
-            @Query("after") String after
-    );
+    Call<OpenAiList<Assistant>> listAssistants(@QueryMap Map<String, String> queryMap);
 
     @GET("/v1/assistants/{assistant_id}")
     @Headers("OpenAI-Beta: assistants=v2")
@@ -328,7 +323,7 @@ public interface OpenAiApi {
 
     @GET("/v1/vector_stores")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<VectorStore>> listVectorStores(@Query("order") String order, @Query("before") String before, @Query("after") String after, @Query("limit") Integer limit);
+    Call<OpenAiList<VectorStore>> listVectorStores(@QueryMap Map<String, String> queryMap);
 
     @GET("/v1/vector_stores/{vector_store_id}")
     @Headers("OpenAI-Beta: assistants=v2")
@@ -357,7 +352,7 @@ public interface OpenAiApi {
 
     @GET("/v1/vector_stores/{vector_store_id}/files")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<VectorStoreFile>> listVectorStoreFiles(@Path("vector_store_id") String vectorStoreId, @Query("limit") Integer limit, @Query("order") String order, @Query("before") String before, @Query("after") String after, @Query("filter") String filter);
+    Call<OpenAiList<VectorStoreFile>> listVectorStoreFiles(@Path("vector_store_id") String vectorStoreId, @QueryMap Map<String, String> queryMap);
 
     @GET("/v1/vector_stores/{vector_store_id}/files/{file_id}")
     @Headers("OpenAI-Beta: assistants=v2")
@@ -389,9 +384,5 @@ public interface OpenAiApi {
 
     @GET("/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}/files")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<VectorStoreFileBatch>> listVectorStoreFileBatch(@Path("vector_store_id") String vectorStoreId, @Path("batch_id") String batchId, @Query("limit") Integer limit, @Query("order") String order, @Query("before") String before, @Query("after") String after, @Query("filter") String filter);
-
-    // ===============================
-    // ASSISTANTS - Streaming
-    // ===============================
+    Call<OpenAiList<VectorStoreFileBatch>> listVectorStoreFileBatch(@Path("vector_store_id") String vectorStoreId, @Path("batch_id") String batchId, @QueryMap Map<String, String> queryMap);
 }

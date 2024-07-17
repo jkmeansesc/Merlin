@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class TextContentPart extends ContentPart {
     @NonNull
     private String text;
+    private Integer index;
 
     public TextContentPart(@NotNull String text) {
         super(Fields.TEXT);

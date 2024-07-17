@@ -1,0 +1,74 @@
+package org.haifan.merlin.service;
+
+import okhttp3.ResponseBody;
+import org.haifan.merlin.api.GeminiApi;
+import org.haifan.merlin.config.GeminiConfig;
+import org.haifan.merlin.config.LlmConfig;
+import org.haifan.merlin.interceptors.GeminiInterceptor;
+import org.haifan.merlin.model.gemini.GenerateContentResponse;
+import org.haifan.merlin.model.gemini.models.*;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.Path;
+
+import java.util.concurrent.CompletableFuture;
+
+public class GeminiService extends LlmService {
+
+    private final GeminiApi api;
+
+    public GeminiService() {
+        this(new GeminiConfig());
+    }
+
+    public GeminiService(String apiKey) {
+        this(new GeminiConfig(apiKey));
+    }
+
+    private GeminiService(GeminiConfig config) {
+        super(config, new GeminiInterceptor(config.getApiKey()));
+        this.api = super.retrofit.create(GeminiApi.class);
+    }
+
+    @Override
+    public LlmConfig getConfig() {
+        return super.llmConfig;
+    }
+
+    // ===============================
+    // v1 - models
+    // ===============================
+
+    public CompletableFuture<BatchEmbedContentsResponse> batchEmbedContents(String model, BatchEmbedContentsRequest request) {
+        return super.call(api.batchEmbedContents(model, request));
+    }
+
+    public CompletableFuture<CountTokensResponse> countTokens(String model, CountTokensRequest request) {
+        return super.call(api.countTokens(model, request));
+    }
+
+    public CompletableFuture<EmbedContentResponse> embedContent(String model, EmbedContentRequest request) {
+        return super.call(api.embedContent(model, request));
+    }
+
+    public CompletableFuture<GenerateContentResponse> generateContent(String model, GenerateContentRequest request) {
+        return super.call(api.generateContent(model, request));
+    }
+
+    public CompletableFuture<Model> getModel(String name) {
+        return super.call(api.getModel(name));
+    }
+
+    public CompletableFuture<ModelList> listModels() {
+        return super.call(api.listModels());
+    }
+
+    public CompletableFuture<ModelList> listModels(Integer pageSize, String pageToken) {
+        return super.call(api.listModels(pageSize, pageToken));
+    }
+
+    // TODO: support streaming
+    public CompletableFuture<ResponseBody> streamGenerateContent(String model, GenerateContentRequest request) {
+        return super.call(api.streamGenerateContent(model, request));
+    }
+}

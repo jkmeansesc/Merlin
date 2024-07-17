@@ -14,6 +14,7 @@ public class ImageUrlContentPart extends ContentPart {
     @NonNull
     @JsonProperty("image_url")
     private ImageUrl imageUrl;
+    private Integer index;
 
     public ImageUrlContentPart(String url) {
         super(Fields.IMAGE_URL);

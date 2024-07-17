@@ -14,6 +14,7 @@ public class ImageFileContentPart extends ContentPart {
     @NonNull
     @JsonProperty("image_file")
     private ImageFile imageFile;
+    private Integer index;
 
     public ImageFileContentPart(String fileId) {
         super(Fields.IMAGE_FILE);

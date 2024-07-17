@@ -6,23 +6,19 @@ import org.haifan.merlin.constants.Provider;
 
 import java.util.Objects;
 
-/**
- * TODO: add javadoc
- */
-
 @Slf4j
-public class OpenAiInterceptor extends LlmInterceptor {
+public class GeminiInterceptor extends LlmInterceptor {
 
-    public OpenAiInterceptor(String apiKey) {
+    public GeminiInterceptor(String apiKey) {
         super(apiKey);
-        Objects.requireNonNull(apiKey, "OpenAI API key required");
+        Objects.requireNonNull(apiKey, "Google Gemini API key required");
     }
 
     @Override
     protected Request addAuthHeader(Request originalRequest) {
-        log.info("Adding auth header for {}", Provider.OPENAI);
+        log.info("Adding auth header for {}", Provider.GOOGLE_GEMINI);
         return originalRequest.newBuilder()
-                .header("Authorization", "Bearer " + apiKey)
+                .header("x-goog-api-key", apiKey)
                 .build();
     }
 }

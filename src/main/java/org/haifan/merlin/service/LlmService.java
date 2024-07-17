@@ -1,6 +1,7 @@
 package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.haifan.merlin.config.LlmConfig;
@@ -8,9 +9,6 @@ import org.haifan.merlin.interceptors.LlmInterceptor;
 import org.haifan.merlin.interceptors.SLF4JHttpLogger;
 import org.haifan.merlin.utils.DefaultObjectMapper;
 import org.jetbrains.annotations.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,9 +21,9 @@ import java.util.concurrent.CompletableFuture;
 /**
  * TODO: add javadoc
  */
+@Slf4j
 public abstract class LlmService {
 
-    private static final Logger logger = LoggerFactory.getLogger(LlmService.class);
     protected final Retrofit retrofit;
     protected final LlmConfig llmConfig;
 
@@ -33,11 +31,12 @@ public abstract class LlmService {
 
     protected LlmService(LlmConfig llmConfig, LlmInterceptor llmInterceptor) {
         this.llmConfig = llmConfig;
-        logger.info("Initializing LlmService with base URL: {}", llmConfig.getBaseUrl());
+        log.info("Initializing LlmService with base URL: {}", llmConfig.getBaseUrl());
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new SLF4JHttpLogger());
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         logging.redactHeader("Authorization");
-        logging.redactHeader("Cookie");
+        logging.redactHeader("x-goog-api-key");
+
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(llmInterceptor)
                 .addNetworkInterceptor(logging)
@@ -50,17 +49,17 @@ public abstract class LlmService {
                 .client(client)
                 .addConverterFactory(JacksonConverterFactory.create(mapper))
                 .build();
-        logger.info("LlmService initialized");
+        log.info("LlmService initialized");
     }
 
     protected <T> CompletableFuture<T> call(Call<T> call) {
         CompletableFuture<T> future = new CompletableFuture<>();
-        logger.info("Calling");
+        log.info("Calling");
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NotNull Call<T> call, @NotNull Response<T> response) {
                 if (response.isSuccessful()) {
-                    logger.info("Call successful");
+                    log.info("Call successful");
                     future.complete(response.body());
                 } else {
                     future.completeExceptionally(new Exception("API call failed: " + response.code()));
@@ -69,7 +68,7 @@ public abstract class LlmService {
 
             @Override
             public void onFailure(@NotNull Call<T> call, @NotNull Throwable t) {
-                logger.error("API call failed due to exception", t);
+                log.error("API call failed due to exception", t);
                 future.completeExceptionally(t);
             }
         });

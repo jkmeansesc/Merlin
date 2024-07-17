@@ -50,7 +50,6 @@ import org.haifan.merlin.utils.FileParser;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
 import java.io.File;
@@ -97,10 +96,7 @@ public class OpenAiService extends LlmService {
     }
 
     public CompletableFuture<Transcription> createTranscription(TranscriptionRequest request, File audio) {
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio))
-                .addFormDataPart(Fields.MODEL, request.getModel());
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio)).addFormDataPart(Fields.MODEL, request.getModel());
 
         if (request.getPrompt() != null) {
             builder.addFormDataPart(Fields.PROMPT, request.getPrompt());
@@ -127,10 +123,7 @@ public class OpenAiService extends LlmService {
     }
 
     public CompletableFuture<Translation> createTranslation(TranslationRequest request, File audio) {
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio))
-                .addFormDataPart(Fields.MODEL, request.getModel());
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio)).addFormDataPart(Fields.MODEL, request.getModel());
 
         if (request.getPrompt() != null) {
             builder.addFormDataPart(Fields.PROMPT, request.getPrompt());
@@ -246,10 +239,7 @@ public class OpenAiService extends LlmService {
     }
 
     public CompletableFuture<org.haifan.merlin.model.openai.endpoints.files.File> uploadFile(String purpose, File file) {
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart(Fields.PURPOSE, purpose)
-                .addFormDataPart(Fields.FILE, file.getName(), FileParser.parseFile(file));
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.PURPOSE, purpose).addFormDataPart(Fields.FILE, file.getName(), FileParser.parseFile(file));
 
         return super.call(api.uploadFile(builder.build()));
     }
@@ -286,13 +276,10 @@ public class OpenAiService extends LlmService {
     }
 
     private CompletableFuture<ImageList> createImageEdit(ImageEditRequest request, File image, File mask) {
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart(Fields.N, request.getN().toString()) // integer or null
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.N, request.getN().toString()) // integer or null
                 .addFormDataPart(Fields.SIZE, request.getSize()) // string or null
                 .addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat()) //string or null
-                .addFormDataPart(Fields.PROMPT, request.getPrompt())
-                .addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(IanaMediaType.IMAGE_ALL)));
+                .addFormDataPart(Fields.PROMPT, request.getPrompt()).addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(IanaMediaType.IMAGE_ALL)));
 
         if (mask != null) {
             builder.addFormDataPart(Fields.MASK, mask.getName(), RequestBody.create(mask, MediaType.parse(IanaMediaType.IMAGE_ALL)));
@@ -313,9 +300,7 @@ public class OpenAiService extends LlmService {
     }
 
     public CompletableFuture<ImageList> createImageVariation(ImageVariationRequest request, File image) {
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart(Fields.N, request.getN().toString()) // integer or null
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.N, request.getN().toString()) // integer or null
                 .addFormDataPart(Fields.SIZE, request.getSize()) // string or null
                 .addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat()) // string or null
                 .addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(IanaMediaType.IMAGE_ALL)));
@@ -387,8 +372,8 @@ public class OpenAiService extends LlmService {
         return super.call(api.listAssistants());
     }
 
-    public CompletableFuture<OpenAiList<Assistant>> listAssistants(Integer limit, String order, String before, String after) {
-        return super.call(api.listAssistants(limit, order, before, after));
+    public CompletableFuture<OpenAiList<Assistant>> listAssistants(Map<String, String> queryMap) {
+        return super.call(api.listAssistants(queryMap));
     }
 
     public CompletableFuture<Assistant> retrieveAssistant(String assistantId) {
@@ -515,8 +500,8 @@ public class OpenAiService extends LlmService {
         return super.call(api.listVectorStores());
     }
 
-    public CompletableFuture<OpenAiList<VectorStore>> listVectorStores(String order, String before, String after, Integer limit) {
-        return super.call(api.listVectorStores(order, before, after, limit));
+    public CompletableFuture<OpenAiList<VectorStore>> listVectorStores(Map<String, String> queryMap) {
+        return super.call(api.listVectorStores(queryMap));
     }
 
     public CompletableFuture<VectorStore> retrieveVectorStore(String vectorStoreId) {
@@ -548,15 +533,8 @@ public class OpenAiService extends LlmService {
         return super.call(api.listVectorStoreFiles(vectorStoreId));
     }
 
-    public CompletableFuture<OpenAiList<VectorStoreFile>> listVectorStoreFiles(
-            String vectorStoreId,
-            Integer limit,
-            String order,
-            String before,
-            String after,
-            String filter
-    ) {
-        return super.call(api.listVectorStoreFiles(vectorStoreId, limit, order, before, after, filter));
+    public CompletableFuture<OpenAiList<VectorStoreFile>> listVectorStoreFiles(String vectorStoreId, Map<String, String> queryMap) {
+        return super.call(api.listVectorStoreFiles(vectorStoreId, queryMap));
     }
 
     public CompletableFuture<VectorStoreFile> retrieveVectorStoreFile(String vectorStoreId, String fileId) {
@@ -587,11 +565,7 @@ public class OpenAiService extends LlmService {
         return super.call(api.listVectorStoreFileBatch(vectorStoreId, batchId));
     }
 
-    public CompletableFuture<OpenAiList<VectorStoreFileBatch>> listVectorStoreFileBatch(String vectorStoreId, String batchId, Integer limit, String order, String before, String after, String filter) {
-        return super.call(api.listVectorStoreFileBatch(vectorStoreId, batchId, limit, order, before, after, filter));
+    public CompletableFuture<OpenAiList<VectorStoreFileBatch>> listVectorStoreFileBatch(String vectorStoreId, String batchId, Map<String, String> queryMap) {
+        return super.call(api.listVectorStoreFileBatch(vectorStoreId, batchId, queryMap));
     }
-
-    // ===============================
-    // ASSISTANTS - Streaming
-    // ===============================
 }
