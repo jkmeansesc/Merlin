@@ -1,5 +1,6 @@
 package org.haifan.merlin.service;
 
+import org.haifan.merlin.client.Merlin;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -80,5 +81,11 @@ class OllamaServiceTest {
 
     @Test
     void listRunning() {
+        Merlin.builder()
+                .addService(new OllamaService())
+                .build()
+                .getOllamaService()
+                .listRunning()
+                .join();
     }
 }
