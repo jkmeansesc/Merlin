@@ -22,15 +22,19 @@ public class GeminiService extends LlmService {
         this(new GeminiConfig(apiKey));
     }
 
+    public GeminiService(String configPath, boolean isConfigPath) {
+        this(new GeminiConfig(configPath, isConfigPath));
+    }
+
+    public GeminiService(String apiKey, String configPath) {
+        this(new GeminiConfig(apiKey, configPath));
+    }
+
     private GeminiService(GeminiConfig config) {
         super(config, new GeminiInterceptor(config.getApiKey()));
         this.api = super.retrofit.create(GeminiApi.class);
     }
 
-    @Override
-    public LlmConfig getConfig() {
-        return super.llmConfig;
-    }
 
     // ===============================
     // Google Gemini v1

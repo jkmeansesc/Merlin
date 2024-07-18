@@ -9,13 +9,9 @@ import org.haifan.merlin.config.OllamaConfig;
 import org.haifan.merlin.interceptors.OllamaInterceptor;
 import org.haifan.merlin.model.ollama.*;
 import org.haifan.merlin.model.openai.StreamingResponse;
-import org.haifan.merlin.model.openai.endpoints.chat.ChatCompletionChunk;
-import org.haifan.merlin.model.openai.endpoints.chat.ChatCompletionRequest;
 import org.haifan.merlin.utils.FileParser;
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.Part;
-import retrofit2.http.Path;
 
 import java.io.File;
 import java.util.concurrent.CompletableFuture;
@@ -28,14 +24,13 @@ public class OllamaService extends LlmService {
         this(new OllamaConfig());
     }
 
+    public OllamaService(String configPath) {
+        this(new OllamaConfig(configPath));
+    }
+
     private OllamaService(OllamaConfig config) {
         super(config, new OllamaInterceptor());
         this.api = super.retrofit.create(OllamaApi.class);
-    }
-
-    @Override
-    public LlmConfig getConfig() {
-        return super.llmConfig;
     }
 
     // TODO: implement this

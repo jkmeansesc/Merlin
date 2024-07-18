@@ -18,7 +18,7 @@ public class GeminiInterceptor extends LlmInterceptor {
     protected Request addAuthHeader(Request originalRequest) {
         log.info("Adding auth header for {}", Provider.GOOGLE_GEMINI);
         return originalRequest.newBuilder()
-                .header("x-goog-api-key", apiKey)
+                .header("x-goog-api-key", Objects.requireNonNull(apiKey))
                 .build();
     }
 }

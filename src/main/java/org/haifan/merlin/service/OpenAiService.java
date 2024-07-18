@@ -72,15 +72,19 @@ public class OpenAiService extends LlmService {
         this(new OpenAiConfig(apiKey));
     }
 
+    public OpenAiService(String configPath, boolean isConfigPath) {
+        this(new OpenAiConfig(configPath, isConfigPath));
+    }
+
+    public OpenAiService(String apiKey, String configPath) {
+        this(new OpenAiConfig(apiKey, configPath));
+    }
+
     private OpenAiService(OpenAiConfig config) {
         super(config, new OpenAiInterceptor(config.getApiKey()));
         this.api = super.retrofit.create(OpenAiApi.class);
     }
 
-    @Override
-    public LlmConfig getConfig() {
-        return super.llmConfig;
-    }
 
     // ===============================
     // ENDPOINTS - Audio

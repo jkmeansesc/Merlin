@@ -17,6 +17,7 @@ class GeminiServiceTest {
                     .getService()
                     .listModels()
                     .join();
+            System.out.println(list);
         }
     }
 }

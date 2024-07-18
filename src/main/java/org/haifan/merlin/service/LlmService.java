@@ -27,8 +27,6 @@ public abstract class LlmService {
     protected final Retrofit retrofit;
     protected final LlmConfig llmConfig;
 
-    public abstract LlmConfig getConfig();
-
     protected LlmService(LlmConfig llmConfig, LlmInterceptor llmInterceptor) {
         this.llmConfig = llmConfig;
         log.info("Initializing LlmService with base URL: {}", llmConfig.getBaseUrl());
