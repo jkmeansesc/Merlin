@@ -1,6 +1,10 @@
 package org.haifan.merlin.service;
 
 import org.haifan.merlin.client.Merlin;
+import org.haifan.merlin.model.ollama.OllamaCompletionRequest;
+import org.haifan.merlin.model.ollama.OllamaModel;
+import org.haifan.merlin.model.ollama.OllamaModelList;
+import org.haifan.merlin.utils.JsonPrinter;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,10 +49,28 @@ class OllamaServiceTest {
 
     @Test
     void listModels() {
+        OllamaModelList list = Merlin.builder()
+                .addService(new OllamaService())
+                .build()
+                .getOllamaService()
+                .listModels()
+                .join();
+
+        System.out.println(JsonPrinter.print(list));
     }
 
     @Test
     void showModelInfo() {
+        OllamaCompletionRequest request = OllamaCompletionRequest.builder()
+                .name("mistral")
+                .build();
+        OllamaModel model = Merlin.builder()
+                .addService(new OllamaService())
+                .build()
+                .getOllamaService()
+                .showModelInfo(request)
+                .join();
+        System.out.println(JsonPrinter.print(model));
     }
 
     @Test

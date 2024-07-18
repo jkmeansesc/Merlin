@@ -10,7 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 public class OllamaCompletionRequest {
-    @NonNull
     private String model;
     private String name;
     private Boolean verbose;
