@@ -198,9 +198,9 @@ class OpenAiServiceTest {
             System.out.println(JsonPrinter.print(request6));
 
             Merlin.<OpenAiService>builder()
-                    .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
+                    .addService(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
                     .build()
-                    .getService()
+                    .getOpenAiService()
                     .createEmbeddings(request1)
                     .join();
         }
@@ -249,9 +249,9 @@ class OpenAiServiceTest {
         @Test
         void createSpeech() {
             Merlin.<OpenAiService>builder()
-                    .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
+                    .addService(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
                     .build()
-                    .getService()
+                    .getOpenAiService()
                     .createSpeech(SpeechRequest
                             .builder()
                             .model("tts-1")
@@ -270,9 +270,9 @@ class OpenAiServiceTest {
             assert resourceUrl != null;
             String filePath = Paths.get(resourceUrl.getPath()).toFile().getAbsolutePath();
             Merlin.<OpenAiService>builder()
-                    .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
+                    .addService(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
                     .build()
-                    .getService()
+                    .getOpenAiService()
                     .uploadFile("fine-tune", filePath)
                     .join();
         }
@@ -285,9 +285,9 @@ class OpenAiServiceTest {
         @Test
         void createImage() {
             Merlin.<OpenAiService>builder()
-                    .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
+                    .addService(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
                     .build()
-                    .getService()
+                    .getOpenAiService()
                     .createImage(ImageRequest.builder()
                             .prompt("A cute baby sea otter")
                             .n(1)
@@ -302,9 +302,9 @@ class OpenAiServiceTest {
         @Test
         void testListModels() {
             Merlin.<OpenAiService>builder()
-                    .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
+                    .addService(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
                     .build()
-                    .getService()
+                    .getOpenAiService()
                     .listModels()
                     .join();
         }
@@ -312,9 +312,9 @@ class OpenAiServiceTest {
         @Test
         void testRetrieveModel() {
             Merlin.<OpenAiService>builder()
-                    .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
+                    .addService(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
                     .build()
-                    .getService()
+                    .getOpenAiService()
                     .retrieveModel("gpt-3.5-turbo-instruct")
                     .join();
         }
@@ -322,9 +322,9 @@ class OpenAiServiceTest {
         @Test
         void testDeleteAFineTunedModel() {
             Merlin.<OpenAiService>builder()
-                    .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
+                    .addService(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
                     .build()
-                    .getService()
+                    .getOpenAiService()
                     .deleteAFineTunedModel("ft:gpt-3.5-turbo:acemeco:suffix:abc123")
                     .join();
         }
@@ -335,9 +335,9 @@ class OpenAiServiceTest {
         @Test
         void testCreateModeration() {
             Merlin.<OpenAiService>builder()
-                    .service(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
+                    .addService(new OpenAiService("sk-proj-5QxGWn88cH0D0flBcLGYT3BlbkFJQmFHZW5sshW08Wwf4um8"))
                     .build()
-                    .getService()
+                    .getOpenAiService()
                     .createModeration(ModerationRequest.builder()
                             .input("I want to kill them.")
                             .model("text-moderation-stable")
