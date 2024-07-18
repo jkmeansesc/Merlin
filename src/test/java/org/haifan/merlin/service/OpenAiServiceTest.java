@@ -31,7 +31,6 @@ class OpenAiServiceTest {
     class TestChat {
         @Test
         void testChatCompletionRequest() {
-
             List<Message> messages = new ArrayList<>();
             messages.add(new SystemMessage("system message"));
             messages.add(new UserMessage("user message"));
