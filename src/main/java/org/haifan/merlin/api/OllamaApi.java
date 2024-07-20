@@ -63,5 +63,5 @@ public interface OllamaApi {
     Call<OllamaEmbedding> createEmbedding(@Body OllamaCompletionRequest request);
 
     @GET("/api/ps")
-    Call<OllamaModel> listRunning();
+    Call<OllamaModelList> listRunning();
 }

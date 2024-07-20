@@ -103,11 +103,14 @@ class OllamaServiceTest {
 
     @Test
     void listRunning() {
-        Merlin.builder()
+        OllamaModelList model = Merlin.builder()
                 .addService(new OllamaService())
                 .build()
                 .getOllamaService()
                 .listRunning()
                 .join();
+
+        assertNotNull(model.getModels());
+        System.out.println(JsonPrinter.print(model));
     }
 }

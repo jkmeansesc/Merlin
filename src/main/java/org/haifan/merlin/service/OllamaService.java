@@ -122,7 +122,7 @@ public class OllamaService extends LlmService {
         return super.call(api.createEmbedding(request));
     }
 
-    public CompletableFuture<OllamaModel> listRunning() {
+    public CompletableFuture<OllamaModelList> listRunning() {
         return super.call(api.listRunning());
     }
 }
