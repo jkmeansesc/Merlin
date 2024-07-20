@@ -20,7 +20,7 @@ public class DefaultObjectMapper {
 
     public static ObjectMapper create() {
         ObjectMapper mapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+//                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         SimpleModule module = new SimpleModule();

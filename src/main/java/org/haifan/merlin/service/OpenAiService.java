@@ -5,7 +5,6 @@ import okhttp3.RequestBody;
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.api.OpenAiApi;
-import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.config.OpenAiConfig;
 import org.haifan.merlin.constants.Fields;
 import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
@@ -84,7 +83,6 @@ public class OpenAiService extends LlmService {
         super(config, new OpenAiInterceptor(config.getApiKey()));
         this.api = super.retrofit.create(OpenAiApi.class);
     }
-
 
     // ===============================
     // ENDPOINTS - Audio

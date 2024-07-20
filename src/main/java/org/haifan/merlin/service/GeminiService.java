@@ -6,6 +6,7 @@ import org.haifan.merlin.config.GeminiConfig;
 import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.interceptors.GeminiInterceptor;
 import org.haifan.merlin.model.gemini.*;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -33,6 +34,12 @@ public class GeminiService extends LlmService {
     private GeminiService(GeminiConfig config) {
         super(config, new GeminiInterceptor(config.getApiKey()));
         this.api = super.retrofit.create(GeminiApi.class);
+    }
+
+    @TestOnly
+    GeminiService(GeminiApi api) {
+        super(new GeminiConfig("123"), new GeminiInterceptor("123"));
+        this.api = api;
     }
 
 

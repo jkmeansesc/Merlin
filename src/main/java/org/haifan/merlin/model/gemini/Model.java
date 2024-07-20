@@ -23,4 +23,5 @@ public class Model {
     private Double temperature;
     private Double topP;
     private Integer topK;
+    private Integer maxTemperature;
 }
