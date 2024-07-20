@@ -132,3 +132,25 @@ classDiagram
         }
     }
 ```
+
+## Dev Logs
+
+## User Manual
+
+### API Key Management
+
+Merlin supports API key management through environment variables.
+
+| Provider       | Environment Variable |
+| -------------- | -------------------- |
+| OpenAI ChatGPT | `OPENAI_KEY`         |
+| Goole Gemini   | `GOOGLE_GEMINI_KEY`  |
+
+Or you can set the API key directly through initialization.
+
+```java
+OpenAiService service = new OpenAiService("<your-api-key>");
+GenminiService service = new GeminiService("<your-api-key>");
+```
+
+By default, Merlin will look for API keys through environment variables and fall back to direct initialization. If neither is found, an Exception will be thrown.
