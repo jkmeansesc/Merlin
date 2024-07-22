@@ -2,6 +2,7 @@ package org.haifan.merlin.service;
 
 import org.haifan.merlin.client.Merlin;
 import org.haifan.merlin.model.ollama.OllamaCompletionRequest;
+import org.haifan.merlin.model.ollama.OllamaEmbedding;
 import org.haifan.merlin.model.ollama.OllamaModel;
 import org.haifan.merlin.model.ollama.OllamaModelList;
 import org.haifan.merlin.utils.JsonPrinter;
@@ -99,18 +100,30 @@ class OllamaServiceTest {
 
     @Test
     void createEmbedding() {
+        OllamaCompletionRequest request = OllamaCompletionRequest.builder()
+                .model("mistral")
+                .prompt("Here is an article about llamas...")
+                .build();
+        OllamaEmbedding response = Merlin.builder()
+                .addService(new OllamaService())
+                .build()
+                .getOllamaService()
+                .createEmbedding(request)
+                .join();
+        assertNotNull(response.getEmbedding());
+        System.out.println(JsonPrinter.print(response));
     }
+
 
     @Test
     void listRunning() {
-        OllamaModelList model = Merlin.builder()
+        OllamaModelList response = Merlin.builder()
                 .addService(new OllamaService())
                 .build()
                 .getOllamaService()
                 .listRunning()
                 .join();
-
-        assertNotNull(model.getModels());
-        System.out.println(JsonPrinter.print(model));
+        assertNotNull(response.getModels());
+        System.out.println(JsonPrinter.print(response));
     }
 }

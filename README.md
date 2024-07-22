@@ -1,29 +1,61 @@
 # Merlin
 
-Merlin is a Java library that provides a unified interface to interact with LLMs.
+Merlin is a Java util library that provides an unified interface to interact with Large Language Models (LLMs).
 
-## Project Overview
+| Libraries used                                           |
+| -------------------------------------------------------- |
+| [okhttp](https://github.com/square/okhttp)               |
+| [log4j](https://logging.apache.org/log4j/2.x/index.html) |
+| [jackson](https://github.com/FasterXML/jackson)          |
+| [lombok](https://projectlombok.org/)                     |
+| [JUnit5](https://junit.org/junit5/)                      |
+| [Mockito](https://site.mockito.org/)                     |
+| [SLF4J](https://www.slf4j.org/index.html)                |
 
-| Libraries used                                           | Description                                                                           |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| [okhttp](https://github.com/square/okhttp)               | OkHttp is an HTTP client.                                                             |
-| [log4j](https://logging.apache.org/log4j/2.x/index.html) | Apache Log4j is a versatile, industrial-grade Java logging framework.                 |
-| [jackson](https://github.com/FasterXML/jackson)          | Jackson has been known as "the Java JSON library" or "the best JSON parser for Java". |
-| [lombok](https://projectlombok.org/)                     | Lombok is a java library that automatically plugs into the editor and build tools.    |
-| [JUnit5](https://junit.org/junit5/)                      | JUnit is a simple framework to write repeatable tests.                                |
-| [Mockito](https://site.mockito.org/)                     | Mockito is a mocking framework that tastes really good.                               |
+> OpenAI: deprecated and legacy features are not supported
 
-| Build tools                             |
-| --------------------------------------- |
-| [Maven](https://maven.apache.org/)      |
-| [SonarQube](https://www.sonarqube.org/) |
+> Google Gemini: currently supports v1beta.
 
-- OpenAI notice:
-  - Deprecated and legacy features are not supported.
+## Getting Started
+
+> This section will be updated as the project progresses and in sequential order.
+
+### Add Merlin to your project
+
+#### Maven
+
+```xml
+TBA
+```
+
+#### Gradle
+
+```gradle
+TBA
+```
+
+### API Key Management
+
+Merlin supports API key management through environment variables.
+
+| Provider       | Environment Variable |
+| -------------- | -------------------- |
+| OpenAI ChatGPT | `OPENAI_KEY`         |
+| Goole Gemini   | `GOOGLE_GEMINI_KEY`  |
+
+Or you can set the API key directly through initialization.
+
+```java
+OpenAiService service = new OpenAiService("<your-api-key>");
+GenminiService service = new GeminiService("<your-api-key>");
+```
+
+By default, Merlin will look for API keys through environment variables and fall back to direct initialization. If neither is found, an Exception will be thrown.
 
 ## User stories
 
 > Expected to change during development. Some user stories might be broken down into smaller user stories.
+> I will update the user stories when I finished unit testing.
 
 | 1. Basic Integration                                                                                                              | Must have                                                                                                                                                                                                            |
 | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -135,22 +167,132 @@ classDiagram
 
 ## Dev Logs
 
-## User Manual
+### 2024-06-14
 
-### API Key Management
+Project needs more clarifications, needs to show more value.
 
-Merlin supports API key management through environment variables.
+- [x] write up a document explaining what the project is all about
 
-| Provider       | Environment Variable |
-| -------------- | -------------------- |
-| OpenAI ChatGPT | `OPENAI_KEY`         |
-| Goole Gemini   | `GOOGLE_GEMINI_KEY`  |
+### 2024-06-20
 
-Or you can set the API key directly through initialization.
+Project is approved. Do this for the next week:
+
+- [x] naming the project
+- [x] set up a Gitlab repository
+- [x] start writing user stories
+- [x] start designing
+- [x] start building
+- [x] send a weekly update next Wednesday
+- [x] wait for an online meeting invite next Thursday, it's gonna be short since supervisor is on leave
+- [x] fill out project tracker
+
+Leave at least 3 weeks to start writing dissertation.
+
+### 2024-07-06
+
+- Added OpenAI endpoints for images.
+- Added OpenAI endpoints for files.
+- Added OpenAI endpoints for models.
+- Added OpenAI endpoints for moderations.
+- Added key management service: can read from environment variable or a given string directly.
+- Created `SecureLoggingInterceptor` to mask sensitive headers.
+- Set up `JUnit 5` for testing.
+- Introduced logging framework.
+- Created inner class to group test cases.
+- [[Why switch to SLF4J|Switched to SLF4J to provide more flexibility instead of Log4j 2.]]
+- [[use addNetworkInterceptor|Solved console not logging "application/json" header defined in Retrofit interface.]]
+- [[use Jackson annotation|Solved Okhttp request serializing null fields into payload.]]
+
+I don't need to handle `Content-Type` explicitly, `Okhttp` will check what I'm sending and update the headers accordingly.
+
+- Added `FileParser` util to parse a `File` object into a `RequestBody`
+- Dropped custom logging interceptor, use `HttpLoggingInterceptor` instead.
+
+### 2024-07-07
+
+- Added OpenAI endpoints for audios.
+
+### 2024-07-11
+
+Chat Completion Object is provided in a single, complete object, received after the model has finished generating the entire response. Chat Completion Chunk Object is split into multiple parts (chunks) and sent incrementally, received in real-time as the model generates the response, chunk by chunk, allowing for incremental processing.
+
+Trying to find a way to stream and model the endpoints for chat.
+
+Understanding what is backpressure, which is the remote producing response faster than the local can process.
+
+[[how to stream]]
+
+### 2024-07-12
+
+- Added OpenAI endpoints and models for chat.
+- Added OpenAI endpoints and models for embeddings.
+- Added OpenAI endpoints and models for fine-tuning.
+- Added OpenAI endpoints and models for batch.
+
+### 2024-07-13
+
+If a request has query parameters, provide a default method to call without them and one with all of them. When calling with query params, set null to the ones you don't need, Retrofit will ignore them in the call.
+
+- Added OpenAI endpoints and models for Vector Store.
+- Added OpenAI endpoints and models for Vector Store Files.
+- Added OpenAI endpoints and models for Vector Store File Batches.
+
+Many fields accept both String or a structured object, need to find a way to accommodate this.
+
+[[Jackson's polymorphic deserialization|Figured out how to use Jackson's polymorphic deserialization.]]
 
 ```java
-OpenAiService service = new OpenAiService("<your-api-key>");
-GenminiService service = new GeminiService("<your-api-key>");
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ImageContentPart.class, name = "image_url"),
+        @JsonSubTypes.Type(value = TextContentPart.class, name = "text"),
+})
 ```
 
-By default, Merlin will look for API keys through environment variables and fall back to direct initialization. If neither is found, an Exception will be thrown.
+### 2024-07-14
+
+- Refactored model classes to accommodate fields accepting multiple types with custom serializers.
+- Added Serializers util class to keep custom serializers in one place. Registered custom serializers in the Retrofit builder.
+- Added OpenAI endpoints and models for Assistants.
+- Added OpenAI endpoints and models for Threads.
+- Added OpenAI endpoints and models for Messages.
+- Added OpenAI endpoints and models for Runs.
+- Added OpenAI endpoints and models for Run Step.
+
+### 2024-07-15
+
+- Finished modeling for OpenAI endpoints
+
+### 2024-07-17
+
+- Added support for Google Gemini.
+- Added Google Gemini endpoints and models for Models.
+- Finished modeling for Google Gemini endpoints `v1`.
+
+May need to think about the naming strategy for models since different providers can have the same model names.
+
+### 2024-07-18
+
+- Added support for Ollama.
+- Added Ollama endpoints and models.
+- Overhauled Llmconfig, now it can take a default json config or an arbitrary json file path supplied by user.
+- Refactored Merlin. Now it puts LlmService into a list.
+
+### 2024-07-22
+
+There are still some challenges to solve.
+
+1. [ ] Add support for rate limiting, preferably integrate into service initialization.
+2. [ ] Solve streaming, currently I have a unified `StreamingResponse<T>`, but it's not tested and need refinement.
+3. [ ] Need to figure out how to handle backpressure when streaming. Backpressure is a term used to describe the situation where the remote is producing responses faster than the local can process. This can lead to memory leaks and other issues.
+4. [ ] Google Gemini's documentation has been updated and introduced various new endpoints and dropped support for `v1`, need to update the endpoints completely.
+
+Trying to complete the project for the next 2 week. Then start writing the dissertation.
+
+In the future, I might change the modeling strategy for LLMs because currently the models are too cumbersome to maintain and don't support for parallel calls. But this is beyond the scope of the dissertation because it requires an overhaul of the models. I can provider ways to initiate parallel calls but the code will be cumbersome and far from elegant.
+
+- [ ] provide examples later
