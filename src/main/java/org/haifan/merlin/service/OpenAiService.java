@@ -1,10 +1,8 @@
 package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okhttp3.MultipartBody;
-import okhttp3.ResponseBody;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.*;
 import org.haifan.merlin.api.OpenAiApi;
 import org.haifan.merlin.config.OpenAiConfig;
 import org.haifan.merlin.constants.Fields;
@@ -94,6 +92,16 @@ public class OpenAiService extends LlmService {
     @Override
     public Retrofit getRetrofit() {
         return super.retrofit;
+    }
+
+    @Override
+    public OkHttpClient getOkHttpClient() {
+        return super.client;
+    }
+
+    @Override
+    public ObjectMapper getObjectMapper() {
+        return super.mapper;
     }
 
     // ===============================

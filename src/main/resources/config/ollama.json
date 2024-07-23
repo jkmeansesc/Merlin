@@ -1,4 +1,5 @@
 {
   "baseUrl": "http://10.1.1.12:11434",
-  "useMock": false
+  "useMock": false,
+  "time_out": 60
 }

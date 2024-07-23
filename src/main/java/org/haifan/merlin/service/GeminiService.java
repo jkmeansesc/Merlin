@@ -1,6 +1,8 @@
 package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.api.GeminiApi;
 import org.haifan.merlin.config.GeminiConfig;
@@ -52,6 +54,16 @@ public class GeminiService extends LlmService {
     @Override
     public Retrofit getRetrofit() {
         return super.retrofit;
+    }
+
+    @Override
+    public OkHttpClient getOkHttpClient() {
+        return super.client;
+    }
+
+    @Override
+    public ObjectMapper getObjectMapper() {
+        return super.mapper;
     }
 
     // ===============================

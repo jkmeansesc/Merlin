@@ -1,7 +1,9 @@
 package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.api.OllamaApi;
@@ -49,6 +51,16 @@ public class OllamaService extends LlmService {
     @Override
     public Retrofit getRetrofit() {
         return super.retrofit;
+    }
+
+    @Override
+    public OkHttpClient getOkHttpClient() {
+        return super.client;
+    }
+
+    @Override
+    public ObjectMapper getObjectMapper() {
+        return super.mapper;
     }
 
     // TODO: implement this
