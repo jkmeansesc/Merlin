@@ -1,16 +1,18 @@
 package org.haifan.merlin.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.api.OllamaApi;
-import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.config.OllamaConfig;
 import org.haifan.merlin.interceptors.OllamaInterceptor;
 import org.haifan.merlin.model.ollama.*;
 import org.haifan.merlin.model.openai.StreamingResponse;
 import org.haifan.merlin.utils.FileParser;
+import org.jetbrains.annotations.TestOnly;
 import retrofit2.Call;
+import retrofit2.Retrofit;
 import retrofit2.http.Body;
 
 import java.io.File;
@@ -31,6 +33,22 @@ public class OllamaService extends LlmService {
     private OllamaService(OllamaConfig config) {
         super(config, new OllamaInterceptor());
         this.api = super.retrofit.create(OllamaApi.class);
+    }
+
+    @TestOnly
+    OllamaService(OllamaApi api, OllamaConfig config, OllamaInterceptor interceptor) {
+        super(config, interceptor);
+        this.api = api;
+    }
+
+    @Override
+    public JsonNode getConfig() {
+        return super.llmConfig.getConfig();
+    }
+
+    @Override
+    public Retrofit getRetrofit() {
+        return super.retrofit;
     }
 
     // TODO: implement this

@@ -1,3 +1,4 @@
 {
-  "baseUrl": "https://api.openai.com"
+  "baseUrl": "https://api.openai.com",
+  "useMock": false
 }

@@ -1,5 +1,6 @@
 package org.haifan.merlin.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.api.GeminiApi;
 import org.haifan.merlin.config.GeminiConfig;
@@ -7,6 +8,7 @@ import org.haifan.merlin.config.LlmConfig;
 import org.haifan.merlin.interceptors.GeminiInterceptor;
 import org.haifan.merlin.model.gemini.*;
 import org.jetbrains.annotations.TestOnly;
+import retrofit2.Retrofit;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -37,11 +39,20 @@ public class GeminiService extends LlmService {
     }
 
     @TestOnly
-    GeminiService(GeminiApi api) {
-        super(new GeminiConfig("123"), new GeminiInterceptor("123"));
+    GeminiService(GeminiApi api, GeminiConfig config, GeminiInterceptor interceptor) {
+        super(config, interceptor);
         this.api = api;
     }
 
+    @Override
+    public JsonNode getConfig() {
+        return super.llmConfig.getConfig();
+    }
+
+    @Override
+    public Retrofit getRetrofit() {
+        return super.retrofit;
+    }
 
     // ===============================
     // Google Gemini v1

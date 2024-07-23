@@ -199,9 +199,9 @@ Leave at least 3 weeks to start writing dissertation.
 - Set up `JUnit 5` for testing.
 - Introduced logging framework.
 - Created inner class to group test cases.
-- [[Why switch to SLF4J|Switched to SLF4J to provide more flexibility instead of Log4j 2.]]
-- [[use addNetworkInterceptor|Solved console not logging "application/json" header defined in Retrofit interface.]]
-- [[use Jackson annotation|Solved Okhttp request serializing null fields into payload.]]
+- Switched to SLF4J to provide more flexibility instead of Log4j 2.
+- Solved console not logging "application/json" header defined in Retrofit interface.
+- Solved Okhttp request serializing null fields into payload.
 
 I don't need to handle `Content-Type` explicitly, `Okhttp` will check what I'm sending and update the headers accordingly.
 
@@ -220,7 +220,7 @@ Trying to find a way to stream and model the endpoints for chat.
 
 Understanding what is backpressure, which is the remote producing response faster than the local can process.
 
-[[how to stream]]
+Learn how to stream.
 
 ### 2024-07-12
 
@@ -239,7 +239,7 @@ If a request has query parameters, provide a default method to call without them
 
 Many fields accept both String or a structured object, need to find a way to accommodate this.
 
-[[Jackson's polymorphic deserialization|Figured out how to use Jackson's polymorphic deserialization.]]
+Figured out how to use Jackson's polymorphic deserialization.
 
 ```java
 @JsonTypeInfo(
@@ -295,4 +295,4 @@ Trying to complete the project for the next 2 week. Then start writing the disse
 
 In the future, I might change the modeling strategy for LLMs because currently the models are too cumbersome to maintain and don't support for parallel calls. But this is beyond the scope of the dissertation because it requires an overhaul of the models. I can provider ways to initiate parallel calls but the code will be cumbersome and far from elegant.
 
-- [ ] provide examples later
+- [ ] provide examples later.

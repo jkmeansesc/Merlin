@@ -1,5 +1,6 @@
 package org.haifan.merlin.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.MultipartBody;
@@ -47,6 +48,7 @@ import org.haifan.merlin.constants.IanaMediaType;
 import org.haifan.merlin.interceptors.OpenAiInterceptor;
 import org.haifan.merlin.utils.FileParser;
 import retrofit2.Call;
+import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
@@ -82,6 +84,16 @@ public class OpenAiService extends LlmService {
     private OpenAiService(OpenAiConfig config) {
         super(config, new OpenAiInterceptor(config.getApiKey()));
         this.api = super.retrofit.create(OpenAiApi.class);
+    }
+
+    @Override
+    public JsonNode getConfig() {
+        return super.llmConfig.getConfig();
+    }
+
+    @Override
+    public Retrofit getRetrofit() {
+        return super.retrofit;
     }
 
     // ===============================

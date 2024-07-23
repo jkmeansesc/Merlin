@@ -21,6 +21,10 @@ public class OllamaModel {
     private String expiresAt;
     @JsonProperty("size_vram")
     private Integer sizeVRam;
+    private String modelfile;
+    private String parameters;
+    private String license;
+    private String template;
 
     @Data
     public static class Details {

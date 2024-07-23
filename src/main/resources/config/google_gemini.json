@@ -1,3 +1,4 @@
 {
-  "baseUrl": "https://generativelanguage.googleapis.com"
+  "baseUrl": "https://generativelanguage.googleapis.com",
+  "useMock": true
 }

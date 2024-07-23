@@ -1,14 +1,6 @@
 package org.haifan.merlin.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.haifan.merlin.api.GeminiApi;
-import org.haifan.merlin.api.OllamaApi;
-import org.haifan.merlin.api.OpenAiApi;
-import org.haifan.merlin.service.GeminiService;
-import org.haifan.merlin.service.LlmService;
-import org.haifan.merlin.service.OllamaService;
-import org.haifan.merlin.service.OpenAiService;
-import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import retrofit2.Call;
 import retrofit2.Callback;

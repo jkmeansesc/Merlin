@@ -24,7 +24,18 @@ public abstract class LlmConfig {
     }
 
     protected LlmConfig(Provider provider, String apiKey) {
-        this.apiKey = (apiKey != null) ? apiKey : ApiKeyManager.getApiKey(provider.name());
+        log.info("Initializing config for {}", provider.name());
+        if (apiKey != null) {
+            this.apiKey = apiKey;
+            log.info("Using supplied api key directly for {}", provider.name());
+        } else {
+            this.apiKey = ApiKeyManager.getApiKey(provider.name());
+            if (Provider.OLLAMA.name().equals(provider.name())) {
+                log.info("No api key needed for {}", provider.name());
+            } else {
+                log.info("Reading api key from environment for {}", provider.name());
+            }
+        }
     }
 
     protected void load(Provider provider) {
@@ -36,6 +47,7 @@ public abstract class LlmConfig {
             ObjectMapper mapper = new ObjectMapper();
             this.config = mapper.readTree(inputStream);
             log.info("Loaded config file: {}", configFile);
+            log.info("Config initialized");
         } catch (IOException e) {
             log.error("Failed to load config file: {}", configFile, e);
             throw new LlmConfigException("Error loading configuration", e);
@@ -47,6 +59,7 @@ public abstract class LlmConfig {
             ObjectMapper mapper = new ObjectMapper();
             this.config = mapper.readTree(new java.io.File(configPath));
             log.info("Loaded custom config file: {}", configPath);
+            log.info("Custom config initialized");
         } catch (IOException e) {
             log.error("Failed to load custom config file: {}", configPath, e);
             throw new LlmConfigException("Error loading custom configuration", e);
@@ -55,5 +68,9 @@ public abstract class LlmConfig {
 
     public String getBaseUrl() {
         return config.get("baseUrl").asText();
+    }
+
+    public boolean useMock() {
+        return config.get("useMock").asBoolean();
     }
 }

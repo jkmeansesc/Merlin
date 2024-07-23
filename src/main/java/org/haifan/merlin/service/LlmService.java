@@ -1,5 +1,6 @@
 package org.haifan.merlin.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -72,4 +73,7 @@ public abstract class LlmService {
         });
         return future;
     }
+
+    public abstract JsonNode getConfig();
+    public abstract Retrofit getRetrofit();
 }
