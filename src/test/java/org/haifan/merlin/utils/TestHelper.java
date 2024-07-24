@@ -30,11 +30,18 @@ public class TestHelper {
     public static <T> void setupSuccessfulAsyncResponseWithJson(Call<T> call, String jsonResponse, Class<T> responseType, ObjectMapper mapper) {
         doAnswer((Answer<Void>) invocation -> {
             Callback<T> callback = invocation.getArgument(0);
-            // This is where the deserialization happens.
-            // This simulates what happens when the code receives JSON from the server and deserializes it into the model objects.
-            T response = mapper.readValue(jsonResponse, responseType);
+            Response<T> response;
+            if (responseType == Void.class) {
+                // For Void responses, don't deserialize anything
+                response = Response.success((T) null);
+            } else {
+                // This is where the deserialization happens.
+                // This simulates what happens when the code receives JSON from the server and deserializes it into the model objects.
+                T responseBody = mapper.readValue(jsonResponse, responseType);
+                response = Response.success(responseBody);
+            }
             // Immediately calls the onResponse method of the callback, simulating a successful response from the server.
-            callback.onResponse(call, Response.success(response));
+            callback.onResponse(call, response);
             return null;
         }).when(call).enqueue(any(Callback.class));
     }

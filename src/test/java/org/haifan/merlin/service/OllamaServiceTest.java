@@ -2,14 +2,12 @@ package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.RequestBody;
 import org.haifan.merlin.api.OllamaApi;
 import org.haifan.merlin.client.Merlin;
 import org.haifan.merlin.config.OllamaConfig;
 import org.haifan.merlin.interceptors.OllamaInterceptor;
-import org.haifan.merlin.model.ollama.OllamaCompletionRequest;
-import org.haifan.merlin.model.ollama.OllamaEmbedding;
-import org.haifan.merlin.model.ollama.OllamaModel;
-import org.haifan.merlin.model.ollama.OllamaModelList;
+import org.haifan.merlin.model.ollama.*;
 import org.haifan.merlin.utils.DefaultObjectMapper;
 import org.haifan.merlin.utils.JsonPrinter;
 import org.haifan.merlin.utils.TestHelper;
@@ -23,13 +21,18 @@ import org.mockito.quality.Strictness;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 
+import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
 @ExtendWith(MockitoExtension.class)
@@ -57,6 +60,10 @@ class OllamaServiceTest {
         List<Retrofit> retrofitList = new ArrayList<>();
 
         LlmService service_1 = new OllamaService();
+
+        assertNotNull(service_1.getObjectMapper());
+        assertNotNull(service_1.getOkHttpClient());
+
         retrofitList.add(service_1.getRetrofit());
         JsonNode config_1 = service_1.getConfig();
         assertNotNull(config_1, "Config should not be null");
@@ -73,19 +80,73 @@ class OllamaServiceTest {
     }
 
     @Test
-    void getConfig() {
-    }
-
-    @Test
     void streamCompletion() {
     }
 
     @Test
     void createCompletion() {
+
+        if (config.useMock()) {
+            String expected = TestHelper.read("ollama/ollama_completion_no_stream.json");
+            Call<OllamaCompletion> call = mock(Call.class);
+            when(api.createCompletion(any(OllamaCompletionRequest.class))).thenReturn(call);
+            TestHelper.setupSuccessfulAsyncResponseWithJson(call, expected, OllamaCompletion.class, mapper);
+        }
+
+        OllamaCompletionRequest request = OllamaCompletionRequest
+                .builder()
+                .model("mistral")
+                .prompt("Why is the sky blue?")
+                .stream(false)
+                .build();
+
+        OllamaCompletion response = Merlin.builder()
+                .addService(service)
+                .build()
+                .getOllamaService()
+                .createCompletion(request)
+                .join();
+
+        assertTrue(response.getDone(), "Non streaming response should always return true");
+        assertEquals("stop", response.getDoneReason(), "Non streaming response should always return stop");
+        assertNotNull(response.getResponse(), "Response should not be null");
+        System.out.println(JsonPrinter.print(response));
     }
 
     @Test
     void createChatCompletion() {
+
+        if (config.useMock()) {
+            String expected = TestHelper.read("ollama/ollama_chat_completion_no_stream.json");
+            Call<OllamaCompletion> call = mock(Call.class);
+            when(api.createChatCompletion(any(OllamaCompletionRequest.class))).thenReturn(call);
+            TestHelper.setupSuccessfulAsyncResponseWithJson(call, expected, OllamaCompletion.class, mapper);
+        }
+
+        List<OllamaMessage> messages = new ArrayList<>();
+        OllamaMessage message = new OllamaMessage();
+        message.setRole("user");
+        message.setContent("Are you online?");
+        messages.add(message);
+
+        OllamaCompletionRequest request = OllamaCompletionRequest
+                .builder()
+                .model("mistral")
+                .messages(messages)
+                .stream(false)
+                .build();
+
+        OllamaCompletion response = Merlin.builder()
+                .addService(service)
+                .build()
+                .getOllamaService()
+                .createChatCompletion(request)
+                .join();
+
+        assertTrue(response.getDone(), "Non streaming response should always return true");
+        assertEquals("stop", response.getDoneReason(), "Non streaming response should always return stop");
+        assertNotNull(response.getMessage(), "Response should not be null");
+        System.out.println(JsonPrinter.print(response));
     }
 
     @Test
@@ -98,14 +159,85 @@ class OllamaServiceTest {
 
     @Test
     void createModel() {
+
+        if (config.useMock()) {
+            String expected = TestHelper.read("ollama/ollama_status_success.json");
+            Call<OllamaStatus> call = mock(Call.class);
+            when(api.createModel(any(OllamaCompletionRequest.class))).thenReturn(call);
+            TestHelper.setupSuccessfulAsyncResponseWithJson(call, expected, OllamaStatus.class, mapper);
+        }
+
+        OllamaCompletionRequest request = OllamaCompletionRequest
+                .builder()
+                .name("testModel")
+                .modelFile("FROM mistral\n PARAMETER temperature 1\n PARAMETER num_ctx 4096\n SYSTEM You are Mario from super mario bros, acting as an assistant.")
+                .stream(false)
+                .build();
+
+        OllamaStatus response = Merlin.builder()
+                .addService(service)
+                .build()
+                .getOllamaService()
+                .createModel(request)
+                .join();
+        assertEquals("success", response.getStatus(), "status should be success");
+
+        System.out.println(JsonPrinter.print(response));
     }
 
     @Test
     void checkBlob() {
+        if (config.useMock()) {
+            Call<Void> call = mock(Call.class);
+            when(api.checkBlob(anyString())).thenReturn(call);
+            TestHelper.setupFailedAsyncResponse(call, new CompletionException(new LlmApiException("Fake exception", 404, "No error body")));
+        }
+
+        CompletableFuture<Void> future = Merlin.builder()
+                .addService(service)
+                .build()
+                .getOllamaService()
+                .checkBlob("sha256:20be4dc9fc870a36479d8223fec6fca8486003829b4de3bff3bd272679256946");
+        try {
+            future.join();
+            assertTrue(future.isDone(), "something's wrong");
+        } catch (CompletionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof LlmApiException llmApiException) {
+                assertEquals(404, llmApiException.statusCode(), "status code should be 404");
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Test
-    void createBlob() {
+    void createBlob() throws IOException, NoSuchAlgorithmException {
+        File testFile = TestHelper.getFile("ollama/model.bin");
+        String digest = TestHelper.getSHA256(testFile);
+
+        if (config.useMock()) {
+            Call<Void> call = mock(Call.class);
+            when(api.createBlob(anyString(), any(RequestBody.class))).thenReturn(call);
+            TestHelper.setupSuccessfulAsyncResponseWithJson(call, null, Void.class, mapper);
+        }
+
+        CompletableFuture<Void> future = Merlin.builder()
+                .addService(service)
+                .build()
+                .getOllamaService()
+                .createBlob("sha256:" + digest, testFile);
+        try {
+            future.join();
+            assertTrue(future.isDone(), "something's wrong");
+        } catch (CompletionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof LlmApiException a) {
+                assertEquals(400, a.statusCode(), "status code should be 400");
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Test

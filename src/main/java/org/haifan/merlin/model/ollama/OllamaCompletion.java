@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * TODO: add javadoc
+ */
 @Data
 public class OllamaCompletion {
     private String model;
@@ -26,5 +29,7 @@ public class OllamaCompletion {
     @JsonProperty("eval_duration")
     private Long evalDuration;
     private List<Integer> context;
+    @JsonProperty("done_reason")
+    private String doneReason;
 
 }

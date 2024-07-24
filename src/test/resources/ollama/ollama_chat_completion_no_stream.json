@@ -1,0 +1,16 @@
+{
+  "model": "mistral",
+  "created_at": "2024-07-23T22:58:43.776485704Z",
+  "message": {
+    "role": "assistant",
+    "content": " Yes, I'm here and ready to assist you! How can I help you today?"
+  },
+  "done_reason": "stop",
+  "done": true,
+  "total_duration": 4984130969,
+  "load_duration": 3953035,
+  "prompt_eval_count": 9,
+  "prompt_eval_duration": 712007000,
+  "eval_count": 20,
+  "eval_duration": 4139080000
+}

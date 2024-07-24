@@ -34,7 +34,7 @@ public interface OllamaApi {
     Call<Void> checkBlob(@Path("digest") String digest);
 
     @POST("api/blobs/{digest}")
-    Call<ResponseBody> createBlob(@Path("digest") String digest, @Body RequestBody request);
+    Call<Void> createBlob(@Path("digest") String digest, @Body RequestBody request);
 
     @GET("/api/tags")
     Call<OllamaModelList> listModels();

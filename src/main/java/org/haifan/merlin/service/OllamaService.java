@@ -103,7 +103,7 @@ public class OllamaService extends LlmService {
         return super.call(api.checkBlob(digest));
     }
 
-    public CompletableFuture<ResponseBody> createBlob(String digest, File file) {
+    public CompletableFuture<Void> createBlob(String digest, File file) {
         RequestBody requestBody = RequestBody.create(file, MediaType.parse(IanaMediaType.OCTET_STREAM));
         return super.call(api.createBlob(digest,requestBody));
     }
