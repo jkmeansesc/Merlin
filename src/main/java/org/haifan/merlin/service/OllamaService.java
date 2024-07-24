@@ -2,12 +2,10 @@ package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
+import okhttp3.*;
 import org.haifan.merlin.api.OllamaApi;
 import org.haifan.merlin.config.OllamaConfig;
+import org.haifan.merlin.constants.IanaMediaType;
 import org.haifan.merlin.interceptors.OllamaInterceptor;
 import org.haifan.merlin.model.ollama.*;
 import org.haifan.merlin.model.openai.StreamingResponse;
@@ -105,12 +103,9 @@ public class OllamaService extends LlmService {
         return super.call(api.checkBlob(digest));
     }
 
-    public CompletableFuture<Void> createBlob(String digest, File file) {
-        RequestBody requestBody = FileParser.parseFile(file);
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addPart(requestBody);
-        return super.call(api.createBlob(digest, builder.build()));
+    public CompletableFuture<ResponseBody> createBlob(String digest, File file) {
+        RequestBody requestBody = RequestBody.create(file, MediaType.parse(IanaMediaType.OCTET_STREAM));
+        return super.call(api.createBlob(digest,requestBody));
     }
 
     public CompletableFuture<OllamaModelList> listModels() {

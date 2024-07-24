@@ -1,6 +1,7 @@
 package org.haifan.merlin.api;
 
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.model.ollama.*;
 import retrofit2.Call;
@@ -33,7 +34,7 @@ public interface OllamaApi {
     Call<Void> checkBlob(@Path("digest") String digest);
 
     @POST("api/blobs/{digest}")
-    Call<Void> createBlob(@Path("digest") String digest, @Body RequestBody request);
+    Call<ResponseBody> createBlob(@Path("digest") String digest, @Body RequestBody request);
 
     @GET("/api/tags")
     Call<OllamaModelList> listModels();

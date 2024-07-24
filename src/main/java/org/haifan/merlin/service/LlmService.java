@@ -60,14 +60,16 @@ public abstract class LlmService {
             @Override
             public void onResponse(@NotNull Call<T> call, @NotNull Response<T> response) {
                 if (response.isSuccessful()) {
-                    log.info("Call successful");
+                    log.info("Call successful with status code: {}", response.code());
                     future.complete(response.body());
                 } else {
+                    log.info("Call successful but with status code {}", response.code());
+                    log.info("Throwing LlmApiException with details. It is wrapped in a CompletionException");
                     try {
-                        String errorBody = response.errorBody() != null ? response.errorBody().string() : null;
-                        future.completeExceptionally(new LlmApiException(response.code(), "API call failed with status code: " + response.code() + "\n" + errorBody, errorBody));
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "No error body found";
+                        future.completeExceptionally(new LlmApiException("API call failed with status code: " + response.code() + "\n" + errorBody, response.code(), errorBody));
                     } catch (IOException e) {
-                        future.completeExceptionally(new LlmApiException(response.code(), "API call failed with status code: " + response.code() + "\n" + "Failed to read error body", "Failed to read error body"));
+                        future.completeExceptionally(new LlmApiException("API call failed with status code: " + response.code() + "\n" + "Failed to read error body", response.code(), "Failed to read error body"));
                     }
                 }
             }
@@ -75,7 +77,7 @@ public abstract class LlmService {
             @Override
             public void onFailure(@NotNull Call<T> call, @NotNull Throwable t) {
                 log.error("API call failed due to exception", t);
-                future.completeExceptionally(new LlmApiException(-1, "Network error", t.getMessage()));
+                future.completeExceptionally(t);
             }
         });
         return future;
@@ -97,20 +99,11 @@ public abstract class LlmService {
             }
         }
 
-        return new OkHttpClient.Builder()
-                .connectionPool(new ConnectionPool(5, 1, TimeUnit.SECONDS))
-                .readTimeout(timeoutMillis, TimeUnit.MILLISECONDS)
-                .addInterceptor(llmInterceptor)
-                .addNetworkInterceptor(logging)
-                .build();
+        return new OkHttpClient.Builder().connectionPool(new ConnectionPool(5, 1, TimeUnit.SECONDS)).readTimeout(timeoutMillis, TimeUnit.MILLISECONDS).addInterceptor(llmInterceptor).addNetworkInterceptor(logging).build();
     }
 
     private Retrofit defaultRetrofit() {
-        return new Retrofit.Builder()
-                .baseUrl(this.llmConfig.getBaseUrl())
-                .client(this.client)
-                .addConverterFactory(JacksonConverterFactory.create(mapper))
-                .build();
+        return new Retrofit.Builder().baseUrl(this.llmConfig.getBaseUrl()).client(this.client).addConverterFactory(JacksonConverterFactory.create(mapper)).build();
     }
 
     public abstract JsonNode getConfig();

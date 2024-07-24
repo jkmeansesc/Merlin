@@ -4,7 +4,7 @@ public class LlmApiException extends RuntimeException {
     private final int statusCode;
     private final String errorBody;
 
-    public LlmApiException(int statusCode, String message, String errorBody) {
+    public LlmApiException(String message, int statusCode, String errorBody) {
         super(message);
         this.statusCode = statusCode;
         this.errorBody = errorBody;
