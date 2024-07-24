@@ -30,9 +30,7 @@ public abstract class LlmConfig {
             log.info("Using supplied api key directly for {}", provider.name());
         } else {
             this.apiKey = ApiKeyManager.getApiKey(provider.name());
-            if (Provider.OLLAMA.name().equals(provider.name())) {
-                log.info("No api key needed for {}", provider.name());
-            } else {
+            if (!Provider.OLLAMA.name().equals(provider.name())) {
                 log.info("Reading api key from environment for {}", provider.name());
             }
         }

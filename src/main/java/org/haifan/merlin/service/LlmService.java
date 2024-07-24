@@ -18,6 +18,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -62,14 +63,19 @@ public abstract class LlmService {
                     log.info("Call successful");
                     future.complete(response.body());
                 } else {
-                    future.completeExceptionally(new Exception("API call failed: " + response.code()));
+                    try {
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : null;
+                        future.completeExceptionally(new LlmApiException(response.code(), "API call failed with status code: " + response.code() + "\n" + errorBody, errorBody));
+                    } catch (IOException e) {
+                        future.completeExceptionally(new LlmApiException(response.code(), "API call failed with status code: " + response.code() + "\n" + "Failed to read error body", "Failed to read error body"));
+                    }
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call<T> call, @NotNull Throwable t) {
                 log.error("API call failed due to exception", t);
-                future.completeExceptionally(t);
+                future.completeExceptionally(new LlmApiException(-1, "Network error", t.getMessage()));
             }
         });
         return future;
