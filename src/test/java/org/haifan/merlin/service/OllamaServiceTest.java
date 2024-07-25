@@ -159,7 +159,6 @@ class OllamaServiceTest {
 
     @Test
     void createModel() {
-
         if (config.useMock()) {
             String expected = TestHelper.read("ollama/ollama_status_success.json");
             Call<OllamaStatus> call = mock(Call.class);
@@ -285,6 +284,11 @@ class OllamaServiceTest {
 
     @Test
     void copyModel() {
+
+        OllamaCompletionRequest request = OllamaCompletionRequest.builder()
+                .source("mistral")
+                .destination("mistral-backup")
+                .build();
     }
 
     @Test
