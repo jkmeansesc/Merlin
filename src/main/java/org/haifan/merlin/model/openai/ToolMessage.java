@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import org.haifan.merlin.constants.Fields;
+import org.haifan.merlin.internal.constants.Fields;
 import org.jetbrains.annotations.NotNull;
 
 

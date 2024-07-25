@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
-import org.haifan.merlin.api.GeminiApi;
-import org.haifan.merlin.config.GeminiConfig;
-import org.haifan.merlin.config.LlmConfig;
-import org.haifan.merlin.interceptors.GeminiInterceptor;
+import org.haifan.merlin.internal.api.GeminiApi;
+import org.haifan.merlin.internal.config.GeminiConfig;
+import org.haifan.merlin.internal.interceptors.GeminiInterceptor;
 import org.haifan.merlin.model.gemini.*;
 import org.jetbrains.annotations.TestOnly;
 import retrofit2.Retrofit;
@@ -23,20 +22,20 @@ public class GeminiService extends LlmService {
         this(new GeminiConfig());
     }
 
-    public GeminiService(String apiKey) {
-        this(new GeminiConfig(apiKey));
+    public GeminiService(String token) {
+        this(new GeminiConfig(token));
     }
 
     public GeminiService(String configPath, boolean isConfigPath) {
         this(new GeminiConfig(configPath, isConfigPath));
     }
 
-    public GeminiService(String apiKey, String configPath) {
-        this(new GeminiConfig(apiKey, configPath));
+    public GeminiService(String token, String configPath) {
+        this(new GeminiConfig(token, configPath));
     }
 
     private GeminiService(GeminiConfig config) {
-        super(config, new GeminiInterceptor(config.getApiKey()));
+        super(config, new GeminiInterceptor(config.getToken()));
         this.api = super.retrofit.create(GeminiApi.class);
     }
 

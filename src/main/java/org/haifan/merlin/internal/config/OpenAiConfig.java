@@ -1,6 +1,6 @@
-package org.haifan.merlin.config;
+package org.haifan.merlin.internal.config;
 
-import org.haifan.merlin.constants.Provider;
+import org.haifan.merlin.internal.constants.Provider;
 
 /**
  * TODO: add javadoc
@@ -12,8 +12,8 @@ public class OpenAiConfig extends LlmConfig {
         load(Provider.OPENAI);
     }
 
-    public OpenAiConfig(String apiKey) {
-        super(Provider.OPENAI, apiKey);
+    public OpenAiConfig(String token) {
+        super(Provider.OPENAI, token);
         load(Provider.OPENAI);
     }
 
@@ -22,12 +22,12 @@ public class OpenAiConfig extends LlmConfig {
         if (isConfigPath) {
             load(configPath);
         } else {
-            throw new IllegalArgumentException("Use OpenAiConfig(String apiKey) for setting API key");
+            throw new IllegalArgumentException("Use OpenAiConfig(String token) for setting API key");
         }
     }
 
-    public OpenAiConfig(String apiKey, String configPath) {
-        super(Provider.OPENAI, apiKey);
+    public OpenAiConfig(String token, String configPath) {
+        super(Provider.OPENAI, token);
         load(configPath);
     }
 }

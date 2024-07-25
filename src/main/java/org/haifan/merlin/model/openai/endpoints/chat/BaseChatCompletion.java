@@ -3,7 +3,7 @@ package org.haifan.merlin.model.openai.endpoints.chat;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import org.haifan.merlin.constants.Fields;
+import org.haifan.merlin.internal.constants.Fields;
 import org.haifan.merlin.model.openai.Logprobs;
 import org.haifan.merlin.model.openai.Message;
 import org.haifan.merlin.model.openai.Usage;

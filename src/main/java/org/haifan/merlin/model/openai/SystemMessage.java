@@ -1,7 +1,7 @@
 package org.haifan.merlin.model.openai;
 
 import lombok.*;
-import org.haifan.merlin.constants.Fields;
+import org.haifan.merlin.internal.constants.Fields;
 import org.jetbrains.annotations.NotNull;
 
 @Data

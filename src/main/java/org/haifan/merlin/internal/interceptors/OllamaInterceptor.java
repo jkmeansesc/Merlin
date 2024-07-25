@@ -1,8 +1,8 @@
-package org.haifan.merlin.interceptors;
+package org.haifan.merlin.internal.interceptors;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Request;
-import org.haifan.merlin.constants.Provider;
+import org.haifan.merlin.internal.constants.Provider;
 
 @Slf4j
 public class OllamaInterceptor extends LlmInterceptor {

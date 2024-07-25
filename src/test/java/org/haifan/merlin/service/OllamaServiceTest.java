@@ -3,13 +3,13 @@ package org.haifan.merlin.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.RequestBody;
-import org.haifan.merlin.api.OllamaApi;
+import org.haifan.merlin.internal.api.OllamaApi;
 import org.haifan.merlin.client.Merlin;
-import org.haifan.merlin.config.OllamaConfig;
-import org.haifan.merlin.interceptors.OllamaInterceptor;
+import org.haifan.merlin.internal.config.OllamaConfig;
+import org.haifan.merlin.internal.interceptors.OllamaInterceptor;
 import org.haifan.merlin.model.ollama.*;
-import org.haifan.merlin.utils.DefaultObjectMapper;
-import org.haifan.merlin.utils.JsonPrinter;
+import org.haifan.merlin.internal.utils.DefaultObjectMapper;
+import org.haifan.merlin.internal.utils.JsonPrinter;
 import org.haifan.merlin.utils.TestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -285,10 +285,35 @@ class OllamaServiceTest {
     @Test
     void copyModel() {
 
+        if (config.useMock()) {
+            Call<Void> call = mock(Call.class);
+            when(api.copyModel(any(OllamaCompletionRequest.class))).thenReturn(call);
+            TestHelper.setupSuccessfulAsyncResponseWithJson(call, null, Void.class, mapper);
+        }
+
         OllamaCompletionRequest request = OllamaCompletionRequest.builder()
                 .source("mistral")
                 .destination("mistral-backup")
                 .build();
+
+        CompletableFuture<Void> future = Merlin.builder()
+                .ollama()
+                .build()
+                .getOllamaService()
+                .copyModel(request);
+
+        try {
+            future.join();
+            assertTrue(future.isDone(), "something's wrong");
+        } catch (CompletionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof LlmApiException a) {
+                assertEquals(404, a.statusCode(), "status code should be 404");
+            } else {
+                throw e;
+            }
+        }
+
     }
 
     @Test

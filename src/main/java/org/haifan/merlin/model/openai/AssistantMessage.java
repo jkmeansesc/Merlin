@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.haifan.merlin.constants.Fields;
+import org.haifan.merlin.internal.constants.Fields;
 
 import java.util.List;
 

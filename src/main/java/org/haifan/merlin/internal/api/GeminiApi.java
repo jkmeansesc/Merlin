@@ -1,4 +1,4 @@
-package org.haifan.merlin.api;
+package org.haifan.merlin.internal.api;
 
 import okhttp3.ResponseBody;
 import org.haifan.merlin.model.gemini.*;

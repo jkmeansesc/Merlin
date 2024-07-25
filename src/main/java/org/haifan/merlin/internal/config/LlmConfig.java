@@ -1,11 +1,11 @@
-package org.haifan.merlin.config;
+package org.haifan.merlin.internal.config;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.haifan.merlin.constants.Provider;
-import org.haifan.merlin.utils.ApiKeyManager;
+import org.haifan.merlin.internal.constants.Provider;
+import org.haifan.merlin.internal.utils.ApiKeyManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,20 +16,20 @@ import java.io.InputStream;
 @Slf4j
 @Getter
 public abstract class LlmConfig {
-    protected final String apiKey;
+    protected final String token;
     protected JsonNode config;
 
     protected LlmConfig(Provider provider) {
         this(provider, null);
     }
 
-    protected LlmConfig(Provider provider, String apiKey) {
+    protected LlmConfig(Provider provider, String token) {
         log.info("Initializing config for {}", provider.name());
-        if (apiKey != null) {
-            this.apiKey = apiKey;
+        if (token != null) {
+            this.token = token;
             log.info("Using supplied api key directly for {}", provider.name());
         } else {
-            this.apiKey = ApiKeyManager.getApiKey(provider.name());
+            this.token = ApiKeyManager.getApiKey(provider.name());
             if (!Provider.OLLAMA.name().equals(provider.name())) {
                 log.info("Reading api key from environment for {}", provider.name());
             }

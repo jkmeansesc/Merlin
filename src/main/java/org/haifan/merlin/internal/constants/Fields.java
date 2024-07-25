@@ -1,4 +1,4 @@
-package org.haifan.merlin.constants;
+package org.haifan.merlin.internal.constants;
 
 public class Fields {
     private Fields() {

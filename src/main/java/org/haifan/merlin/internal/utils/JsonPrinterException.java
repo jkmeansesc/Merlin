@@ -1,4 +1,4 @@
-package org.haifan.merlin.utils;
+package org.haifan.merlin.internal.utils;
 
 /**
  * Custom exception thrown by {@link JsonPrinter} when there is an error during JSON serialization.

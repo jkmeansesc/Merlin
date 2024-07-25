@@ -1,7 +1,6 @@
-package org.haifan.merlin.utils;
+package org.haifan.merlin.internal.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.haifan.merlin.model.openai.Content;

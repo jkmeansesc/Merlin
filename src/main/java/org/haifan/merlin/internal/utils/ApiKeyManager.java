@@ -1,6 +1,6 @@
-package org.haifan.merlin.utils;
+package org.haifan.merlin.internal.utils;
 
-import org.haifan.merlin.constants.Provider;
+import org.haifan.merlin.internal.constants.Provider;
 
 /**
  * TODO: add javadoc

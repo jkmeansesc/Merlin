@@ -1,4 +1,4 @@
-package org.haifan.merlin.interceptors;
+package org.haifan.merlin.internal.interceptors;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.jetbrains.annotations.NotNull;

@@ -1,4 +1,4 @@
-package org.haifan.merlin.utils;
+package org.haifan.merlin.internal.utils;
 
 public class FileParserException extends RuntimeException {
     public FileParserException(String message, Throwable cause) {

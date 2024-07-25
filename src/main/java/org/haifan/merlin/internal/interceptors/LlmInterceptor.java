@@ -1,4 +1,4 @@
-package org.haifan.merlin.interceptors;
+package org.haifan.merlin.internal.interceptors;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -11,14 +11,14 @@ import java.io.IOException;
  * TODO: add javadoc
  */
 public abstract class LlmInterceptor implements Interceptor {
-    protected final String apiKey;
+    protected final String token;
 
-    protected LlmInterceptor(String apiKey) {
-        this.apiKey = apiKey;
+    protected LlmInterceptor(String token) {
+        this.token = token;
     }
 
     protected LlmInterceptor() {
-        this.apiKey = null;
+        this.token = null;
     }
 
     @NotNull

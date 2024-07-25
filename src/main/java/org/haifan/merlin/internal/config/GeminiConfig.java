@@ -1,6 +1,6 @@
-package org.haifan.merlin.config;
+package org.haifan.merlin.internal.config;
 
-import org.haifan.merlin.constants.Provider;
+import org.haifan.merlin.internal.constants.Provider;
 
 public class GeminiConfig extends LlmConfig {
 
@@ -9,8 +9,8 @@ public class GeminiConfig extends LlmConfig {
         load(Provider.GOOGLE_GEMINI);
     }
 
-    public GeminiConfig(String apiKey) {
-        super(Provider.GOOGLE_GEMINI, apiKey);
+    public GeminiConfig(String token) {
+        super(Provider.GOOGLE_GEMINI, token);
         load(Provider.GOOGLE_GEMINI);
     }
 
@@ -19,12 +19,12 @@ public class GeminiConfig extends LlmConfig {
         if (isConfigPath) {
             load(configPath);
         } else {
-            throw new IllegalArgumentException("Use GeminiConfig(String apiKey) for setting API key");
+            throw new IllegalArgumentException("Use GeminiConfig(String token) for setting API key");
         }
     }
 
-    public GeminiConfig(String apiKey, String configPath) {
-        super(Provider.GOOGLE_GEMINI, apiKey);
+    public GeminiConfig(String token, String configPath) {
+        super(Provider.GOOGLE_GEMINI, token);
         load(configPath);
     }
 }

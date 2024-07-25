@@ -1,4 +1,4 @@
-package org.haifan.merlin.constants;
+package org.haifan.merlin.internal.constants;
 
 /**
  * <a href="https://www.iana.org/assignments/media-types/media-types.xhtml">...</a>

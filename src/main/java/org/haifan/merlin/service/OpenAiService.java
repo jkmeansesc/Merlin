@@ -3,9 +3,9 @@ package org.haifan.merlin.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
-import org.haifan.merlin.api.OpenAiApi;
-import org.haifan.merlin.config.OpenAiConfig;
-import org.haifan.merlin.constants.Fields;
+import org.haifan.merlin.internal.api.OpenAiApi;
+import org.haifan.merlin.internal.config.OpenAiConfig;
+import org.haifan.merlin.internal.constants.Fields;
 import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
 import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
 import org.haifan.merlin.model.openai.assistants.messages.MessageObject;
@@ -42,9 +42,9 @@ import org.haifan.merlin.model.openai.endpoints.images.ImageList;
 import org.haifan.merlin.model.openai.endpoints.models.Model;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationList;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
-import org.haifan.merlin.constants.IanaMediaType;
-import org.haifan.merlin.interceptors.OpenAiInterceptor;
-import org.haifan.merlin.utils.FileParser;
+import org.haifan.merlin.internal.constants.IanaMediaType;
+import org.haifan.merlin.internal.interceptors.OpenAiInterceptor;
+import org.haifan.merlin.internal.utils.FileParser;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
@@ -67,20 +67,20 @@ public class OpenAiService extends LlmService {
         this(new OpenAiConfig());
     }
 
-    public OpenAiService(String apiKey) {
-        this(new OpenAiConfig(apiKey));
+    public OpenAiService(String token) {
+        this(new OpenAiConfig(token));
     }
 
     public OpenAiService(String configPath, boolean isConfigPath) {
         this(new OpenAiConfig(configPath, isConfigPath));
     }
 
-    public OpenAiService(String apiKey, String configPath) {
-        this(new OpenAiConfig(apiKey, configPath));
+    public OpenAiService(String token, String configPath) {
+        this(new OpenAiConfig(token, configPath));
     }
 
     private OpenAiService(OpenAiConfig config) {
-        super(config, new OpenAiInterceptor(config.getApiKey()));
+        super(config, new OpenAiInterceptor(config.getToken()));
         this.api = super.retrofit.create(OpenAiApi.class);
     }
 

@@ -1,8 +1,8 @@
-package org.haifan.merlin.utils;
+package org.haifan.merlin.internal.utils;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import org.haifan.merlin.constants.IanaMediaType;
+import org.haifan.merlin.internal.constants.IanaMediaType;
 
 import java.io.File;
 import java.io.IOException;

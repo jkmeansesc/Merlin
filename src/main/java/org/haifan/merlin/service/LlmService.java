@@ -6,10 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import org.haifan.merlin.config.LlmConfig;
-import org.haifan.merlin.interceptors.LlmInterceptor;
-import org.haifan.merlin.interceptors.SLF4JHttpLogger;
-import org.haifan.merlin.utils.DefaultObjectMapper;
+import org.haifan.merlin.internal.config.LlmConfig;
+import org.haifan.merlin.internal.interceptors.LlmInterceptor;
+import org.haifan.merlin.internal.interceptors.SLF4JHttpLogger;
+import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 import org.jetbrains.annotations.NotNull;
 
 import retrofit2.Call;

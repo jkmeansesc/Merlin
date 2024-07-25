@@ -41,7 +41,10 @@ public class Merlin {
     }
 
     public static class MerlinBuilder {
-        private Map<Class<? extends LlmService>, LlmService> services;
+
+        private MerlinBuilder() {
+            this.services = new HashMap<>();
+        }
 
         public MerlinBuilder addService(LlmService service) {
             this.services.put(service.getClass(), service);
@@ -58,6 +61,16 @@ public class Merlin {
             return this;
         }
 
+        public MerlinBuilder openai(String configPath, boolean isConfigPath) {
+            this.services.put(OpenAiService.class, new OpenAiService(configPath, isConfigPath));
+            return this;
+        }
+
+        public MerlinBuilder openai(String token, String configPath) {
+            this.services.put(OpenAiService.class, new OpenAiService(token, configPath));
+            return this;
+        }
+
         public MerlinBuilder gemini() {
             this.services.put(GeminiService.class, new GeminiService());
             return this;
@@ -68,8 +81,23 @@ public class Merlin {
             return this;
         }
 
+        public MerlinBuilder gemini(String configPath, boolean isConfigPath) {
+            this.services.put(GeminiService.class, new GeminiService(configPath, isConfigPath));
+            return this;
+        }
+
+        public MerlinBuilder gemini(String token, String configPath) {
+            this.services.put(GeminiService.class, new GeminiService(token, configPath));
+            return this;
+        }
+
         public MerlinBuilder ollama() {
             this.services.put(OllamaService.class, new OllamaService());
+            return this;
+        }
+
+        public MerlinBuilder ollama(String configPath) {
+            this.services.put(OllamaService.class, new OllamaService(configPath));
             return this;
         }
 

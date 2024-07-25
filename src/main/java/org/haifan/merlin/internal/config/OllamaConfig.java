@@ -1,6 +1,6 @@
-package org.haifan.merlin.config;
+package org.haifan.merlin.internal.config;
 
-import org.haifan.merlin.constants.Provider;
+import org.haifan.merlin.internal.constants.Provider;
 
 public class OllamaConfig extends LlmConfig {
 

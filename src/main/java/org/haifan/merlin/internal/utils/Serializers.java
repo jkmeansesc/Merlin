@@ -1,4 +1,4 @@
-package org.haifan.merlin.utils;
+package org.haifan.merlin.internal.utils;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

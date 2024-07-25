@@ -2,12 +2,12 @@ package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.haifan.merlin.api.GeminiApi;
+import org.haifan.merlin.internal.api.GeminiApi;
 import org.haifan.merlin.client.Merlin;
-import org.haifan.merlin.config.GeminiConfig;
-import org.haifan.merlin.interceptors.GeminiInterceptor;
+import org.haifan.merlin.internal.config.GeminiConfig;
+import org.haifan.merlin.internal.interceptors.GeminiInterceptor;
 import org.haifan.merlin.model.gemini.ModelList;
-import org.haifan.merlin.utils.DefaultObjectMapper;
+import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 import org.haifan.merlin.utils.TestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
