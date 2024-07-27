@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.internal.api.GeminiApi;
-import org.haifan.merlin.internal.config.GeminiConfig;
+import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.interceptors.GeminiInterceptor;
 import org.haifan.merlin.model.gemini.*;
 import org.jetbrains.annotations.TestOnly;
@@ -17,52 +17,26 @@ import java.util.concurrent.CompletableFuture;
 public class GeminiService extends LlmService {
 
     private final GeminiApi api;
+    public static final String DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com";
 
     public GeminiService() {
-        this(new GeminiConfig());
+        this(new LlmConfig(Provider.GOOGLE_GEMINI, DEFAULT_BASE_URL, null));
     }
 
-    public GeminiService(String token) {
-        this(new GeminiConfig(token));
-    }
-
-    public GeminiService(String configPath, boolean isConfigPath) {
-        this(new GeminiConfig(configPath, isConfigPath));
-    }
-
-    public GeminiService(String token, String configPath) {
-        this(new GeminiConfig(token, configPath));
-    }
-
-    private GeminiService(GeminiConfig config) {
+    public GeminiService(LlmConfig config) {
         super(config, new GeminiInterceptor(config.getToken()));
         this.api = super.retrofit.create(GeminiApi.class);
     }
 
     @TestOnly
-    GeminiService(GeminiApi api, GeminiConfig config, GeminiInterceptor interceptor) {
+    GeminiService(GeminiApi api, LlmConfig config, GeminiInterceptor interceptor) {
         super(config, interceptor);
         this.api = api;
     }
 
     @Override
-    public JsonNode getConfig() {
-        return super.llmConfig.getConfig();
-    }
-
-    @Override
-    public Retrofit getRetrofit() {
-        return super.retrofit;
-    }
-
-    @Override
-    public OkHttpClient getOkHttpClient() {
-        return super.client;
-    }
-
-    @Override
-    public ObjectMapper getObjectMapper() {
-        return super.mapper;
+    protected String parseStreamLine(String line) {
+        return line;
     }
 
     // ===============================

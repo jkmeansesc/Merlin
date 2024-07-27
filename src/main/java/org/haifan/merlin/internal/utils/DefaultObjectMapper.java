@@ -17,8 +17,10 @@ public class DefaultObjectMapper {
         throw new IllegalStateException("Utility class");
     }
 
+    private static ObjectMapper mapper;
+
     public static ObjectMapper create() {
-        ObjectMapper mapper = new ObjectMapper()
+        mapper = new ObjectMapper()
 //                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -36,6 +38,10 @@ public class DefaultObjectMapper {
         module.addDeserializer(Content.class, new Serializers.ContentDeserializer());
 
         mapper.registerModule(module);
+        return mapper;
+    }
+
+    public static ObjectMapper get() {
         return mapper;
     }
 }

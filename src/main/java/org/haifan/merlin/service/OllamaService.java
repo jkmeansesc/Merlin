@@ -1,17 +1,17 @@
 package org.haifan.merlin.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.haifan.merlin.internal.api.OllamaApi;
-import org.haifan.merlin.internal.config.OllamaConfig;
 import org.haifan.merlin.internal.constants.IanaMediaType;
+import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.interceptors.OllamaInterceptor;
+import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 import org.haifan.merlin.model.ollama.*;
-import org.haifan.merlin.model.openai.StreamingResponse;
+import org.haifan.merlin.model.StreamingResponse;
 import org.jetbrains.annotations.TestOnly;
 import retrofit2.Call;
-import retrofit2.Retrofit;
 import retrofit2.http.Body;
 
 import java.io.File;
@@ -20,81 +20,73 @@ import java.util.concurrent.CompletableFuture;
 public class OllamaService extends LlmService {
 
     private final OllamaApi api;
+    private static final String DEFAULT_BASE_URL = "http://localhost:11434/";
 
     public OllamaService() {
-        this(new OllamaConfig());
+        this(new LlmConfig(Provider.OLLAMA, DEFAULT_BASE_URL, null));
     }
 
-    public OllamaService(String configPath) {
-        this(new OllamaConfig(configPath));
-    }
-
-    private OllamaService(OllamaConfig config) {
+    public OllamaService(LlmConfig config) {
         super(config, new OllamaInterceptor());
         this.api = super.retrofit.create(OllamaApi.class);
     }
 
     @TestOnly
-    OllamaService(OllamaApi api, OllamaConfig config, OllamaInterceptor interceptor) {
+    OllamaService(OllamaApi api, LlmConfig config, OllamaInterceptor interceptor) {
         super(config, interceptor);
         this.api = api;
     }
 
     @Override
-    public JsonNode getConfig() {
-        return super.llmConfig.getConfig();
+    protected String parseStreamLine(String line) {
+        return line;
     }
 
-    @Override
-    public Retrofit getRetrofit() {
-        return super.retrofit;
-    }
-
-    @Override
-    public OkHttpClient getOkHttpClient() {
-        return super.client;
-    }
-
-    @Override
-    public ObjectMapper getObjectMapper() {
-        return super.mapper;
-    }
-
-    // TODO: implement this
     private OllamaCompletion parseChunk(String json) {
-        // Use Jackson or Gson to parse JSON into ChatCompletionChunk
-        return null;
+        ObjectMapper mapper = DefaultObjectMapper.get();
+        try {
+            return mapper.readValue(json, OllamaCompletion.class);
+        } catch (JsonProcessingException e) {
+            throw new StreamParsingException("Error parsing JSON chunk", e);
+        }
     }
 
-    // TODO: implement this
     private OllamaStatus parseStatus(String json) {
-        return null;
+        ObjectMapper mapper = DefaultObjectMapper.get();
+        try {
+            return mapper.readValue(json, OllamaStatus.class);
+        } catch (JsonProcessingException e) {
+            throw new StreamParsingException("Error parsing JSON chunk", e);
+        }
     }
 
     public StreamingResponse<OllamaCompletion> streamCompletion(OllamaCompletionRequest request) {
         Call<ResponseBody> call = api.streamCompletion(request);
-        return new StreamingResponse<>(call, this::parseChunk);
+        return new StreamingResponse<>(super.stream(call, this::parseChunk));
     }
 
     public CompletableFuture<OllamaCompletion> createCompletion(OllamaCompletionRequest request) {
+        request.setStream(false);
         return super.call(api.createCompletion(request));
     }
 
     public CompletableFuture<OllamaCompletion> createChatCompletion(OllamaCompletionRequest request) {
+        request.setStream(false);
         return super.call(api.createChatCompletion(request));
     }
 
     public StreamingResponse<OllamaCompletion> streamChatCompletion(@Body OllamaCompletionRequest request) {
         Call<ResponseBody> call = api.streamChatCompletion(request);
-        return new StreamingResponse<>(call, this::parseChunk);
+        return new StreamingResponse<>(super.stream(call, this::parseChunk));
     }
 
     public StreamingResponse<OllamaStatus> createModelStream(OllamaCompletionRequest request) {
         Call<ResponseBody> call = api.createModelStream(request);
-        return new StreamingResponse<>(call, this::parseStatus);
+        return new StreamingResponse<>(super.stream(call, this::parseStatus));
     }
 
     public CompletableFuture<OllamaStatus> createModel(OllamaCompletionRequest request) {
+        request.setStream(false);
         return super.call(api.createModel(request));
     }
 
@@ -104,7 +96,7 @@ public class OllamaService extends LlmService {
 
     public CompletableFuture<Void> createBlob(String digest, File file) {
         RequestBody requestBody = RequestBody.create(file, MediaType.parse(IanaMediaType.OCTET_STREAM));
-        return super.call(api.createBlob(digest,requestBody));
+        return super.call(api.createBlob(digest, requestBody));
     }
 
     public CompletableFuture<OllamaModelList> listModels() {
@@ -126,7 +118,7 @@ public class OllamaService extends LlmService {
 
     public StreamingResponse<OllamaStatus> pullModelStream(OllamaCompletionRequest request) {
         Call<ResponseBody> call = api.pullModelStream(request);
-        return new StreamingResponse<>(call, this::parseStatus);
+        return new StreamingResponse<>(super.stream(call, this::parseStatus));
     }
 
     public CompletableFuture<OllamaStatus> pullModel(OllamaCompletionRequest request) {
@@ -135,7 +127,7 @@ public class OllamaService extends LlmService {
 
     public StreamingResponse<OllamaStatus> pushModelStream(OllamaCompletionRequest request) {
         Call<ResponseBody> call = api.pushModelStream(request);
-        return new StreamingResponse<>(call, this::parseStatus);
+        return new StreamingResponse<>(super.stream(call, this::parseStatus));
     }
 
     public CompletableFuture<OllamaStatus> pushModel(OllamaCompletionRequest request) {

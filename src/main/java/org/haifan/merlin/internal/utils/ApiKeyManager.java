@@ -11,16 +11,16 @@ public class ApiKeyManager {
         throw new IllegalStateException("Utility class");
     }
 
-    public static String getApiKey(String providerName) {
-        String envVarName = providerName.toUpperCase() + "_KEY";
+    public static String getApiKey(String provider) {
+        String envVarName = provider.toUpperCase() + "_KEY";
         String envKey = System.getenv(envVarName);
         if (envKey != null && !envKey.trim().isEmpty()) {
             return envKey;
-        } else if (providerName.equals(Provider.OLLAMA.name())) {
+        } else if (provider.equals(Provider.OLLAMA.name())) {
             return null;
         }
 
-        throw new IllegalStateException("No API key provided for " + providerName +
+        throw new IllegalStateException("No API key provided for " + provider +
                 ". Please supply a key or set the " + envVarName + " environment variable.");
     }
 

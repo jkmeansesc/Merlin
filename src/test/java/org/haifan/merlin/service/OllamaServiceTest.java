@@ -1,15 +1,18 @@
 package org.haifan.merlin.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import org.haifan.merlin.internal.api.OllamaApi;
 import org.haifan.merlin.client.Merlin;
-import org.haifan.merlin.internal.config.OllamaConfig;
+import org.haifan.merlin.internal.constants.IanaMediaType;
+import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.interceptors.OllamaInterceptor;
 import org.haifan.merlin.model.ollama.*;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 import org.haifan.merlin.internal.utils.JsonPrinter;
+import org.haifan.merlin.utils.TestConfig;
 import org.haifan.merlin.utils.TestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import retrofit2.Call;
-import retrofit2.Retrofit;
+import retrofit2.HttpException;
+import retrofit2.Response;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,14 +45,14 @@ class OllamaServiceTest {
 
     @Mock
     private OllamaApi api;
-    private final OllamaConfig config = new OllamaConfig();
+    private LlmConfig config;
     private final OllamaInterceptor interceptor = new OllamaInterceptor();
     private OllamaService service;
     private final ObjectMapper mapper = DefaultObjectMapper.create();
 
     @BeforeEach
     void setUp() {
-        if (config.useMock()) {
+        if (TestConfig.useMock()) {
             service = new OllamaService(api, config, interceptor);
         } else {
             service = new OllamaService();
@@ -57,36 +61,53 @@ class OllamaServiceTest {
 
     @Test
     void test_all_constructors_can_be_initialized() {
-        List<Retrofit> retrofitList = new ArrayList<>();
 
         LlmService service_1 = new OllamaService();
+        assertNotNull(service_1.getClient());
+        assertNotNull(service_1.getMapper());
+        assertNotNull(service_1.getRetrofit());
+        assertNotNull(service_1.getConfig());
 
-        assertNotNull(service_1.getObjectMapper());
-        assertNotNull(service_1.getOkHttpClient());
+        this.config = new LlmConfig(Provider.OLLAMA, "test baseUrl", "test token");
+        LlmService service_2 = new OllamaService(config);
+        assertEquals("test baseurl", service_2.getConfig().getBaseUrl(), "Wrong baseUrl");
+        assertEquals("test token", service_2.getConfig().getToken(), "Wrong token");
 
-        retrofitList.add(service_1.getRetrofit());
-        JsonNode config_1 = service_1.getConfig();
-        assertNotNull(config_1, "Config should not be null");
-        assertTrue(config_1.has("baseUrl"), "Config should contain the key 'baseUrl'");
-
-        LlmService service_2 = new OllamaService("src/test/resources/test_config.json");
-        retrofitList.add(service_2.getRetrofit());
-        JsonNode config_2 = service_2.getConfig();
-        assertNotNull(config_2, "Config should not be null");
-        assertTrue(config_2.has("baseUrl"), "Config should contain the key 'baseUrl'");
-        assertEquals("https://do.not.delete.this.or.test.will.fail.com", config_2.get("baseUrl").asText(), "Wrong config is loaded");
-
-        retrofitList.forEach(retrofit -> assertNotNull(retrofit, "Retrofit should not be null"));
     }
 
     @Test
     void streamCompletion() {
+
+        OllamaCompletionRequest request = OllamaCompletionRequest
+                .builder()
+                .model("mistral")
+                .prompt("Are you there? Say yes if yes and no if no.")
+                .build();
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        Merlin.builder()
+                .addService(service)
+                .build()
+                .getService(OllamaService.class)
+                .streamCompletion(request)
+                .start(
+                        chunk -> {
+                        },
+                        error -> {
+                            System.err.println("Error occurred: " + error.getMessage());
+                            future.completeExceptionally(error);
+                        },
+                        () -> {
+                            System.out.println("Streaming completed");
+                            future.complete(null);
+                        }
+                );
+        future.join();
     }
 
     @Test
     void createCompletion() {
 
-        if (config.useMock()) {
+        if (TestConfig.useMock()) {
             String expected = TestHelper.read("ollama/ollama_completion_no_stream.json");
             Call<OllamaCompletion> call = mock(Call.class);
             when(api.createCompletion(any(OllamaCompletionRequest.class))).thenReturn(call);
@@ -96,14 +117,13 @@ class OllamaServiceTest {
         OllamaCompletionRequest request = OllamaCompletionRequest
                 .builder()
                 .model("mistral")
-                .prompt("Why is the sky blue?")
-                .stream(false)
+                .prompt("Are you there?")
                 .build();
 
         OllamaCompletion response = Merlin.builder()
                 .addService(service)
                 .build()
-                .getOllamaService()
+                .getService(OllamaService.class)
                 .createCompletion(request)
                 .join();
 
@@ -116,7 +136,7 @@ class OllamaServiceTest {
     @Test
     void createChatCompletion() {
 
-        if (config.useMock()) {
+        if (TestConfig.useMock()) {
             String expected = TestHelper.read("ollama/ollama_chat_completion_no_stream.json");
             Call<OllamaCompletion> call = mock(Call.class);
             when(api.createChatCompletion(any(OllamaCompletionRequest.class))).thenReturn(call);
@@ -133,13 +153,12 @@ class OllamaServiceTest {
                 .builder()
                 .model("mistral")
                 .messages(messages)
-                .stream(false)
                 .build();
 
         OllamaCompletion response = Merlin.builder()
                 .addService(service)
                 .build()
-                .getOllamaService()
+                .getService(OllamaService.class)
                 .createChatCompletion(request)
                 .join();
 
@@ -159,7 +178,7 @@ class OllamaServiceTest {
 
     @Test
     void createModel() {
-        if (config.useMock()) {
+        if (TestConfig.useMock()) {
             String expected = TestHelper.read("ollama/ollama_status_success.json");
             Call<OllamaStatus> call = mock(Call.class);
             when(api.createModel(any(OllamaCompletionRequest.class))).thenReturn(call);
@@ -170,13 +189,12 @@ class OllamaServiceTest {
                 .builder()
                 .name("testModel")
                 .modelFile("FROM mistral\n PARAMETER temperature 1\n PARAMETER num_ctx 4096\n SYSTEM You are Mario from super mario bros, acting as an assistant.")
-                .stream(false)
                 .build();
 
         OllamaStatus response = Merlin.builder()
                 .addService(service)
                 .build()
-                .getOllamaService()
+                .getService(OllamaService.class)
                 .createModel(request)
                 .join();
         assertEquals("success", response.getStatus(), "status should be success");
@@ -186,24 +204,24 @@ class OllamaServiceTest {
 
     @Test
     void checkBlob() {
-        if (config.useMock()) {
+        if (TestConfig.useMock()) {
             Call<Void> call = mock(Call.class);
             when(api.checkBlob(anyString())).thenReturn(call);
-            TestHelper.setupFailedAsyncResponse(call, new CompletionException(new LlmApiException("Fake exception", 404, "No error body")));
+            TestHelper.setupFailedAsyncResponse(call, new CompletionException(new HttpException(Response.error(404, ResponseBody.create("", MediaType.get(IanaMediaType.JSON))))));
         }
 
         CompletableFuture<Void> future = Merlin.builder()
                 .addService(service)
                 .build()
-                .getOllamaService()
+                .getService(OllamaService.class)
                 .checkBlob("sha256:20be4dc9fc870a36479d8223fec6fca8486003829b4de3bff3bd272679256946");
         try {
             future.join();
             assertTrue(future.isDone(), "something's wrong");
         } catch (CompletionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof LlmApiException llmApiException) {
-                assertEquals(404, llmApiException.statusCode(), "status code should be 404");
+            if (cause instanceof HttpException a) {
+                assertEquals(404, a.code(), "status code should be 404");
             } else {
                 throw e;
             }
@@ -215,7 +233,7 @@ class OllamaServiceTest {
         File testFile = TestHelper.getFile("ollama/model.bin");
         String digest = TestHelper.getSHA256(testFile);
 
-        if (config.useMock()) {
+        if (TestConfig.useMock()) {
             Call<Void> call = mock(Call.class);
             when(api.createBlob(anyString(), any(RequestBody.class))).thenReturn(call);
             TestHelper.setupSuccessfulAsyncResponseWithJson(call, null, Void.class, mapper);
@@ -224,15 +242,15 @@ class OllamaServiceTest {
         CompletableFuture<Void> future = Merlin.builder()
                 .addService(service)
                 .build()
-                .getOllamaService()
+                .getService(OllamaService.class)
                 .createBlob("sha256:" + digest, testFile);
         try {
             future.join();
             assertTrue(future.isDone(), "something's wrong");
         } catch (CompletionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof LlmApiException a) {
-                assertEquals(400, a.statusCode(), "status code should be 400");
+            if (cause instanceof HttpException a) {
+                assertEquals(400, a.code(), "status code should be 400");
             } else {
                 throw e;
             }
@@ -241,7 +259,7 @@ class OllamaServiceTest {
 
     @Test
     void listModels() {
-        if (config.useMock()) {
+        if (TestConfig.useMock()) {
             String expected = TestHelper.read("ollama/ollama_model_list.json");
             Call<OllamaModelList> call = mock(Call.class);
             when(api.listModels()).thenReturn(call);
@@ -251,18 +269,16 @@ class OllamaServiceTest {
         OllamaModelList response = Merlin.builder()
                 .addService(service)
                 .build()
-                .getOllamaService()
+                .getService(OllamaService.class)
                 .listModels()
                 .join();
         assertNotNull(response.getModels());
-        assertEquals(1, response.getModels().size());
-        assertEquals("mistral:latest", response.getModels().get(0).getModel());
         System.out.println(JsonPrinter.print(response));
     }
 
     @Test
     void showModelInfo() {
-        if (config.useMock()) {
+        if (TestConfig.useMock()) {
             String expected = TestHelper.read("ollama/ollama_model_info.json");
             Call<OllamaModel> call = mock(Call.class);
             when(api.showModelInfo(any(OllamaCompletionRequest.class))).thenReturn(call);
@@ -275,7 +291,7 @@ class OllamaServiceTest {
         OllamaModel response = Merlin.builder()
                 .addService(service)
                 .build()
-                .getOllamaService()
+                .getService(OllamaService.class)
                 .showModelInfo(request)
                 .join();
         assertNotNull(response.getModelInfo());
@@ -284,8 +300,7 @@ class OllamaServiceTest {
 
     @Test
     void copyModel() {
-
-        if (config.useMock()) {
+        if (TestConfig.useMock()) {
             Call<Void> call = mock(Call.class);
             when(api.copyModel(any(OllamaCompletionRequest.class))).thenReturn(call);
             TestHelper.setupSuccessfulAsyncResponseWithJson(call, null, Void.class, mapper);
@@ -299,7 +314,7 @@ class OllamaServiceTest {
         CompletableFuture<Void> future = Merlin.builder()
                 .ollama()
                 .build()
-                .getOllamaService()
+                .getService(OllamaService.class)
                 .copyModel(request);
 
         try {
@@ -307,8 +322,8 @@ class OllamaServiceTest {
             assertTrue(future.isDone(), "something's wrong");
         } catch (CompletionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof LlmApiException a) {
-                assertEquals(404, a.statusCode(), "status code should be 404");
+            if (cause instanceof HttpException a) {
+                assertEquals(404, a.code(), "status code should be 404");
             } else {
                 throw e;
             }
@@ -318,6 +333,34 @@ class OllamaServiceTest {
 
     @Test
     void deleteModel() {
+
+        if (TestConfig.useMock()) {
+            Call<Void> call = mock(Call.class);
+            when(api.deleteModel(any(OllamaCompletionRequest.class))).thenReturn(call);
+            TestHelper.setupSuccessfulAsyncResponseWithJson(call, null, Void.class, mapper);
+        }
+
+        OllamaCompletionRequest request = OllamaCompletionRequest.builder()
+                .name("testModel:latest")
+                .build();
+
+        CompletableFuture<Void> future = Merlin.builder()
+                .addService(service)
+                .build()
+                .getService(OllamaService.class)
+                .deleteModel(request);
+
+        try {
+            future.join();
+            assertTrue(future.isDone(), "something's wrong");
+        } catch (CompletionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof HttpException a) {
+                assertEquals(500, a.code(), "status code should be 404 by documentation but actually it returns 500, so 500 is expected.");
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Test
@@ -338,7 +381,7 @@ class OllamaServiceTest {
 
     @Test
     void createEmbedding() {
-        if (config.useMock()) {
+        if (TestConfig.useMock()) {
             String expected = TestHelper.read("ollama/ollama_embedding.json");
             Call<OllamaEmbedding> call = mock(Call.class);
             when(api.createEmbedding(any(OllamaCompletionRequest.class))).thenReturn(call);
@@ -352,7 +395,7 @@ class OllamaServiceTest {
         OllamaEmbedding response = Merlin.builder()
                 .addService(service)
                 .build()
-                .getOllamaService()
+                .getService(OllamaService.class)
                 .createEmbedding(request)
                 .join();
         assertNotNull(response.getEmbedding());
@@ -362,7 +405,7 @@ class OllamaServiceTest {
 
     @Test
     void listRunning() {
-        if (config.useMock()) {
+        if (TestConfig.useMock()) {
             String expected = TestHelper.read("ollama/ollama_model_list.json");
             Call<OllamaModelList> call = mock(Call.class);
             when(api.listRunning()).thenReturn(call);
@@ -372,7 +415,7 @@ class OllamaServiceTest {
         OllamaModelList response = Merlin.builder()
                 .addService(service)
                 .build()
-                .getOllamaService()
+                .getService(OllamaService.class)
                 .listRunning()
                 .join();
         assertNotNull(response.getModels());

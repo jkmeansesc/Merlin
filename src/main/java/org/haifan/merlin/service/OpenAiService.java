@@ -1,11 +1,12 @@
 package org.haifan.merlin.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.haifan.merlin.internal.api.OpenAiApi;
-import org.haifan.merlin.internal.config.OpenAiConfig;
 import org.haifan.merlin.internal.constants.Fields;
+import org.haifan.merlin.internal.constants.Provider;
+import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
 import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
 import org.haifan.merlin.model.openai.assistants.messages.MessageObject;
@@ -22,7 +23,7 @@ import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileBat
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreRequest;
 import org.haifan.merlin.model.openai.DeletionStatus;
 import org.haifan.merlin.model.openai.OpenAiList;
-import org.haifan.merlin.model.openai.StreamingResponse;
+import org.haifan.merlin.model.StreamingResponse;
 import org.haifan.merlin.model.openai.endpoints.audio.*;
 import org.haifan.merlin.model.openai.endpoints.batch.Batch;
 import org.haifan.merlin.model.openai.endpoints.batch.BatchRequest;
@@ -62,46 +63,33 @@ import java.util.concurrent.CompletableFuture;
 public class OpenAiService extends LlmService {
 
     private final OpenAiApi api;
+    public static final String DEFAULT_BASE_URL = "https://api.openai.com";
 
     public OpenAiService() {
-        this(new OpenAiConfig());
+        this(new LlmConfig(Provider.OPENAI, DEFAULT_BASE_URL, null));
     }
 
-    public OpenAiService(String token) {
-        this(new OpenAiConfig(token));
-    }
-
-    public OpenAiService(String configPath, boolean isConfigPath) {
-        this(new OpenAiConfig(configPath, isConfigPath));
-    }
-
-    public OpenAiService(String token, String configPath) {
-        this(new OpenAiConfig(token, configPath));
-    }
-
-    private OpenAiService(OpenAiConfig config) {
+    public OpenAiService(LlmConfig config) {
         super(config, new OpenAiInterceptor(config.getToken()));
         this.api = super.retrofit.create(OpenAiApi.class);
     }
 
     @Override
-    public JsonNode getConfig() {
-        return super.llmConfig.getConfig();
+    protected String parseStreamLine(String line) {
+        if (line.startsWith("data: ")) {
+            String json = line.substring(6).trim();
+            return "[DONE]".equals(json) ? null : json;
+        }
+        return null;
     }
 
-    @Override
-    public Retrofit getRetrofit() {
-        return super.retrofit;
-    }
-
-    @Override
-    public OkHttpClient getOkHttpClient() {
-        return super.client;
-    }
-
-    @Override
-    public ObjectMapper getObjectMapper() {
-        return super.mapper;
+    private ChatCompletionChunk parseChunk(String json) {
+        ObjectMapper mapper = DefaultObjectMapper.get();
+        try {
+            return mapper.readValue(json, ChatCompletionChunk.class);
+        } catch (JsonProcessingException e) {
+            throw new StreamParsingException("Error parsing JSON chunk", e);
+        }
     }
 
     // ===============================
@@ -170,13 +158,7 @@ public class OpenAiService extends LlmService {
 
     public StreamingResponse<ChatCompletionChunk> streamChatCompletion(ChatCompletionRequest request) {
         Call<ResponseBody> call = api.streamChatCompletion(request);
-        return new StreamingResponse<>(call, this::parseChunk);
-    }
-
-    // TODO: implement this
-    private ChatCompletionChunk parseChunk(String json) {
-        // Use Jackson or Gson to parse JSON into ChatCompletionChunk
-        return null;
+        return new StreamingResponse<>(super.stream(call, this::parseChunk));
     }
 
     // ===============================

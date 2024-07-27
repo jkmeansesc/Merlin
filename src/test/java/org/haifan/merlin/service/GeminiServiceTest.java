@@ -4,10 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.haifan.merlin.internal.api.GeminiApi;
 import org.haifan.merlin.client.Merlin;
-import org.haifan.merlin.internal.config.GeminiConfig;
+import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.interceptors.GeminiInterceptor;
 import org.haifan.merlin.model.gemini.ModelList;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
+import org.haifan.merlin.utils.TestConfig;
 import org.haifan.merlin.utils.TestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -34,14 +35,14 @@ import static org.mockito.Mockito.when;
 class GeminiServiceTest {
     @Mock
     private GeminiApi api;
-    private final GeminiConfig config = new GeminiConfig();
+    private LlmConfig config;
     private final GeminiInterceptor interceptor = new GeminiInterceptor("");
     private GeminiService service;
     private final ObjectMapper mapper = DefaultObjectMapper.create();
 
     @BeforeEach
     void setUp() {
-        if (config.useMock()) {
+        if (TestConfig.useMock()) {
             service = new GeminiService(api, config, interceptor);
         } else {
             service = new GeminiService();
@@ -51,42 +52,23 @@ class GeminiServiceTest {
     @Test
     void test_all_constructors_can_be_initialized() {
 
-        List<Retrofit> retrofitList = new ArrayList<>();
-
         LlmService service_1 = new GeminiService();
-        JsonNode config_1 = service_1.getConfig();
-        retrofitList.add(service_1.getRetrofit());
-        assertNotNull(config_1, "Config should not be null");
-        assertTrue(config_1.has("baseUrl"), "Config should contain the key 'baseUrl'");
+        assertNotNull(service_1.getClient());
+        assertNotNull(service_1.getMapper());
+        assertNotNull(service_1.getRetrofit());
+        assertNotNull(service_1.getConfig());
 
-        LlmService service_2 = new GeminiService("foo");
-        JsonNode config_2 = service_2.getConfig();
-        retrofitList.add(service_2.getRetrofit());
-        assertNotNull(config_2, "Config should not be null");
-        assertTrue(config_2.has("baseUrl"), "Config should contain the key 'baseUrl'");
-
-        LlmService service_3 = new GeminiService("src/test/resources/test_config.json", true);
-        JsonNode config_3 = service_3.getConfig();
-        retrofitList.add(service_3.getRetrofit());
-        assertNotNull(config_3, "Config should not be null");
-        assertTrue(config_3.has("baseUrl"), "Config should contain the key 'baseUrl'");
-        assertEquals("https://do.not.delete.this.or.test.will.fail.com", config_3.get("baseUrl").asText(), "Wrong config is loaded");
-
-        LlmService service_4 = new GeminiService("foo", "src/test/resources/test_config.json");
-        JsonNode config_4 = service_4.getConfig();
-        retrofitList.add(service_4.getRetrofit());
-        assertNotNull(config_4, "Config should not be null");
-        assertTrue(config_4.has("baseUrl"), "Config should contain the key 'baseUrl'");
-        assertEquals("https://do.not.delete.this.or.test.will.fail.com", config_4.get("baseUrl").asText(), "Wrong config is loaded");
-
-        retrofitList.forEach(retrofit -> assertNotNull(retrofit, "Retrofit should not be null"));
+        this.config = new LlmConfig(Provider.GOOGLE_GEMINI, "test baseUrl", "test token");
+        LlmService service_2 = new GeminiService(config);
+        assertEquals("test baseurl", service_2.getConfig().getBaseUrl(), "Wrong baseUrl");
+        assertEquals("test token", service_2.getConfig().getToken(), "Wrong token");
     }
 
     @Nested
     class V1Test {
         @Test
         void listModels() {
-            if (config.useMock()) {
+            if (TestConfig.useMock()) {
                 String expected = TestHelper.read("google_gemini/gemini_model_list.json");
                 Call<ModelList> call = mock(Call.class);
                 when(api.listModels()).thenReturn(call);
@@ -96,7 +78,7 @@ class GeminiServiceTest {
             ModelList response = Merlin.builder()
                     .addService(service)
                     .build()
-                    .getGeminiService()
+                    .getService(GeminiService.class)
                     .listModels()
                     .join();
             response.getModels().forEach(model -> assertNotNull(model.getName()));
