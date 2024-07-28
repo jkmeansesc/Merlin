@@ -9,7 +9,9 @@ import org.haifan.merlin.model.openai.ToolChoice;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
 
 /**
- * TODO: add javadoc
+ * A utility class for creating and managing a singleton instance of {@link ObjectMapper}.
+ * This class provides methods to configure the {@link ObjectMapper} with custom serializers
+ * and deserializers.
  */
 public class DefaultObjectMapper {
 
@@ -19,6 +21,19 @@ public class DefaultObjectMapper {
 
     private static ObjectMapper mapper;
 
+    /**
+     * Creates and configures a new instance of {@link ObjectMapper} with custom
+     * serializers and deserializers for the following classes:
+     * <ul>
+     * <li>{@link ResponseFormat}</li>
+     * <li>{@link ToolChoice}</li>
+     * <li>{@link EmbeddingRequest.Input}</li>
+     * <li>{@link Content}</li>
+     * </ul>
+     * This method ensures that the {@link ObjectMapper} includes non-null values during serialization.
+     *
+     * @return a configured {@link ObjectMapper} instance.
+     */
     public static ObjectMapper create() {
         mapper = new ObjectMapper()
 //                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -41,7 +56,16 @@ public class DefaultObjectMapper {
         return mapper;
     }
 
+    /**
+     * Returns the singleton instance of {@link ObjectMapper}. If the instance is not yet created,
+     * it calls the {@link #create()} method to create and configure it.
+     *
+     * @return the singleton {@link ObjectMapper} instance.
+     */
     public static ObjectMapper get() {
+        if (mapper == null) {
+            return create();
+        }
         return mapper;
     }
 }

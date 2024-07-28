@@ -68,12 +68,6 @@ class GeminiServiceTest {
     class V1Test {
         @Test
         void listModels() {
-            if (TestConfig.useMock()) {
-                String expected = TestHelper.read("google_gemini/gemini_model_list.json");
-                Call<ModelList> call = mock(Call.class);
-                when(api.listModels()).thenReturn(call);
-                TestHelper.setupSuccessfulAsyncResponseWithJson(call, expected, ModelList.class, mapper);
-            }
 
             ModelList response = Merlin.builder()
                     .addService(service)

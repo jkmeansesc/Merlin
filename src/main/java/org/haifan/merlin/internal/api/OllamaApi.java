@@ -30,10 +30,10 @@ public interface OllamaApi {
     @POST("/api/create")
     Call<OllamaStatus> createModel(@Body OllamaCompletionRequest request);
 
-    @HEAD("api/blobs/{digest}")
+    @HEAD("/api/blobs/{digest}")
     Call<Void> checkBlob(@Path("digest") String digest);
 
-    @POST("api/blobs/{digest}")
+    @POST("/api/blobs/{digest}")
     Call<Void> createBlob(@Path("digest") String digest, @Body RequestBody request);
 
     @GET("/api/tags")
@@ -45,7 +45,7 @@ public interface OllamaApi {
     @POST("/api/copy")
     Call<Void> copyModel(@Body OllamaCompletionRequest request);
 
-    @DELETE("/api/delete")
+    @HTTP(method = "DELETE", path = "/api/delete", hasBody = true)
     Call<Void> deleteModel(@Body OllamaCompletionRequest request);
 
     @POST("/api/pull")

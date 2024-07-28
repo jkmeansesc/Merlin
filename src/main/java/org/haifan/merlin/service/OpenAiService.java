@@ -158,7 +158,7 @@ public class OpenAiService extends LlmService {
 
     public StreamingResponse<ChatCompletionChunk> streamChatCompletion(ChatCompletionRequest request) {
         Call<ResponseBody> call = api.streamChatCompletion(request);
-        return new StreamingResponse<>(super.stream(call, this::parseChunk));
+        return new StreamingResponse<>(super.stream(call, this::parseChunk,this));
     }
 
     // ===============================

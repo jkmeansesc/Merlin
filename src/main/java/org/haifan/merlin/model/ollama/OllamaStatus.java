@@ -8,4 +8,5 @@ public class OllamaStatus {
     private String digest;
     private Long total;
     private Long completed;
+    private String error;
 }

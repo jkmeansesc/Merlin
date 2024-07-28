@@ -1,7 +1,10 @@
 package org.haifan.merlin.model.ollama;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -9,6 +12,9 @@ import java.util.List;
  * TODO: add javadoc
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OllamaCompletion {
     private String model;
     @JsonProperty("created_at")
@@ -32,4 +38,7 @@ public class OllamaCompletion {
     @JsonProperty("done_reason")
     private String doneReason;
 
+    public OllamaCompletion(String response) {
+        this.response = response;
+    }
 }

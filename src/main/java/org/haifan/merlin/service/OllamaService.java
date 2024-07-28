@@ -62,7 +62,7 @@ public class OllamaService extends LlmService {
 
     public StreamingResponse<OllamaCompletion> streamCompletion(OllamaCompletionRequest request) {
         Call<ResponseBody> call = api.streamCompletion(request);
-        return new StreamingResponse<>(super.stream(call, this::parseChunk));
+        return new StreamingResponse<>(super.stream(call, this::parseChunk, this));
     }
 
     public CompletableFuture<OllamaCompletion> createCompletion(OllamaCompletionRequest request) {
@@ -77,12 +77,12 @@ public class OllamaService extends LlmService {
 
     public StreamingResponse<OllamaCompletion> streamChatCompletion(@Body OllamaCompletionRequest request) {
         Call<ResponseBody> call = api.streamChatCompletion(request);
-        return new StreamingResponse<>(super.stream(call, this::parseChunk));
+        return new StreamingResponse<>(super.stream(call, this::parseChunk, this));
     }
 
     public StreamingResponse<OllamaStatus> createModelStream(OllamaCompletionRequest request) {
         Call<ResponseBody> call = api.createModelStream(request);
-        return new StreamingResponse<>(super.stream(call, this::parseStatus));
+        return new StreamingResponse<>(super.stream(call, this::parseStatus,this));
     }
 
     public CompletableFuture<OllamaStatus> createModel(OllamaCompletionRequest request) {
@@ -118,19 +118,21 @@ public class OllamaService extends LlmService {
 
     public StreamingResponse<OllamaStatus> pullModelStream(OllamaCompletionRequest request) {
         Call<ResponseBody> call = api.pullModelStream(request);
-        return new StreamingResponse<>(super.stream(call, this::parseStatus));
+        return new StreamingResponse<>(super.stream(call, this::parseStatus,this));
     }
 
     public CompletableFuture<OllamaStatus> pullModel(OllamaCompletionRequest request) {
+        request.setStream(false);
         return super.call(api.pullModel(request));
     }
 
     public StreamingResponse<OllamaStatus> pushModelStream(OllamaCompletionRequest request) {
         Call<ResponseBody> call = api.pushModelStream(request);
-        return new StreamingResponse<>(super.stream(call, this::parseStatus));
+        return new StreamingResponse<>(super.stream(call, this::parseStatus,this));
     }
 
     public CompletableFuture<OllamaStatus> pushModel(OllamaCompletionRequest request) {
+        request.setStream(false);
         return super.call(api.pushModel(request));
     }
 
