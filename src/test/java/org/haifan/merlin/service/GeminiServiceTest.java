@@ -1,6 +1,5 @@
 package org.haifan.merlin.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.haifan.merlin.internal.api.GeminiApi;
 import org.haifan.merlin.client.Merlin;
@@ -9,7 +8,6 @@ import org.haifan.merlin.internal.interceptors.GeminiInterceptor;
 import org.haifan.merlin.model.gemini.ModelList;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 import org.haifan.merlin.utils.TestConfig;
-import org.haifan.merlin.utils.TestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,18 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import retrofit2.Call;
-import retrofit2.Retrofit;
-
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@SuppressWarnings("unchecked")
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class GeminiServiceTest {

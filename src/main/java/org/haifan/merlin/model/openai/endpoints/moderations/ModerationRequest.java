@@ -1,6 +1,5 @@
 package org.haifan.merlin.model.openai.endpoints.moderations;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 /**

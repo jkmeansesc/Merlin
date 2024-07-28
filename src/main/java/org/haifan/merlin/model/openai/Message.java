@@ -7,6 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+/**
+ * Abstract class representing a message with role-based polymorphic behavior.
+ * This class is used as a base for different types of messages in the system.
+ * The type of message is determined by the {@code role} property.
+ * <a href="https://platform.openai.com/docs/api-reference/chat/create#chat-create-messages">...</a>
+ */
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,

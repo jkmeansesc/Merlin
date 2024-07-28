@@ -2,7 +2,6 @@ package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.FlowableEmitter;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -13,13 +12,10 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import org.haifan.merlin.internal.interceptors.LlmInterceptor;
 import org.haifan.merlin.internal.interceptors.SLF4JHttpLogger;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
-import org.jetbrains.annotations.NotNull;
 
 import retrofit2.*;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;

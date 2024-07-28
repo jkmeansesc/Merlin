@@ -9,7 +9,9 @@ import org.haifan.merlin.internal.utils.ApiKeyManager;
 import java.time.Duration;
 
 /**
- * TODO: add javadoc
+ * Configuration class for setting up Large Language Model (LLM) connections.
+ * This class holds configuration details such as the provider, base URL, token, timeout, and log level.
+ * It also provides methods to retrieve the appropriate HTTP log level based on the configured log level.
  */
 @Slf4j
 @Data

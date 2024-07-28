@@ -17,13 +17,18 @@ public class Operation {
 
     @JsonIgnore
     public Object getResult() {
-        return done ? (error != null ? error : response) : null;
+        return Boolean.TRUE.equals(done) ? getResultWhenDone() : null;
+    }
+
+    @JsonIgnore
+    private Object getResultWhenDone() {
+        return error != null ? error : response;
     }
 
     @JsonIgnore
     public void setResult(Object result) {
-        if (result instanceof Status) {
-            this.error = (Status) result;
+        if (result instanceof Status status) {
+            this.error = status;
             this.response = null;
         } else {
             this.error = null;

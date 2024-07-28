@@ -8,7 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 
 /**
- * TODO: add javadoc
+ * Abstract interceptor for adding authentication headers to HTTP requests for Large Language Models (LLMs).
+ * This class provides a base implementation for intercepting HTTP requests and modifying them to include
+ * authentication tokens.
  */
 public abstract class LlmInterceptor implements Interceptor {
     protected final String token;

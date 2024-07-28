@@ -10,7 +10,6 @@ import org.haifan.merlin.internal.interceptors.OllamaInterceptor;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 import org.haifan.merlin.model.ollama.*;
 import org.haifan.merlin.model.StreamingResponse;
-import org.jetbrains.annotations.TestOnly;
 import retrofit2.Call;
 import retrofit2.http.Body;
 
@@ -29,12 +28,6 @@ public class OllamaService extends LlmService {
     public OllamaService(LlmConfig config) {
         super(config, new OllamaInterceptor());
         this.api = super.retrofit.create(OllamaApi.class);
-    }
-
-    @TestOnly
-    OllamaService(OllamaApi api, LlmConfig config, OllamaInterceptor interceptor) {
-        super(config, interceptor);
-        this.api = api;
     }
 
     @Override

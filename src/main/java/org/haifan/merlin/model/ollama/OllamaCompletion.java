@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * TODO: add javadoc
+ * Represents the completion response from Ollama.
  */
 @Data
 @Builder
@@ -37,8 +37,4 @@ public class OllamaCompletion {
     private List<Integer> context;
     @JsonProperty("done_reason")
     private String doneReason;
-
-    public OllamaCompletion(String response) {
-        this.response = response;
-    }
 }

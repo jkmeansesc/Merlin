@@ -45,7 +45,7 @@ import retrofit2.http.*;
 import java.util.Map;
 
 /**
- * TODO: add javadoc
+ * Interface representing the OpenAI API endpoints.
  */
 public interface OpenAiApi {
 

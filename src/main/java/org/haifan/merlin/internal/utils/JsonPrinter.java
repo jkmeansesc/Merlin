@@ -22,9 +22,9 @@ public class JsonPrinter {
     public static String print(Object obj) throws JsonPrinterException {
         ObjectMapper mapper = DefaultObjectMapper.create();
         try {
-            if (obj instanceof String) {
+            if (obj instanceof String str) {
                 // If it's already a string, parse and pretty print it
-                Object json = mapper.readValue((String) obj, Object.class);
+                Object json = mapper.readValue(str, Object.class);
                 return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
             } else {
                 // If it's an object, pretty print it

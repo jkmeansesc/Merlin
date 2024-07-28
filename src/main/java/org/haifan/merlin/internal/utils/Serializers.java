@@ -55,21 +55,16 @@ public class Serializers {
     public static class ToolChoiceSerializer extends JsonSerializer<ToolChoice> {
         @Override
         public void serialize(ToolChoice value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-
             // values other than "none", "auto", "required" will be ignored and serialized as null
-            switch (value.getType().toLowerCase()) {
-                case "none":
-                case "auto":
-                case "required":
-                    gen.writeString(value.getType());
-                    break;
-                default:
-                    if (value.getTool() != null) {
-                        gen.writeObject(value.getTool());
-                    } else {
-                        gen.writeNull();
-                    }
-                    break;
+            String type = value.getType().toLowerCase();
+            if (type.equals("none") || type.equals("auto") || type.equals("required")) {
+                gen.writeString(type);
+            } else {
+                if (value.getTool() != null) {
+                    gen.writeObject(value.getTool());
+                } else {
+                    gen.writeNull();
+                }
             }
         }
     }

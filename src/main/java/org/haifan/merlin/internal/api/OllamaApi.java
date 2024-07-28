@@ -1,7 +1,6 @@
 package org.haifan.merlin.internal.api;
 
 import okhttp3.RequestBody;
-import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.model.ollama.*;
 import retrofit2.Call;

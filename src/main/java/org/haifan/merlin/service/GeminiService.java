@@ -1,15 +1,11 @@
 package org.haifan.merlin.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.internal.api.GeminiApi;
 import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.interceptors.GeminiInterceptor;
 import org.haifan.merlin.model.gemini.*;
 import org.jetbrains.annotations.TestOnly;
-import retrofit2.Retrofit;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;

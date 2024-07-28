@@ -47,7 +47,6 @@ import org.haifan.merlin.internal.constants.IanaMediaType;
 import org.haifan.merlin.internal.interceptors.OpenAiInterceptor;
 import org.haifan.merlin.internal.utils.FileParser;
 import retrofit2.Call;
-import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
@@ -58,17 +57,27 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * TODO: add javadoc
+ * Service class for interacting with the OpenAI API.
+ * This class extends {@link LlmService} and provides methods to call endpoints in {@link OpenAiApi}.
  */
 public class OpenAiService extends LlmService {
 
     private final OpenAiApi api;
     public static final String DEFAULT_BASE_URL = "https://api.openai.com";
 
+    /**
+     * Constructs an {@code OpenAiService} instance with the default configuration.
+     * Uses the default base URL and retrieves the token from the environment or configuration.
+     */
     public OpenAiService() {
         this(new LlmConfig(Provider.OPENAI, DEFAULT_BASE_URL, null));
     }
 
+    /**
+     * Constructs an {@code OpenAiService} instance with the specified configuration.
+     *
+     * @param config the configuration for the OpenAI service.
+     */
     public OpenAiService(LlmConfig config) {
         super(config, new OpenAiInterceptor(config.getToken()));
         this.api = super.retrofit.create(OpenAiApi.class);
@@ -96,6 +105,7 @@ public class OpenAiService extends LlmService {
     // ENDPOINTS - Audio
     // ===============================
 
+    // TODO: complete Javadoc for all the endpoints.
     public CompletableFuture<ResponseBody> createSpeech(SpeechRequest request) {
         return super.call(api.createSpeech(request));
     }
@@ -158,7 +168,7 @@ public class OpenAiService extends LlmService {
 
     public StreamingResponse<ChatCompletionChunk> streamChatCompletion(ChatCompletionRequest request) {
         Call<ResponseBody> call = api.streamChatCompletion(request);
-        return new StreamingResponse<>(super.stream(call, this::parseChunk,this));
+        return new StreamingResponse<>(super.stream(call, this::parseChunk, this));
     }
 
     // ===============================
