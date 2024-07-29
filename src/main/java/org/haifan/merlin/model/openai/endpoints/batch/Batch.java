@@ -19,7 +19,7 @@ public class Batch {
     @JsonProperty("input_file_id")
     private String inputFileId;
     @JsonProperty("completion_window")
-    private Integer completionWindow;
+    private String completionWindow;
     private String status;
     @JsonProperty("output_file_id")
     private String outputFileId;

@@ -6,23 +6,34 @@ import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 import org.haifan.merlin.model.openai.*;
 import org.haifan.merlin.model.openai.Function;
-import org.haifan.merlin.model.openai.endpoints.audio.SpeechRequest;
+import org.haifan.merlin.model.openai.endpoints.audio.*;
+import org.haifan.merlin.model.openai.endpoints.batch.Batch;
+import org.haifan.merlin.model.openai.endpoints.batch.BatchRequest;
 import org.haifan.merlin.model.openai.endpoints.chat.*;
 import org.haifan.merlin.model.openai.endpoints.embeddings.Embedding;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
+import org.haifan.merlin.model.openai.endpoints.files.OpenAiFile;
+import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningCheckpoint;
+import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningEvent;
+import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningJob;
+import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningJobRequest;
+import org.haifan.merlin.model.openai.endpoints.images.Image;
 import org.haifan.merlin.model.openai.endpoints.images.ImageRequest;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
 import org.haifan.merlin.utils.TestHelper;
 import org.haifan.merlin.annotations.UseWireMock;
 import org.haifan.merlin.annotations.UseRelay;
 import org.junit.jupiter.api.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,15 +47,14 @@ class OpenAiServiceTest {
     @BeforeEach
     void setUp(TestInfo testInfo) {
         String baseUrl = OpenAiService.DEFAULT_BASE_URL;
-
-        Properties props = new Properties();
+        String apiKey = null;
+        Properties p = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("test.properties")) {
-            props.load(input);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            p.load(input);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to load test.properties, supply one if not present.");
         }
-
-        String apiKey = props.getProperty("openai.api.key");
 
         if (testInfo.getTestMethod().isPresent()) {
             var method = testInfo.getTestMethod().get();
@@ -53,11 +63,12 @@ class OpenAiServiceTest {
             } else if (method.isAnnotationPresent(UseRelay.class)) {
                 UseRelay annotation = method.getAnnotation(UseRelay.class);
                 baseUrl = annotation.value();
-                apiKey = "sk-ncfFdWCgLtn5rSUoArsPZaICIFpxf0kgWkvJEBIurYYvgmb2";
+                apiKey = p.getProperty("api.key");
             }
         }
 
         this.config = new LlmConfig(Provider.OPENAI, baseUrl, apiKey);
+        this.config.setTimeOut(Duration.ofSeconds(60));
         this.config.setLogLevel(LlmConfig.Level.BODY);
         this.service = new OpenAiService(config);
     }
@@ -79,6 +90,7 @@ class OpenAiServiceTest {
     @Nested
     class AudioTest {
         @Test
+        @UseRelay
         void createSpeech() throws IOException {
             ResponseBody response = Merlin.<OpenAiService>builder()
                     .addService(service)
@@ -93,6 +105,42 @@ class OpenAiServiceTest {
                     .join();
             Path mp3 = TestHelper.audioToFile(response, Paths.get("src/test/resources/openai/output.mp3"));
             assertTrue(mp3.toFile().exists());
+        }
+
+        @Test
+        @UseWireMock
+        void createTranscription() {
+            TranscriptionRequest request = TranscriptionRequest.builder()
+                    .model("whisper-1")
+                    .build();
+
+            Transcription response = Merlin.<OpenAiService>builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .createTranscription(request, "src/test/resources/openai/output.mp3")
+                    .join();
+            assertNotNull(response.getText());
+            System.out.println(DefaultObjectMapper.print(response));
+        }
+
+        @Test
+        @UseWireMock
+        void createTranslation() {
+            TranslationRequest request = TranslationRequest.builder()
+                    .model("whisper-1")
+                    .prompt("translate into mandarine")
+                    .build();
+
+            Translation response = Merlin.<OpenAiService>builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .createTranslation(request, "src/test/resources/openai/output.mp3")
+                    .join();
+
+            assertNotNull(response.getText());
+            System.out.println(DefaultObjectMapper.print(response));
         }
     }
 
@@ -146,6 +194,7 @@ class OpenAiServiceTest {
         }
 
         @Test
+        @UseWireMock
         void createChatCompletion() {
             List<OpenAiMessage> messages = new ArrayList<>();
             messages.add(new OpenAiMessage(OpenAiMessage.Role.USER, "Are you there?"));
@@ -166,6 +215,7 @@ class OpenAiServiceTest {
         }
 
         @Test
+        @UseRelay
         @Disabled("Not mocked")
         void streamChatCompletion() {
             List<OpenAiMessage> messages = new ArrayList<>();
@@ -189,7 +239,7 @@ class OpenAiServiceTest {
                             chunk -> {
                                 System.out.println("Received chunk: " + chunk);
                                 OpenAiMessage message = chunk.getChoices().get(0).getMessage();
-                                messages.add(message);
+                                messages.add(message); // not accumulated but small chunks
                             },
                             error -> {
                                 System.err.println("Error occurred: " + error.getMessage());
@@ -213,8 +263,9 @@ class OpenAiServiceTest {
     }
 
     @Nested
-    class TestEmbedding {
+    class EmbeddingsTest {
         @Test
+        @UseWireMock
         void createEmbeddings() {
 
             // Single string
@@ -277,123 +328,328 @@ class OpenAiServiceTest {
                     .createEmbeddings(request)
                     .join();
 
-            assertNotNull(response.getData());
+            assertNotNull(response.getData(), "Data should not be null");
+            assertTrue(response.getData().size() > 1, "Should receive at least one embedding");
         }
     }
 
     @Nested
-    class TestFineTuning {
+    class FineTuningTest {
         @Test
-        void createFineTuning() {
+        @UseWireMock
+        void createFineTuningJob() {
+            FineTuningJobRequest request = FineTuningJobRequest.builder()
+                    .model("gpt-4o-mini")
+                    .trainingFile("file-BK7bzQj3FfZFXr7DbL6xJwfo")
+                    .build();
 
+            FineTuningJob response = Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .createFineTuningJob(request)
+                    .join();
+            assertNotNull(response.getStatus(), "Status should not be null");
+            assertNotNull(response.getTrainingFile());
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
         void listFineTuningJobs() {
+            OpenAiData<FineTuningJob> response = Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .listFineTuningJobs()
+                    .join();
 
+            assertEquals("list", response.getObject(), "object should be list");
+            System.out.println(DefaultObjectMapper.print(response));
+
+            OpenAiData<FineTuningJob> response_1 = Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .listFineTuningJobs(null, 2)
+                    .join();
+
+            System.out.println(DefaultObjectMapper.print(response_1));
         }
 
         @Test
+        @UseWireMock
         void listFineTuningEvents() {
+            OpenAiData<FineTuningEvent> response = Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .listFineTuningEvents("ftjob-abc123")
+                    .join();
+            assertEquals("list", response.getObject(), "object should be list");
+            assertNotNull(response.getData(), "Data should not be null");
 
+            System.out.println(DefaultObjectMapper.print(response));
+
+            Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .listFineTuningEvents("ftjob-abc123", "test", 2)
+                    .join();
         }
 
         @Test
+        @UseWireMock
         void listFineTuningCheckpoints() {
+            OpenAiData<FineTuningCheckpoint> response = Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .listFineTuningCheckpoints("ftjob-abc123")
+                    .join();
 
+            assertNotNull(response.getData(), "Data should not be null");
+            System.out.println(DefaultObjectMapper.print(response));
+
+            Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .listFineTuningCheckpoints("ftjob-abc123", null, 2)
+                    .join();
         }
 
         @Test
+        @UseWireMock
         void retrieveFineTuningJob() {
+            FineTuningJob response = Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .retrieveFineTuningJob("ftjob-abc123")
+                    .join();
 
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void cancelFineTuningJob() {
-
+            FineTuningJob response = Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .cancelFineTuningJob("ftjob-abc123")
+                    .join();
+            assertNotNull(response);
+            assertEquals("cancelled", response.getStatus(), "status should be cancelled");
+            System.out.println(DefaultObjectMapper.print(response));
         }
     }
 
     @Nested
     class BatchTest {
+        @Test
+        @UseWireMock
+        void createBatch() {
 
+            String fileId = "file-abc123";
+            String endpoint = "/v1/chat/completions";
+            String completionWindow = "24h";
+
+            BatchRequest request = BatchRequest.builder()
+                    .inputFileId(fileId)
+                    .endpoint(endpoint)
+                    .completionWindow(completionWindow)
+                    .build();
+
+            Batch response = Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .createBatch(request)
+                    .join();
+
+            assertEquals(fileId, response.getInputFileId(), "input file id mismatch");
+            assertEquals(endpoint, response.getEndpoint(), "endpoint mismatch");
+            assertEquals(completionWindow, response.getCompletionWindow(), "completion window mismatch");
+
+            System.out.println(DefaultObjectMapper.print(response));
+        }
+
+        @Test
+        @UseWireMock
+        void retrieveBatch() {
+            String batchId = "batch_abc123";
+            Batch response = Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .retrieveBatch(batchId)
+                    .join();
+            assertEquals(batchId, response.getId(), "id mismatch");
+            System.out.println(DefaultObjectMapper.print(response));
+        }
+
+        @Test
+        @UseWireMock
+        void cancelBatch() {
+            String batchId = "batch_abc123";
+            Batch response = Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .cancelBatch(batchId)
+                    .join();
+            assertEquals(batchId, response.getId(), "id mismatch");
+            System.out.println(DefaultObjectMapper.print(response));
+        }
+
+        @Test
+        @UseWireMock
+        void listBatches() {
+            Merlin merlin = Merlin.builder().addService(service).build();
+            merlin.getService(OpenAiService.class)
+                    .listBatches()
+                    .join();
+            OpenAiData<Batch> response = merlin.getService(OpenAiService.class)
+                    .listBatches(null, 2)
+                    .join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
+        }
     }
 
     @Nested
     class FilesTest {
 
         @Test
+        @UseWireMock
         void uploadFile() {
             URL resourceUrl = OpenAiServiceTest.class.getClassLoader().getResource("log4j2.xml");
             assert resourceUrl != null;
             String filePath = Paths.get(resourceUrl.getPath()).toFile().getAbsolutePath();
-            Merlin.<OpenAiService>builder()
-                    .addService(new OpenAiService())
+            OpenAiFile response = Merlin.<OpenAiService>builder()
+                    .addService(service)
                     .build()
                     .getService(OpenAiService.class)
                     .uploadFile("fine-tune", filePath)
                     .join();
+            assertEquals("log4j2.xml", response.getFilename(), "filename mismatch");
+            System.out.println(DefaultObjectMapper.print(response));
+        }
+
+        @Test
+        @UseWireMock
+        void listFiles() {
+            OpenAiData<OpenAiFile> response = Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .listFiles()
+                    .join();
+            assertNotNull(response.getData());
+            System.out.println(DefaultObjectMapper.print(response));
+        }
+
+        @Test
+        @UseWireMock
+        void retrieveFile() {
+            String fileId = "file-EGQhIfguFLF0hHfCu0iVF9xL";
+            OpenAiFile response = Merlin.<OpenAiService>builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .retrieveFile(fileId)
+                    .join();
+            assertEquals("log4j2.xml", response.getFilename(), "filename mismatch");
+            System.out.println(DefaultObjectMapper.print(response));
+        }
+
+        @Test
+        void deleteFile() {
+            String fileId = "file-EGQhIfguFLF0hHfCu0iVF9xL";
+            DeletionStatus response = Merlin.<OpenAiService>builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .deleteFile(fileId)
+                    .join();
+            assertTrue(response.isDeleted(), "deleted field should indicate true");
+            System.out.println(DefaultObjectMapper.print(response));
+        }
+
+        @Test
+        @UseWireMock
+        void retrieveFileContent() throws IOException {
+            String fileId = "file-EGQhIfguFLF0hHfCu0iVF9xL";
+            ResponseBody response = Merlin.<OpenAiService>builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .retrieveFileContent(fileId)
+                    .join();
+            assertNotNull(response);
+            Path relativePath = Path.of("openai", "log4j2.xml");
+            Path filePath = TestHelper.writeResponseBodyToFile(response, relativePath);
+            assertTrue(Files.exists(filePath));
         }
     }
 
-
     @Nested
-    class TestImages {
-
+    class ImagesTest {
         @Test
+        @UseWireMock
         void createImage() {
-            Merlin.<OpenAiService>builder()
-                    .addService(new OpenAiService())
+            ImageRequest request = ImageRequest.builder()
+                    .model("dall-e-3")
+                    .prompt("A cute baby sea otter")
+                    .n(1)
+                    .size("1024x1024")
+                    .build();
+            OpenAiData<Image> response = Merlin.builder()
+                    .addService(service)
                     .build()
                     .getService(OpenAiService.class)
-                    .createImage(ImageRequest.builder()
-                            .prompt("A cute baby sea otter")
-                            .n(1)
-                            .build())
+                    .createImage(request)
                     .join();
+            assertNotNull(response);
+            assertFalse(response.getData().isEmpty());
+            System.out.println(DefaultObjectMapper.print(response));
+        }
+
+        @Test
+        void createImageEdit() {
+        }
+
+        @Test
+        void createImageVariation() {
         }
     }
 
     @Nested
-    class TestModels {
-
+    class ModelsTest {
         @Test
-        void testListModels() {
-            Merlin.<OpenAiService>builder()
-                    .addService(new OpenAiService())
-                    .build()
-                    .getService(OpenAiService.class)
-                    .listModels()
-                    .join();
+        void listModels() {
         }
 
         @Test
-        void testRetrieveModel() {
-            Merlin.<OpenAiService>builder()
-                    .addService(new OpenAiService())
-                    .build()
-                    .getService(OpenAiService.class)
-                    .retrieveModel("gpt-3.5-turbo-instruct")
-                    .join();
+        void retrieveModel() {
         }
 
         @Test
-        void testDeleteAFineTunedModel() {
-            Merlin.<OpenAiService>builder()
-                    .addService(new OpenAiService())
-                    .build()
-                    .getService(OpenAiService.class)
-                    .deleteAFineTunedModel("ft:gpt-3.5-turbo:acemeco:suffix:abc123")
-                    .join();
+        void deleteAFineTunedModel() {
         }
     }
+
 
     @Nested
     class ModerationTest {
         @Test
-        void testCreateModeration() {
+        void createModeration() {
             Merlin.<OpenAiService>builder()
-                    .addService(new OpenAiService())
+                    .addService(service)
                     .build()
                     .getService(OpenAiService.class)
                     .createModeration(ModerationRequest.builder()
@@ -405,7 +661,171 @@ class OpenAiServiceTest {
     }
 
     @Nested
-    class AssistantTest {
+    class AssistantsTest {
+        @Test
+        void createAssistant() {
+        }
 
+        @Test
+        void listAssistants() {
+        }
+
+        @Test
+        void retrieveAssistant() {
+        }
+
+        @Test
+        void modifyAssistant() {
+        }
+
+        @Test
+        void deleteAssistant() {
+        }
+    }
+
+    @Nested
+    class ThreadsTest {
+        @Test
+        void createThread() {
+        }
+
+        @Test
+        void retrieveThread() {
+        }
+
+        @Test
+        void modifyThread() {
+        }
+
+        @Test
+        void deleteThread() {
+        }
+    }
+
+    @Nested
+    class MessagesTest {
+        @Test
+        void createMessage() {
+        }
+
+        @Test
+        void listMessages() {
+        }
+
+        @Test
+        void retrieveMessage() {
+        }
+
+        @Test
+        void modifyMessage() {
+        }
+
+        @Test
+        void deleteMessage() {
+        }
+    }
+
+    @Nested
+    class RunsTest {
+        @Test
+        void createRun() {
+        }
+
+        @Test
+        void createThreadAndRun() {
+        }
+
+        @Test
+        void listRuns() {
+        }
+
+        @Test
+        void retrieveRun() {
+        }
+
+        @Test
+        void modifyRun() {
+        }
+
+        @Test
+        void submitToolOutputsToRun() {
+        }
+
+        @Test
+        void cancelRun() {
+        }
+    }
+
+    @Nested
+    class RunStepsTest {
+        @Test
+        void listRunSteps() {
+        }
+
+        @Test
+        void retrieveRunStep() {
+        }
+    }
+
+    @Nested
+    class VectorStoreTest {
+        @Test
+        void createVectorStore() {
+        }
+
+        @Test
+        void listVectorStores() {
+        }
+
+        @Test
+        void retrieveVectorStore() {
+        }
+
+        @Test
+        void modifyVectorStore() {
+        }
+
+        @Test
+        void deleteVectorStore() {
+        }
+    }
+
+    @Nested
+    class VectorStoreFileTest {
+        @Test
+        void createVectorStoreFile() {
+        }
+
+        @Test
+        void listVectorStoreFiles() {
+        }
+
+        @Test
+        void retrieveVectorStoreFile() {
+        }
+
+        @Test
+        void deleteVectorStoreFile() {
+        }
+    }
+
+    @Nested
+    class VectorStoreFileBatchTest {
+
+        @Test
+        void createVectorStoreFileBatch() {
+        }
+
+        @Test
+        void retrieveVectorStoreFileBatch() {
+        }
+
+        @Test
+        void cancelVectorStoreFileBatch() {
+        }
+
+        @Test
+        void listVectorStoreFileBatch() {
+        }
     }
 }

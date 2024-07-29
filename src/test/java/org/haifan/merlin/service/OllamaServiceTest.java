@@ -1,22 +1,26 @@
 package org.haifan.merlin.service;
 
+import org.haifan.merlin.annotations.UseRelay;
+import org.haifan.merlin.annotations.UseWireMock;
 import org.haifan.merlin.client.Merlin;
 import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 import org.haifan.merlin.model.ollama.*;
-import org.haifan.merlin.utils.TestConfig;
 import org.haifan.merlin.utils.TestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import retrofit2.HttpException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,12 +34,31 @@ class OllamaServiceTest {
     private OllamaService service;
 
     @BeforeEach
-    void setUp() {
-        if (TestConfig.useMock()) {
-            this.config = new LlmConfig(Provider.OLLAMA, "https://ollama.wiremockapi.cloud", null);
-        } else {
-            this.config = new LlmConfig(Provider.OLLAMA, "http://10.1.1.12:11434", null);
+    void setUp(TestInfo testInfo) {
+
+        String baseUrl = "http://10.1.1.12:11434";
+        String apiKey = null;
+
+        Properties p = new Properties();
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("test.properties")) {
+            p.load(input);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to load test.properties, supply one if not present.");
         }
+
+        if (testInfo.getTestMethod().isPresent()) {
+            var method = testInfo.getTestMethod().get();
+            if (method.isAnnotationPresent(UseWireMock.class)) {
+                baseUrl = "https://ollama.wiremockapi.cloud/";
+            } else if (method.isAnnotationPresent(UseRelay.class)) {
+                UseRelay annotation = method.getAnnotation(UseRelay.class);
+                baseUrl = annotation.value();
+                apiKey = p.getProperty("api.key");
+            }
+        }
+
+        this.config = new LlmConfig(Provider.OPENAI, baseUrl, apiKey);
         this.config.setTimeOut(Duration.ofSeconds(60));
         this.config.setLogLevel(LlmConfig.Level.HEADERS);
         service = new OllamaService(config);
@@ -103,6 +126,7 @@ class OllamaServiceTest {
     }
 
     @Test
+    @UseWireMock
     void createCompletion() {
 
         OllamaCompletionRequest request = OllamaCompletionRequest
@@ -125,6 +149,7 @@ class OllamaServiceTest {
     }
 
     @Test
+    @UseWireMock
     void createChatCompletion() {
 
         List<OllamaMessage> messages = new ArrayList<>();
@@ -248,6 +273,7 @@ class OllamaServiceTest {
     }
 
     @Test
+    @UseWireMock
     void createModel() {
         OllamaCompletionRequest request = OllamaCompletionRequest
                 .builder()
@@ -266,6 +292,7 @@ class OllamaServiceTest {
     }
 
     @Test
+    @UseWireMock
     void checkBlob() {
         CompletableFuture<Void> future = Merlin.builder()
                 .addService(service)
@@ -286,6 +313,7 @@ class OllamaServiceTest {
     }
 
     @Test
+    @UseWireMock
     void createBlob() throws IOException, NoSuchAlgorithmException {
         File testFile = TestHelper.getFile("ollama/model.bin");
         String digest = TestHelper.getSHA256(testFile);
@@ -309,6 +337,7 @@ class OllamaServiceTest {
     }
 
     @Test
+    @UseWireMock
     void listModels() {
         OllamaModelList response = Merlin.builder()
                 .addService(service)
@@ -321,6 +350,7 @@ class OllamaServiceTest {
     }
 
     @Test
+    @UseWireMock
     void showModelInfo() {
         OllamaCompletionRequest request = OllamaCompletionRequest.builder()
                 .name("mistral")
@@ -336,6 +366,7 @@ class OllamaServiceTest {
     }
 
     @Test
+    @UseWireMock
     void copyModel() {
         OllamaCompletionRequest request = OllamaCompletionRequest.builder()
                 .source("mistral")
@@ -362,6 +393,7 @@ class OllamaServiceTest {
     }
 
     @Test
+    @UseWireMock
     void deleteModel() {
         OllamaCompletionRequest request = OllamaCompletionRequest.builder()
                 .name("testModel:latest")
@@ -426,6 +458,7 @@ class OllamaServiceTest {
     }
 
     @Test
+    @UseWireMock
     void pullModel() {
         OllamaCompletionRequest request = OllamaCompletionRequest.builder()
                 .name("llama3")
@@ -481,6 +514,7 @@ class OllamaServiceTest {
     }
 
     @Test
+    @UseWireMock
     void pushModel() {
         OllamaCompletionRequest request = OllamaCompletionRequest.builder()
                 .name("test/test:latest")
@@ -496,6 +530,7 @@ class OllamaServiceTest {
     }
 
     @Test
+    @UseWireMock
     void createEmbedding() {
         OllamaCompletionRequest request = OllamaCompletionRequest.builder()
                 .model("mistral")
@@ -513,6 +548,7 @@ class OllamaServiceTest {
 
 
     @Test
+    @UseWireMock
     void listRunning() {
         OllamaModelList response = Merlin.builder()
                 .addService(service)

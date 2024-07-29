@@ -28,13 +28,13 @@ import org.haifan.merlin.model.openai.endpoints.chat.ChatCompletion;
 import org.haifan.merlin.model.openai.endpoints.chat.ChatCompletionRequest;
 import org.haifan.merlin.model.openai.endpoints.embeddings.Embedding;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
-import org.haifan.merlin.model.openai.endpoints.files.File;
+import org.haifan.merlin.model.openai.endpoints.files.OpenAiFile;
 import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningCheckpoint;
 import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningEvent;
 import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningJob;
 import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningJobRequest;
+import org.haifan.merlin.model.openai.endpoints.images.Image;
 import org.haifan.merlin.model.openai.endpoints.images.ImageRequest;
-import org.haifan.merlin.model.openai.endpoints.images.ImageList;
 import org.haifan.merlin.model.openai.endpoints.models.Model;
 
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationList;
@@ -70,7 +70,7 @@ public interface OpenAiApi {
     Call<ChatCompletion> createChatCompletion(@Body ChatCompletionRequest request);
 
     @Streaming
-    @POST("v1/chat/completions")
+    @POST("/v1/chat/completions")
     Call<ResponseBody> streamChatCompletion(@Body ChatCompletionRequest request);
 
     // ===============================
@@ -93,16 +93,16 @@ public interface OpenAiApi {
     @GET("/v1/fine_tuning/jobs")
     Call<OpenAiData<FineTuningJob>> listFineTuningJobs(@Query("after") String after, @Query("limit") Integer limit);
 
-    @GET("v1/fine_tuning/jobs/{fine_tuning_job_id}/events")
+    @GET("/v1/fine_tuning/jobs/{fine_tuning_job_id}/events")
     Call<OpenAiData<FineTuningEvent>> listFineTuningEvents(@Path("fine_tuning_job_id") String fineTuningJobId);
 
-    @GET("v1/fine_tuning/jobs/{fine_tuning_job_id}/events")
+    @GET("/v1/fine_tuning/jobs/{fine_tuning_job_id}/events")
     Call<OpenAiData<FineTuningEvent>> listFineTuningEvents(@Path("fine_tuning_job_id") String fineTuningJobId, @Query("after") String after, @Query("limit") Integer limit);
 
-    @GET("v1/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints")
+    @GET("/v1/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints")
     Call<OpenAiData<FineTuningCheckpoint>> listFineTuningCheckpoints(@Path("fine_tuning_job_id") String fineTuningJobId);
 
-    @GET("v1/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints")
+    @GET("/v1/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints")
     Call<OpenAiData<FineTuningCheckpoint>> listFineTuningCheckpoints(@Path("fine_tuning_job_id") String fineTuningJobId, @Query("after") String after, @Query("limit") Integer limit);
 
     @GET("/v1/fine_tuning/jobs/{fine_tuning_job_id}")
@@ -135,13 +135,13 @@ public interface OpenAiApi {
     // ===============================
 
     @POST("/v1/files")
-    Call<File> uploadFile(@Body RequestBody requestBody);
+    Call<OpenAiFile> uploadFile(@Body RequestBody requestBody);
 
     @GET("/v1/files")
-    Call<OpenAiData<File>> listFiles();
+    Call<OpenAiData<OpenAiFile>> listFiles();
 
     @GET("/v1/files/{file_id}")
-    Call<File> retrieveFile(@Path(Fields.FILE_ID) String fileId);
+    Call<OpenAiFile> retrieveFile(@Path(Fields.FILE_ID) String fileId);
 
     @DELETE("/v1/files/{file_id}")
     Call<DeletionStatus> deleteFile(@Path(Fields.FILE_ID) String fileId);
@@ -154,14 +154,14 @@ public interface OpenAiApi {
     // ENDPOINTS - Images
     // ===============================
 
-    @POST("v1/images/generations")
-    Call<ImageList> createImage(@Body ImageRequest request);
+    @POST("/v1/images/generations")
+    Call<OpenAiData<Image>> createImage(@Body ImageRequest request);
 
     @POST("/v1/images/edits")
-    Call<ImageList> createImageEdit(@Body RequestBody requestBody);
+    Call<OpenAiData<Image>> createImageEdit(@Body RequestBody requestBody);
 
     @POST("/v1/images/variations")
-    Call<ImageList> createImageVariation(@Body RequestBody requestBody);
+    Call<OpenAiData<Image>> createImageVariation(@Body RequestBody requestBody);
 
     // ===============================
     // ENDPOINTS - Models
@@ -178,7 +178,7 @@ public interface OpenAiApi {
     // ===============================
     // ENDPOINTS - Moderation
     // ===============================
-    @POST("v1/moderations")
+    @POST("/v1/moderations")
     Call<ModerationList> createModeration(@Body ModerationRequest request);
 
     // ===============================

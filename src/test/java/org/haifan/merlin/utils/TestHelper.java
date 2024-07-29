@@ -74,4 +74,17 @@ public class TestHelper {
         }
         return path;
     }
+
+    /**
+     * Writes the content of a ResponseBody to a file in the test resources directory.
+     */
+    public static Path writeResponseBodyToFile(ResponseBody responseBody, Path filePath) throws IOException {
+        Path resourceDirectory = Path.of("src", "test", "resources");
+        Path fullPath = resourceDirectory.resolve(filePath);
+        Files.createDirectories(fullPath.getParent());
+        try (InputStream inputStream = responseBody.byteStream()) {
+            Files.copy(inputStream, fullPath, StandardCopyOption.REPLACE_EXISTING);
+        }
+        return fullPath;
+    }
 }

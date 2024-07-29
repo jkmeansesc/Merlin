@@ -84,7 +84,7 @@ public class DefaultObjectMapper {
         try {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
         } catch (JsonProcessingException e) {
-            throw new DefaultObjectMapperException("Error printing object as JSON", e);
+            throw new DefaultObjectMapperException("Error serializing object as JSON", e);
         }
     }
 }

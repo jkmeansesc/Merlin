@@ -32,14 +32,15 @@ import org.haifan.merlin.model.openai.endpoints.chat.ChatCompletionChunk;
 import org.haifan.merlin.model.openai.endpoints.chat.ChatCompletionRequest;
 import org.haifan.merlin.model.openai.endpoints.embeddings.Embedding;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
+import org.haifan.merlin.model.openai.endpoints.files.OpenAiFile;
 import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningCheckpoint;
 import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningEvent;
 import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningJob;
 import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningJobRequest;
+import org.haifan.merlin.model.openai.endpoints.images.Image;
 import org.haifan.merlin.model.openai.endpoints.images.ImageEditRequest;
 import org.haifan.merlin.model.openai.endpoints.images.ImageRequest;
 import org.haifan.merlin.model.openai.endpoints.images.ImageVariationRequest;
-import org.haifan.merlin.model.openai.endpoints.images.ImageList;
 import org.haifan.merlin.model.openai.endpoints.models.Model;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationList;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
@@ -238,22 +239,22 @@ public class OpenAiService extends LlmService {
     // ENDPOINTS - Files
     // ===============================
 
-    public CompletableFuture<org.haifan.merlin.model.openai.endpoints.files.File> uploadFile(String purpose, String filePath) {
+    public CompletableFuture<OpenAiFile> uploadFile(String purpose, String filePath) {
         java.io.File file = new java.io.File(filePath);
         return uploadFile(purpose, file);
     }
 
-    public CompletableFuture<org.haifan.merlin.model.openai.endpoints.files.File> uploadFile(String purpose, File file) {
+    public CompletableFuture<OpenAiFile> uploadFile(String purpose, File file) {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.PURPOSE, purpose).addFormDataPart(Fields.FILE, file.getName(), FileParser.parseFile(file));
 
         return super.call(api.uploadFile(builder.build()));
     }
 
-    public CompletableFuture<OpenAiData<org.haifan.merlin.model.openai.endpoints.files.File>> listFiles() {
+    public CompletableFuture<OpenAiData<OpenAiFile>> listFiles() {
         return super.call(api.listFiles());
     }
 
-    public CompletableFuture<org.haifan.merlin.model.openai.endpoints.files.File> retrieveFile(String fileId) {
+    public CompletableFuture<OpenAiFile> retrieveFile(String fileId) {
         return super.call(api.retrieveFile(fileId));
     }
 
@@ -269,18 +270,17 @@ public class OpenAiService extends LlmService {
     // ENDPOINTS - Images
     // ===============================
 
-    public CompletableFuture<ImageList> createImage(ImageRequest imageRequest) {
+    public CompletableFuture<OpenAiData<Image>> createImage(ImageRequest imageRequest) {
         return super.call(api.createImage(imageRequest));
     }
 
-
-    public CompletableFuture<ImageList> createImageEdit(ImageEditRequest request, String imagePath, String maskPath) {
+    public CompletableFuture<OpenAiData<Image>> createImageEdit(ImageEditRequest request, String imagePath, String maskPath) {
         File image = new File(imagePath);
         File mask = maskPath != null ? new File(maskPath) : null;
         return createImageEdit(request, image, mask);
     }
 
-    private CompletableFuture<ImageList> createImageEdit(ImageEditRequest request, File image, File mask) {
+    private CompletableFuture<OpenAiData<Image>> createImageEdit(ImageEditRequest request, File image, File mask) {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.N, request.getN().toString()) // integer or null
                 .addFormDataPart(Fields.SIZE, request.getSize()) // string or null
                 .addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat()) //string or null
@@ -299,12 +299,12 @@ public class OpenAiService extends LlmService {
         return super.call(api.createImageEdit(builder.build()));
     }
 
-    public CompletableFuture<ImageList> createImageVariation(ImageVariationRequest request, String imagePath) {
+    public CompletableFuture<OpenAiData<Image>> createImageVariation(ImageVariationRequest request, String imagePath) {
         java.io.File image = new java.io.File(imagePath);
         return createImageVariation(request, image);
     }
 
-    public CompletableFuture<ImageList> createImageVariation(ImageVariationRequest request, File image) {
+    public CompletableFuture<OpenAiData<Image>> createImageVariation(ImageVariationRequest request, File image) {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.N, request.getN().toString()) // integer or null
                 .addFormDataPart(Fields.SIZE, request.getSize()) // string or null
                 .addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat()) // string or null

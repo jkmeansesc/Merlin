@@ -1,33 +1,54 @@
 package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.haifan.merlin.annotations.UseRelay;
+import org.haifan.merlin.annotations.UseWireMock;
 import org.haifan.merlin.client.Merlin;
 import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.interceptors.GeminiInterceptor;
 import org.haifan.merlin.model.gemini.ModelList;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
-import org.haifan.merlin.utils.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class GeminiServiceTest {
     private LlmConfig config;
-    private final GeminiInterceptor interceptor = new GeminiInterceptor("");
     private GeminiService service;
-    private final ObjectMapper mapper = DefaultObjectMapper.create();
 
     @BeforeEach
-    void setUp() {
-        if (TestConfig.useMock()) {
-            this.config = new LlmConfig(Provider.GOOGLE_GEMINI, "https://gemini.wiremockapi.cloud/", null);
-        } else {
-            this.config = new LlmConfig(Provider.GOOGLE_GEMINI, GeminiService.DEFAULT_BASE_URL, null);
+    void setUp(TestInfo testInfo) {
+        String baseUrl = GeminiService.DEFAULT_BASE_URL;
+        String apiKey = null;
+        Properties p = new Properties();
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("test.properties")) {
+            p.load(input);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to load test.properties, supply one if not present.");
         }
+
+        if (testInfo.getTestMethod().isPresent()) {
+            var method = testInfo.getTestMethod().get();
+            if (method.isAnnotationPresent(UseWireMock.class)) {
+                baseUrl = "https://gemini.wiremockapi.cloud/";
+            } else if (method.isAnnotationPresent(UseRelay.class)) {
+                UseRelay annotation = method.getAnnotation(UseRelay.class);
+                baseUrl = annotation.value();
+                apiKey = p.getProperty("api.key");
+            }
+        }
+
+        this.config = new LlmConfig(Provider.OPENAI, baseUrl, apiKey);
         this.config.setLogLevel(LlmConfig.Level.BODY);
-        service = new GeminiService();
+        this.service = new GeminiService();
     }
 
     @Test

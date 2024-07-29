@@ -8,7 +8,7 @@ import lombok.Data;
  * <a href="https://platform.openai.com/docs/api-reference/files/object">...</a>
  */
 @Data
-public class File {
+public class OpenAiFile {
 
     private String id;
 
@@ -22,5 +22,18 @@ public class File {
     private String object;
 
     private String purpose;
+
+    /**
+     * @deprecated deprecated from openai documentation, will be removed if openai stops returning this field.
+     */
+    @Deprecated(since = "1.0", forRemoval = true)
+    private String status;
+
+    /**
+     * @deprecated deprecated from openai documentation, will be removed if openai stops returning this field.
+     */
+    @Deprecated(since = "1.0", forRemoval = true)
+    @JsonProperty("status_details")
+    private String statusDetails;
 
 }

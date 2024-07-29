@@ -20,4 +20,5 @@ public class OpenAiData<T> {
     private Boolean hasMore;
     private String model;
     private Usage usage;
+    private Long created;
 }

@@ -24,7 +24,7 @@ public class BatchRequest {
 
     @NonNull
     @JsonProperty("completion_window")
-    private Integer completionWindow;
+    private String completionWindow;
 
     private Map<String, Object> metadata;
 }
