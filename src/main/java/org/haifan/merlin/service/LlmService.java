@@ -57,9 +57,9 @@ public abstract class LlmService {
         return future;
     }
 
-    protected <T> Flowable<T> stream(Call<ResponseBody> call, Function<String, T> chunkParser, LlmService service) {
+    protected <T> Flowable<T> stream(Call<ResponseBody> call, Function<String, T> chunkParser) {
         log.info("Streaming");
-        return Flowable.<T>create(emitter -> call.enqueue(new ApiResponseStreamCallback<>(emitter, chunkParser, service)), io.reactivex.rxjava3.core.BackpressureStrategy.BUFFER)
+        return Flowable.<T>create(emitter -> call.enqueue(new ApiResponseStreamCallback<>(emitter, chunkParser)), io.reactivex.rxjava3.core.BackpressureStrategy.BUFFER)
                 .subscribeOn(Schedulers.io());
     }
 
