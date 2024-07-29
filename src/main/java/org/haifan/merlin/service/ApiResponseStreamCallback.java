@@ -17,12 +17,10 @@ import java.util.function.Function;
 public class ApiResponseStreamCallback<T> implements Callback<ResponseBody> {
     private final FlowableEmitter<T> emitter;
     private final Function<String, T> chunkParser;
-    private final LlmService service;
 
-    public ApiResponseStreamCallback(FlowableEmitter<T> emitter, Function<String, T> chunkParser, LlmService service) {
+    public ApiResponseStreamCallback(FlowableEmitter<T> emitter, Function<String, T> chunkParser) {
         this.emitter = emitter;
         this.chunkParser = chunkParser;
-        this.service = service;
     }
 
     @Override
@@ -44,10 +42,11 @@ public class ApiResponseStreamCallback<T> implements Callback<ResponseBody> {
             log.info("Got streaming response, start parsing");
             String line;
             while ((line = reader.readLine()) != null && !emitter.isCancelled()) {
-                String chunk = service.parseStreamLine(line);
+                String chunk = parseStreamLine(line);
                 T parsedChunk = chunkParser.apply(chunk);
                 emitter.onNext(parsedChunk);
             }
+            log.debug("No more chunks, completing");
             emitter.onComplete();
             log.info("Stream successful");
         } catch (Throwable e) {
@@ -58,5 +57,12 @@ public class ApiResponseStreamCallback<T> implements Callback<ResponseBody> {
     @Override
     public void onFailure(@NotNull Call<ResponseBody> call, @NotNull Throwable t) {
         emitter.onError(t);
+    }
+
+    private String parseStreamLine(String line) {
+        if (line.startsWith("data:")) {
+            return line.substring(5).trim(); // for openai
+        }
+        return line;
     }
 }

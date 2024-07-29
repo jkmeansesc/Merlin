@@ -83,15 +83,6 @@ public class OpenAiService extends LlmService {
         this.api = super.retrofit.create(OpenAiApi.class);
     }
 
-    @Override
-    protected String parseStreamLine(String line) {
-        if (line.startsWith("data: ")) {
-            String json = line.substring(6).trim();
-            return "[DONE]".equals(json) ? null : json;
-        }
-        return null;
-    }
-
     private ChatCompletionChunk parseChunk(String json) {
         ObjectMapper mapper = DefaultObjectMapper.get();
         try {

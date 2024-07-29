@@ -24,17 +24,6 @@ public class GeminiService extends LlmService {
         this.api = super.retrofit.create(GeminiApi.class);
     }
 
-    @TestOnly
-    GeminiService(GeminiApi api, LlmConfig config, GeminiInterceptor interceptor) {
-        super(config, interceptor);
-        this.api = api;
-    }
-
-    @Override
-    protected String parseStreamLine(String line) {
-        return line;
-    }
-
     // ===============================
     // Google Gemini v1
     // ===============================
