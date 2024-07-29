@@ -1,6 +1,7 @@
 package org.haifan.merlin.internal.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.haifan.merlin.model.openai.Content;
@@ -67,5 +68,23 @@ public class DefaultObjectMapper {
             return create();
         }
         return mapper;
+    }
+
+    /**
+     * Prints the given object as a formatted JSON string.
+     *
+     * @param obj the object to serialize to JSON
+     * @return a formatted JSON string
+     * @throws DefaultObjectMapperException if there is an error during JSON serialization
+     */
+    public static String print(Object obj) {
+        if (mapper == null) {
+            create();
+        }
+        try {
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            throw new DefaultObjectMapperException("Error printing object as JSON", e);
+        }
     }
 }

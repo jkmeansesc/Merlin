@@ -30,11 +30,6 @@ public class OllamaService extends LlmService {
         this.api = super.retrofit.create(OllamaApi.class);
     }
 
-    @Override
-    protected String parseStreamLine(String line) {
-        return line;
-    }
-
     private OllamaCompletion parseChunk(String json) {
         ObjectMapper mapper = DefaultObjectMapper.get();
         try {

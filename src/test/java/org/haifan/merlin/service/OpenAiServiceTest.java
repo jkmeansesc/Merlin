@@ -1,7 +1,8 @@
 package org.haifan.merlin.service;
 
 import org.haifan.merlin.client.Merlin;
-import org.haifan.merlin.internal.constants.Fields;
+import org.haifan.merlin.internal.constants.Provider;
+import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 import org.haifan.merlin.model.openai.*;
 import org.haifan.merlin.model.openai.Function;
 import org.haifan.merlin.model.openai.endpoints.audio.SpeechRequest;
@@ -9,7 +10,8 @@ import org.haifan.merlin.model.openai.endpoints.chat.*;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
 import org.haifan.merlin.model.openai.endpoints.images.ImageRequest;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
-import org.haifan.merlin.internal.utils.JsonPrinter;
+import org.haifan.merlin.utils.TestConfig;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -17,122 +19,153 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 class OpenAiServiceTest {
 
+    private LlmConfig config;
+    private OpenAiService service;
+
+    @BeforeEach
+    void setUp() {
+        if (TestConfig.useMock()) {
+            this.config = new LlmConfig(Provider.OPENAI, "https://openai.wiremockapi.cloud/", null);
+        } else {
+            this.config = new LlmConfig(Provider.OPENAI, "https://api.chatanywhere.cn", "sk-wZ2iR46dia1VcsgA3WkLpelIVMcftmsxxvF4Ebzcm0dKFkgL");
+        }
+        this.config.setLogLevel(LlmConfig.Level.BODY);
+        this.service = new OpenAiService(config);
+    }
+
     @Test
-    void testGetConfig() {
+    void test_constructor_can_be_initialized() {
+        LlmService service_1 = new OpenAiService();
+        assertNotNull(service_1.getClient());
+        assertNotNull(service_1.getMapper());
+        assertNotNull(service_1.getRetrofit());
+        assertNotNull(service_1.getConfig());
+
+        this.config = new LlmConfig(Provider.OPENAI, "https://test.baseUrl.com", "test token");
+        LlmService service_2 = new OpenAiService(config);
+        assertEquals("https://test.baseUrl.com", service_2.getConfig().getBaseUrl(), "Wrong baseUrl");
+        assertEquals("test token", service_2.getConfig().getToken(), "Wrong token");
     }
 
     @Nested
-    class TestChat {
+    class ChatTest {
         @Test
-        void testChatCompletionRequest() {
-            List<Message> messages = new ArrayList<>();
-            messages.add(new SystemMessage("system message"));
-            messages.add(new UserMessage("user message"));
-            messages.add(new ToolMessage("tool message", "toolCallId"));
-            messages.add(new AssistantMessage("assistant message", "assistant name"));
+        void test_all_request_fields_can_be_set() {
+            List<OpenAiMessage> messages = new ArrayList<>();
+            messages.add(new OpenAiMessage(OpenAiMessage.Role.SYSTEM, "system message"));
+            messages.add(new OpenAiMessage(OpenAiMessage.Role.USER, "user message"));
+            messages.add(new OpenAiMessage(OpenAiMessage.Role.TOOL, "tool message", "toolCallId"));
+            messages.add(new OpenAiMessage(OpenAiMessage.Role.ASSISTANT, "assistant message"));
 
-            ChatCompletionRequest request_1 = ChatCompletionRequest.builder()
-                    .model("model")
+            assertEquals("system", messages.get(0).getRoleAsString(), "Wrong role");
+            assertEquals("user", messages.get(1).getRoleAsString(), "Wrong role");
+            assertEquals("tool", messages.get(2).getRoleAsString(), "Wrong role");
+            assertEquals("assistant", messages.get(3).getRoleAsString(), "Wrong role");
+
+            List<Tool> tools = new ArrayList<>();
+            tools.add(new Tool("auto", new Function("function")));
+
+            Map<String, Integer> logitBias = new HashMap<>();
+            logitBias.put("logitBias", 1);
+
+            ChatCompletionRequest request = ChatCompletionRequest.builder()
                     .messages(messages)
-                    .toolChoice(new ToolChoice(new Tool("auto", new Function("function name"))))
+                    .model("model")
+                    .frequencyPenalty(0.1)
+                    .logitBias(logitBias)
+                    .logprobs(false)
+                    .topLogprobs(1)
+                    .maxTokens(400)
+                    .n(5)
+                    .presencePenalty(1.1)
+                    .responseFormat(new ResponseFormat("type"))
+                    .seed(1)
+                    .serviceTier("auto")
+                    .stop(Arrays.stream(new String[]{"1", "2"}).toList())
+                    .stream(false)
+                    .streamOptions(new ChatCompletionRequest.StreamOptions())
+                    .temperature(11.0)
+                    .topP(10.1)
+                    .tools(tools)
+                    .toolChoice(new ToolChoice("auto"))
+                    .parallelToolCalls(false)
+                    .user("user")
                     .build();
 
-            System.out.println(JsonPrinter.print(request_1));
-
-            ChatCompletionRequest request_2 = ChatCompletionRequest.builder()
-                    .model("model")
-                    .messages(messages)
-                    .toolChoice(new ToolChoice("123"))
-                    .build();
-
-            System.out.println(JsonPrinter.print(request_2));
+            assertEquals("model", request.getModel());
+            System.out.println(DefaultObjectMapper.print(request));
         }
 
-        @Nested
-        class TestMessage {
-            @Test
-            void testSystemMessage() {
+        @Test
+        void createChatCompletion() {
+            List<OpenAiMessage> messages = new ArrayList<>();
+            messages.add(new OpenAiMessage(OpenAiMessage.Role.USER, "Are you there?"));
 
-                String content = "System content";
-                String name = "System name";
+            ChatCompletionRequest request = ChatCompletionRequest.builder()
+                    .model("gpt-4o")
+                    .messages(messages)
+                    .build();
+            ChatCompletion response = Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .createChatCompletion(request)
+                    .join();
 
-                List<Message> messages = new ArrayList<>();
-                messages.add(new SystemMessage(content));
-                messages.add(new SystemMessage(content, name));
+            assertNotNull(response.getChoices().get(0).getMessage());
+            System.out.println(DefaultObjectMapper.print(response));
+        }
 
-                assertNotNull(messages.get(0).getRole());
-                assertEquals(Fields.SYSTEM, messages.get(0).getRole());
-                assertNotNull(messages.get(1).getRole());
-                assertEquals(Fields.SYSTEM, messages.get(1).getRole());
-                assertNull(messages.get(0).getName());
-                assertEquals(name, messages.get(1).getName());
+        @Test
+        void streamChatCompletion() {
+            List<OpenAiMessage> messages = new ArrayList<>();
+            messages.add(new OpenAiMessage(OpenAiMessage.Role.USER, "Why is the sky blue?"));
 
-                System.out.println(JsonPrinter.print(messages));
+            ChatCompletionRequest request = ChatCompletionRequest.builder()
+                    .model("gpt-3.5-turbo-0125")
+                    .messages(messages)
+                    .build();
+
+            AtomicBoolean isDone = new AtomicBoolean(false);
+            AtomicReference<Throwable> e = new AtomicReference<>();
+            CompletableFuture<Void> future = new CompletableFuture<>();
+
+            Merlin.builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .streamChatCompletion(request)
+                    .start(
+                            chunk -> {
+                                System.out.println("Received chunk: " + chunk);
+                                OpenAiMessage message = chunk.getChoices().get(0).getMessage();
+                                messages.add(message);
+                            },
+                            error -> {
+                                System.err.println("Error occurred: " + error.getMessage());
+                                e.set(error);
+                                future.completeExceptionally(error);
+                            },
+                            () -> {
+                                System.out.println("Streaming completed");
+                                isDone.set(true);
+                                future.complete(null);
+                            }
+                    );
+            future.join();
+            if (e.get() != null) {
+                fail("Stream completed with an error: " + e.get().getMessage());
             }
-
-            @Test
-            void testUserMessage() {
-                List<Message> messages = new ArrayList<>();
-
-                UserMessage userMessageWithDefaultName = new UserMessage("test simple string content");
-                messages.add(userMessageWithDefaultName);
-                assertNotNull(messages.get(0).getRole());
-                assertEquals(Fields.USER, messages.get(0).getRole());
-
-                UserMessage userMessageWithName = new UserMessage("test simple string content with name", "simple name");
-                messages.add(userMessageWithName);
-                assertNotNull(messages.get(1).getRole());
-                assertEquals(Fields.USER, messages.get(1).getRole());
-                assertEquals("simple name", messages.get(1).getName());
-
-                String imgUrl = "https://example.imgurl.com";
-                String imgUrl_1 = "https://different.imgurl.com";
-                String imgUrl_2 = "https://another.different.imgurl.com";
-                String detail = "low";
-                List<ContentPart> contentParts = new ArrayList<>();
-
-                UserMessage userMessageWithContentPart = new UserMessage(contentParts)
-                        .addTextContent("text content in TextContentPart")
-                        .addImageUrlContent(imgUrl)
-                        .addImageUrlContent(imgUrl_1, detail)
-                        .addImageUrlContent(imgUrl_2);
-
-                assertEquals(Fields.TEXT, contentParts.get(0).getType());
-                assertEquals(Fields.IMAGE_URL, contentParts.get(1).getType());
-
-                messages.add(userMessageWithContentPart.setContentParts(contentParts));
-                assertNotNull(messages.get(2).getRole());
-                assertEquals(Fields.USER, messages.get(2).getRole());
-
-                UserMessage userMessageWithDefault = new UserMessage()
-                        .addTextContent("text content")
-                        .addImageUrlContent(imgUrl, "high")
-                        .addImageUrlContent(imgUrl_1, "whatever");
-                messages.add(userMessageWithDefault);
-                assertNotNull(messages.get(3).getRole());
-                assertEquals(Fields.USER, messages.get(3).getRole());
-
-                UserMessage userMessageWithContentPartAndName = new UserMessage(new ArrayList<>(), "name");
-                messages.add(userMessageWithContentPartAndName);
-
-                UserMessage userMessageWithFileContent = new UserMessage()
-                        .addImageFileContent(imgUrl_2)
-                        .addImageFileContent(imgUrl, detail);
-                messages.add(userMessageWithFileContent);
-
-                System.out.println(JsonPrinter.print(messages));
-            }
-
-            @Test
-            void testAssistantMessage() {
-
-            }
+            assertTrue(isDone.get(), "Stream should complete successfully");
+            assertTrue(messages.size() > 1, "Should receive at least one chunk");
+            System.out.println(DefaultObjectMapper.print(messages));
         }
     }
 
@@ -148,7 +181,7 @@ class OpenAiServiceTest {
                     .encodingFormat("base64")
                     .model("text-embedding-3")
                     .build();
-            System.out.println(JsonPrinter.print(request1));
+            System.out.println(DefaultObjectMapper.print(request1));
 
             // Array of strings
             List<String> stringList = Arrays.asList("String 1", "String 2", "String 3");
@@ -157,7 +190,7 @@ class OpenAiServiceTest {
                     .model("text-embedding-ada-002")
                     .build();
 
-            System.out.println(JsonPrinter.print(request2));
+            System.out.println(DefaultObjectMapper.print(request2));
 
             // Array of integers
             List<Integer> intList = Arrays.asList(1, 2, 3, 4, 5);
@@ -166,7 +199,7 @@ class OpenAiServiceTest {
                     .model("text-embedding-ada-002")
                     .build();
 
-            System.out.println(JsonPrinter.print(request3));
+            System.out.println(DefaultObjectMapper.print(request3));
 
             // Array of arrays of integers
             List<List<Integer>> nestedList = Arrays.asList(
@@ -180,21 +213,21 @@ class OpenAiServiceTest {
                     .model("text-embedding-ada-002")
                     .build();
 
-            System.out.println(JsonPrinter.print(request4));
+            System.out.println(DefaultObjectMapper.print(request4));
 
             EmbeddingRequest request5 = EmbeddingRequest.builder()
                     .input(new Integer[]{1, 2, 3})
                     .model("text-embedding-ada-002")
                     .build();
 
-            System.out.println(JsonPrinter.print(request5));
+            System.out.println(DefaultObjectMapper.print(request5));
 
             EmbeddingRequest request6 = EmbeddingRequest.builder()
                     .input(new String[]{"string1", "string2", "string3"})
                     .model("text-embedding-ada-002")
                     .build();
 
-            System.out.println(JsonPrinter.print(request6));
+            System.out.println(DefaultObjectMapper.print(request6));
 
             Merlin.<OpenAiService>builder()
                     .addService(new OpenAiService())

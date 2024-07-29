@@ -2,7 +2,7 @@ package org.haifan.merlin.model.openai.endpoints.finetune;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import org.haifan.merlin.model.openai.Message;
+import org.haifan.merlin.model.openai.OpenAiMessage;
 import org.haifan.merlin.model.openai.Tool;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Data
 public class ChatTrainingFormat {
-    private List<Message> messages;
+    private List<OpenAiMessage> messages;
     private List<Tool> tools;
     @JsonProperty("parallel_tool_calls")
     private Boolean parallelToolCalls;

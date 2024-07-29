@@ -86,6 +86,4 @@ public abstract class LlmService {
                 .addConverterFactory(JacksonConverterFactory.create(mapper))
                 .build();
     }
-
-    protected abstract String parseStreamLine(String line);
 }

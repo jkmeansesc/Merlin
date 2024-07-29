@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.haifan.merlin.model.openai.Message;
+import org.haifan.merlin.model.openai.OpenAiMessage;
 import org.haifan.merlin.model.openai.ToolResources;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Data
 public class ThreadRequest {
-    private List<Message> messages;
+    private List<OpenAiMessage> messages;
     @JsonProperty("tool_resources")
     private ToolResources toolResources;
     private Map<String, Object> metadata;

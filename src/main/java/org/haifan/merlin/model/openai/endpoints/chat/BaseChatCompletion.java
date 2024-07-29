@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.haifan.merlin.internal.constants.Fields;
 import org.haifan.merlin.model.openai.Logprobs;
-import org.haifan.merlin.model.openai.Message;
+import org.haifan.merlin.model.openai.OpenAiMessage;
 import org.haifan.merlin.model.openai.Usage;
 
 import java.util.List;
@@ -35,7 +35,7 @@ public class BaseChatCompletion {
     public static class Choice {
 
         @JsonAlias(Fields.DELTA)
-        private Message message;
+        private OpenAiMessage message;
 
         private Logprobs logprobs;
 

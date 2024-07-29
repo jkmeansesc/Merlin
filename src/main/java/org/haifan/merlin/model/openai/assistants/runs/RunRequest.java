@@ -21,7 +21,7 @@ public class RunRequest {
     @JsonProperty("additional_instructions")
     private String additionalInstructions;
     @JsonProperty("additional_messages")
-    private List<Message> additionalMessages;
+    private List<OpenAiMessage> additionalMessages;
     private List<Tool> tools;
     private Map<String,Object> metadata;
     private Double temperature;

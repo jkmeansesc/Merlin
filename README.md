@@ -159,7 +159,7 @@ classDiagram
     }
 
     namespace util {
-        class JsonPrinter {
+        class DefaultObjectMapper {
             + print(Object obj)
         }
     }

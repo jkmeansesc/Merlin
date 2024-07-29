@@ -1,7 +1,6 @@
 package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.haifan.merlin.internal.api.GeminiApi;
 import org.haifan.merlin.client.Merlin;
 import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.interceptors.GeminiInterceptor;
@@ -11,19 +10,10 @@ import org.haifan.merlin.utils.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class GeminiServiceTest {
-    @Mock
-    private GeminiApi api;
     private LlmConfig config;
     private final GeminiInterceptor interceptor = new GeminiInterceptor("");
     private GeminiService service;
@@ -32,10 +22,12 @@ class GeminiServiceTest {
     @BeforeEach
     void setUp() {
         if (TestConfig.useMock()) {
-            service = new GeminiService(api, config, interceptor);
+            this.config = new LlmConfig(Provider.GOOGLE_GEMINI, "https://gemini.wiremockapi.cloud/", null);
         } else {
-            service = new GeminiService();
+            this.config = new LlmConfig(Provider.GOOGLE_GEMINI, GeminiService.DEFAULT_BASE_URL, null);
         }
+        this.config.setLogLevel(LlmConfig.Level.BODY);
+        service = new GeminiService();
     }
 
     @Test

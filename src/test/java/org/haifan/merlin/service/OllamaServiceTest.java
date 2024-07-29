@@ -2,8 +2,8 @@ package org.haifan.merlin.service;
 
 import org.haifan.merlin.client.Merlin;
 import org.haifan.merlin.internal.constants.Provider;
+import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 import org.haifan.merlin.model.ollama.*;
-import org.haifan.merlin.internal.utils.JsonPrinter;
 import org.haifan.merlin.utils.TestConfig;
 import org.haifan.merlin.utils.TestHelper;
 import org.junit.jupiter.api.BeforeEach;
@@ -121,7 +121,7 @@ class OllamaServiceTest {
         assertTrue(response.getDone(), "Non streaming response should always return true");
         assertEquals("stop", response.getDoneReason(), "Non streaming response should always return stop");
         assertNotNull(response.getResponse(), "Response should not be null");
-        System.out.println(JsonPrinter.print(response));
+        System.out.println(DefaultObjectMapper.print(response));
     }
 
     @Test
@@ -149,7 +149,7 @@ class OllamaServiceTest {
         assertTrue(response.getDone(), "Non streaming response should always return true");
         assertEquals("stop", response.getDoneReason(), "Non streaming response should always return stop");
         assertNotNull(response.getMessage(), "Response should not be null");
-        System.out.println(JsonPrinter.print(response));
+        System.out.println(DefaultObjectMapper.print(response));
     }
 
     @Test
@@ -262,7 +262,7 @@ class OllamaServiceTest {
                 .createModel(request)
                 .join();
         assertEquals("success", response.getStatus(), "status should be success");
-        System.out.println(JsonPrinter.print(response));
+        System.out.println(DefaultObjectMapper.print(response));
     }
 
     @Test
@@ -317,7 +317,7 @@ class OllamaServiceTest {
                 .listModels()
                 .join();
         assertNotNull(response.getModels());
-        System.out.println(JsonPrinter.print(response));
+        System.out.println(DefaultObjectMapper.print(response));
     }
 
     @Test
@@ -332,7 +332,7 @@ class OllamaServiceTest {
                 .showModelInfo(request)
                 .join();
         assertNotNull(response.getModelInfo());
-        System.out.println(JsonPrinter.print(response));
+        System.out.println(DefaultObjectMapper.print(response));
     }
 
     @Test
@@ -508,7 +508,7 @@ class OllamaServiceTest {
                 .createEmbedding(request)
                 .join();
         assertNotNull(response.getEmbedding());
-        System.out.println(JsonPrinter.print(response));
+        System.out.println(DefaultObjectMapper.print(response));
     }
 
 
@@ -521,6 +521,6 @@ class OllamaServiceTest {
                 .listRunning()
                 .join();
         assertNotNull(response.getModels());
-        System.out.println(JsonPrinter.print(response));
+        System.out.println(DefaultObjectMapper.print(response));
     }
 }

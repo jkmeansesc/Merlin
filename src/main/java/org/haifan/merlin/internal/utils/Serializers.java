@@ -54,17 +54,13 @@ public class Serializers {
 
     public static class ToolChoiceSerializer extends JsonSerializer<ToolChoice> {
         @Override
-        public void serialize(ToolChoice value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            // values other than "none", "auto", "required" will be ignored and serialized as null
-            String type = value.getType().toLowerCase();
-            if (type.equals("none") || type.equals("auto") || type.equals("required")) {
-                gen.writeString(type);
+        public void serialize(ToolChoice toolChoice, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            if (toolChoice.getType() != null) {
+                gen.writeString(toolChoice.getType());
+            } else if (toolChoice.getTool() != null) {
+                gen.writeObject(toolChoice.getTool());
             } else {
-                if (value.getTool() != null) {
-                    gen.writeObject(value.getTool());
-                } else {
-                    gen.writeNull();
-                }
+                gen.writeNull();
             }
         }
     }
@@ -72,12 +68,10 @@ public class Serializers {
     public static class ToolChoiceDeserializer extends JsonDeserializer<ToolChoice> {
         @Override
         public ToolChoice deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            if (p.getCurrentToken().isScalarValue()) {
-                String value = p.getValueAsString();
-                return new ToolChoice(value);
-            } else if (p.getCurrentToken().isStructStart()) {
-                ObjectNode node = p.readValueAsTree();
-                Tool tool = ctxt.readValue(node.traverse(p.getCodec()), Tool.class);
+            if (p.getCurrentToken() == JsonToken.VALUE_STRING) {
+                return new ToolChoice(p.getText());
+            } else if (p.getCurrentToken() == JsonToken.START_OBJECT) {
+                Tool tool = p.readValueAs(Tool.class);
                 return new ToolChoice(tool);
             }
             return null;
