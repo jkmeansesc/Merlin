@@ -4,8 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.Request;
 import org.haifan.merlin.internal.constants.Provider;
 
+/**
+ * A just-in-case implementation against future changes from Ollama, also to fit the over-all design.
+ */
 @Slf4j
-public class OllamaInterceptor extends LlmInterceptor {
+public class OllamaInterceptor extends AuthenticationInterceptor {
 
     public OllamaInterceptor() {
         super();

@@ -2,6 +2,7 @@ package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.haifan.merlin.internal.api.OpenAiApi;
 import org.haifan.merlin.internal.constants.Fields;
@@ -158,6 +159,7 @@ public class OpenAiService extends LlmService {
     }
 
     public StreamingResponse<ChatCompletionChunk> streamChatCompletion(ChatCompletionRequest request) {
+        request.setStream(true);
         Call<ResponseBody> call = api.streamChatCompletion(request);
         return new StreamingResponse<>(super.stream(call, this::parseChunk));
     }

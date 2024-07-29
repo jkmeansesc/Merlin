@@ -9,7 +9,7 @@ import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
-import org.haifan.merlin.internal.interceptors.LlmInterceptor;
+import org.haifan.merlin.internal.interceptors.AuthenticationInterceptor;
 import org.haifan.merlin.internal.interceptors.SLF4JHttpLogger;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 
@@ -33,13 +33,13 @@ public abstract class LlmService {
     protected final OkHttpClient client;
     protected final ObjectMapper mapper;
 
-    protected LlmService(LlmConfig config, LlmInterceptor llmInterceptor) {
+    protected LlmService(LlmConfig config, AuthenticationInterceptor authenticationInterceptor) {
 
         log.info("Initializing LlmService with base URL: {}", config.getBaseUrl());
         this.config = config;
 
         log.debug("Creating default OkHttpClient");
-        this.client = defaultOkHttpClient(llmInterceptor);
+        this.client = defaultOkHttpClient(authenticationInterceptor);
 
         log.debug("Creating default ObjectMapper");
         this.mapper = DefaultObjectMapper.create();
@@ -63,7 +63,7 @@ public abstract class LlmService {
                 .subscribeOn(Schedulers.io());
     }
 
-    private OkHttpClient defaultOkHttpClient(LlmInterceptor llmInterceptor) {
+    private OkHttpClient defaultOkHttpClient(AuthenticationInterceptor authenticationInterceptor) {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new SLF4JHttpLogger());
         logging.setLevel(this.config.getHttpLogLevel());
         logging.redactHeader("Authorization");
@@ -74,7 +74,7 @@ public abstract class LlmService {
         return new OkHttpClient.Builder()
                 .connectionPool(new ConnectionPool(5, 1, TimeUnit.SECONDS))
                 .readTimeout(timeoutMillis, TimeUnit.MILLISECONDS)
-                .addInterceptor(llmInterceptor)
+                .addInterceptor(authenticationInterceptor)
                 .addNetworkInterceptor(logging)
                 .build();
     }

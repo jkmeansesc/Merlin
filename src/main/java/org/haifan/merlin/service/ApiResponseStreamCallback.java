@@ -43,8 +43,10 @@ public class ApiResponseStreamCallback<T> implements Callback<ResponseBody> {
             String line;
             while ((line = reader.readLine()) != null && !emitter.isCancelled()) {
                 String chunk = parseStreamLine(line);
-                T parsedChunk = chunkParser.apply(chunk);
-                emitter.onNext(parsedChunk);
+                if (chunk != null && !chunk.isEmpty()) {
+                    T parsedChunk = chunkParser.apply(chunk);
+                    emitter.onNext(parsedChunk);
+                }
             }
             log.debug("No more chunks, completing");
             emitter.onComplete();
@@ -60,8 +62,11 @@ public class ApiResponseStreamCallback<T> implements Callback<ResponseBody> {
     }
 
     private String parseStreamLine(String line) {
-        if (line.startsWith("data:")) {
-            return line.substring(5).trim(); // for openai
+        if (line.isEmpty() || line.equals("data: [DONE]")) {
+            return null;  // skip empty lines and the last openai message
+        }
+        if (line.startsWith("data: ")) {
+            return line.substring(6);  // remove "data: " prefix
         }
         return line;
     }

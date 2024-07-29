@@ -12,14 +12,14 @@ import java.io.IOException;
  * This class provides a base implementation for intercepting HTTP requests and modifying them to include
  * authentication tokens.
  */
-public abstract class LlmInterceptor implements Interceptor {
+public abstract class AuthenticationInterceptor implements Interceptor {
     protected final String token;
 
-    protected LlmInterceptor(String token) {
+    protected AuthenticationInterceptor(String token) {
         this.token = token;
     }
 
-    protected LlmInterceptor() {
+    protected AuthenticationInterceptor() {
         this.token = null;
     }
 

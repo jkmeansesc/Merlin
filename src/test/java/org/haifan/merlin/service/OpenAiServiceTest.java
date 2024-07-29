@@ -12,6 +12,7 @@ import org.haifan.merlin.model.openai.endpoints.images.ImageRequest;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
 import org.haifan.merlin.utils.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -124,9 +125,10 @@ class OpenAiServiceTest {
         }
 
         @Test
+        @Disabled("Not mocked")
         void streamChatCompletion() {
             List<OpenAiMessage> messages = new ArrayList<>();
-            messages.add(new OpenAiMessage(OpenAiMessage.Role.USER, "Why is the sky blue?"));
+            messages.add(new OpenAiMessage(OpenAiMessage.Role.USER, "Hi, are you there?"));
 
             ChatCompletionRequest request = ChatCompletionRequest.builder()
                     .model("gpt-3.5-turbo-0125")

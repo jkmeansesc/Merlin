@@ -15,8 +15,6 @@ public class OpenAiMessage {
     public enum Role {
         SYSTEM, USER, ASSISTANT, TOOL
     }
-
-    @NonNull
     private Role role;
     private String name;
     private String content;
@@ -38,11 +36,15 @@ public class OpenAiMessage {
 
     @JsonProperty("role")
     public String getRoleAsString() {
-        return role.name().toLowerCase();
+        return role != null ? role.name().toLowerCase() : null;
     }
 
     @JsonSetter("role")
     public void setRoleFromString(String role) {
-        this.role = Role.valueOf(role.toUpperCase());
+        try {
+            this.role = Role.valueOf(role.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            this.role = null;
+        }
     }
 }

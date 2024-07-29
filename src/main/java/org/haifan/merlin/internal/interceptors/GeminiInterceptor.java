@@ -7,7 +7,7 @@ import org.haifan.merlin.internal.constants.Provider;
 import java.util.Objects;
 
 @Slf4j
-public class GeminiInterceptor extends LlmInterceptor {
+public class GeminiInterceptor extends AuthenticationInterceptor {
 
     public GeminiInterceptor(String token) {
         super(token);

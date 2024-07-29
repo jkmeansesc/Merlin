@@ -7,7 +7,7 @@ import org.haifan.merlin.internal.constants.Provider;
 import java.util.Objects;
 
 @Slf4j
-public class OpenAiInterceptor extends LlmInterceptor {
+public class OpenAiInterceptor extends AuthenticationInterceptor {
 
     public OpenAiInterceptor(String token) {
         super(token);

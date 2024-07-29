@@ -37,7 +37,7 @@ class OllamaServiceTest {
             this.config = new LlmConfig(Provider.OLLAMA, "http://10.1.1.12:11434", null);
         }
         this.config.setTimeOut(Duration.ofSeconds(60));
-        this.config.setLogLevel(LlmConfig.Level.BODY);
+        this.config.setLogLevel(LlmConfig.Level.HEADERS);
         service = new OllamaService(config);
     }
 

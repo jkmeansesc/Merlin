@@ -6,6 +6,11 @@ import io.reactivex.rxjava3.functions.Action;
 
 import java.util.function.Consumer;
 
+/**
+ * TODO: add javadoc
+ *
+ * @param <T>
+ */
 public class StreamingResponse<T> {
     private final Flowable<T> flowable;
     private Disposable disposable;
