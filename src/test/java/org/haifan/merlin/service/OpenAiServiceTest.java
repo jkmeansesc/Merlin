@@ -1,5 +1,6 @@
 package org.haifan.merlin.service;
 
+import okhttp3.ResponseBody;
 import org.haifan.merlin.client.Merlin;
 import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
@@ -7,18 +8,20 @@ import org.haifan.merlin.model.openai.*;
 import org.haifan.merlin.model.openai.Function;
 import org.haifan.merlin.model.openai.endpoints.audio.SpeechRequest;
 import org.haifan.merlin.model.openai.endpoints.chat.*;
+import org.haifan.merlin.model.openai.endpoints.embeddings.Embedding;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
 import org.haifan.merlin.model.openai.endpoints.images.ImageRequest;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
-import org.haifan.merlin.utils.TestConfig;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-
+import org.haifan.merlin.utils.TestHelper;
+import org.haifan.merlin.annotations.UseWireMock;
+import org.haifan.merlin.annotations.UseRelay;
+import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -31,12 +34,30 @@ class OpenAiServiceTest {
     private OpenAiService service;
 
     @BeforeEach
-    void setUp() {
-        if (TestConfig.useMock()) {
-            this.config = new LlmConfig(Provider.OPENAI, "https://openai.wiremockapi.cloud/", null);
-        } else {
-            this.config = new LlmConfig(Provider.OPENAI, "https://api.chatanywhere.cn", "sk-wZ2iR46dia1VcsgA3WkLpelIVMcftmsxxvF4Ebzcm0dKFkgL");
+    void setUp(TestInfo testInfo) {
+        String baseUrl = OpenAiService.DEFAULT_BASE_URL;
+
+        Properties props = new Properties();
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("test.properties")) {
+            props.load(input);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
+
+        String apiKey = props.getProperty("openai.api.key");
+
+        if (testInfo.getTestMethod().isPresent()) {
+            var method = testInfo.getTestMethod().get();
+            if (method.isAnnotationPresent(UseWireMock.class)) {
+                baseUrl = "https://openai.wiremockapi.cloud/";
+            } else if (method.isAnnotationPresent(UseRelay.class)) {
+                UseRelay annotation = method.getAnnotation(UseRelay.class);
+                baseUrl = annotation.value();
+                apiKey = "sk-ncfFdWCgLtn5rSUoArsPZaICIFpxf0kgWkvJEBIurYYvgmb2";
+            }
+        }
+
+        this.config = new LlmConfig(Provider.OPENAI, baseUrl, apiKey);
         this.config.setLogLevel(LlmConfig.Level.BODY);
         this.service = new OpenAiService(config);
     }
@@ -53,6 +74,26 @@ class OpenAiServiceTest {
         LlmService service_2 = new OpenAiService(config);
         assertEquals("https://test.baseUrl.com", service_2.getConfig().getBaseUrl(), "Wrong baseUrl");
         assertEquals("test token", service_2.getConfig().getToken(), "Wrong token");
+    }
+
+    @Nested
+    class AudioTest {
+        @Test
+        void createSpeech() throws IOException {
+            ResponseBody response = Merlin.<OpenAiService>builder()
+                    .addService(service)
+                    .build()
+                    .getService(OpenAiService.class)
+                    .createSpeech(SpeechRequest
+                            .builder()
+                            .model("tts-1")
+                            .input("The quick brown fox jumped over the lazy dog.")
+                            .voice("alloy")
+                            .build())
+                    .join();
+            Path mp3 = TestHelper.audioToFile(response, Paths.get("src/test/resources/openai/output.mp3"));
+            assertTrue(mp3.toFile().exists());
+        }
     }
 
     @Nested
@@ -177,13 +218,11 @@ class OpenAiServiceTest {
         void createEmbeddings() {
 
             // Single string
-            EmbeddingRequest request1 = EmbeddingRequest.builder()
+            EmbeddingRequest request = EmbeddingRequest.builder()
                     .input("This is a test string")
-                    .dimensions(1)
-                    .encodingFormat("base64")
-                    .model("text-embedding-3")
+                    .model("text-embedding-ada-002")
+                    .encodingFormat("float")
                     .build();
-            System.out.println(DefaultObjectMapper.print(request1));
 
             // Array of strings
             List<String> stringList = Arrays.asList("String 1", "String 2", "String 3");
@@ -231,12 +270,14 @@ class OpenAiServiceTest {
 
             System.out.println(DefaultObjectMapper.print(request6));
 
-            Merlin.<OpenAiService>builder()
-                    .addService(new OpenAiService())
+            OpenAiData<Embedding> response = Merlin.<OpenAiService>builder()
+                    .addService(service)
                     .build()
                     .getService(OpenAiService.class)
-                    .createEmbeddings(request1)
+                    .createEmbeddings(request)
                     .join();
+
+            assertNotNull(response.getData());
         }
     }
 
@@ -274,30 +315,13 @@ class OpenAiServiceTest {
     }
 
     @Nested
-    class TestBatch {
+    class BatchTest {
 
     }
 
     @Nested
-    class TestAudio {
-        @Test
-        void createSpeech() {
-            Merlin.<OpenAiService>builder()
-                    .addService(new OpenAiService())
-                    .build()
-                    .getService(OpenAiService.class)
-                    .createSpeech(SpeechRequest
-                            .builder()
-                            .model("tts-1")
-                            .input("The quick brown fox jumped over the lazy dog.")
-                            .voice("alloy")
-                            .build())
-                    .join();
-        }
-    }
+    class FilesTest {
 
-    @Nested
-    class TestFiles {
         @Test
         void uploadFile() {
             URL resourceUrl = OpenAiServiceTest.class.getClassLoader().getResource("log4j2.xml");

@@ -2,7 +2,6 @@ package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.haifan.merlin.internal.api.OpenAiApi;
 import org.haifan.merlin.internal.constants.Fields;
@@ -23,7 +22,7 @@ import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileBatch;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreRequest;
 import org.haifan.merlin.model.openai.DeletionStatus;
-import org.haifan.merlin.model.openai.OpenAiList;
+import org.haifan.merlin.model.openai.OpenAiData;
 import org.haifan.merlin.model.StreamingResponse;
 import org.haifan.merlin.model.openai.endpoints.audio.*;
 import org.haifan.merlin.model.openai.endpoints.batch.Batch;
@@ -97,7 +96,6 @@ public class OpenAiService extends LlmService {
     // ENDPOINTS - Audio
     // ===============================
 
-    // TODO: complete Javadoc for all the endpoints.
     public CompletableFuture<ResponseBody> createSpeech(SpeechRequest request) {
         return super.call(api.createSpeech(request));
     }
@@ -168,7 +166,7 @@ public class OpenAiService extends LlmService {
     // ENDPOINTS - Embeddings
     // ===============================
 
-    public CompletableFuture<Embedding> createEmbeddings(EmbeddingRequest request) {
+    public CompletableFuture<OpenAiData<Embedding>> createEmbeddings(EmbeddingRequest request) {
         return super.call(api.createEmbeddings(request));
     }
 
@@ -180,27 +178,27 @@ public class OpenAiService extends LlmService {
         return super.call(api.createFineTuningJob(request));
     }
 
-    public CompletableFuture<OpenAiList<FineTuningJob>> listFineTuningJobs() {
+    public CompletableFuture<OpenAiData<FineTuningJob>> listFineTuningJobs() {
         return super.call(api.listFineTuningJobs());
     }
 
-    public CompletableFuture<OpenAiList<FineTuningJob>> listFineTuningJobs(String after, Integer limit) {
+    public CompletableFuture<OpenAiData<FineTuningJob>> listFineTuningJobs(String after, Integer limit) {
         return super.call(api.listFineTuningJobs(after, limit));
     }
 
-    public CompletableFuture<OpenAiList<FineTuningEvent>> listFineTuningEvents(String fineTuningJobId) {
+    public CompletableFuture<OpenAiData<FineTuningEvent>> listFineTuningEvents(String fineTuningJobId) {
         return super.call(api.listFineTuningEvents(fineTuningJobId));
     }
 
-    public CompletableFuture<OpenAiList<FineTuningEvent>> listFineTuningEvents(String fineTuningJobId, String after, Integer limit) {
+    public CompletableFuture<OpenAiData<FineTuningEvent>> listFineTuningEvents(String fineTuningJobId, String after, Integer limit) {
         return super.call(api.listFineTuningEvents(fineTuningJobId, after, limit));
     }
 
-    public CompletableFuture<OpenAiList<FineTuningCheckpoint>> listFineTuningCheckpoints(String fineTuningJobId) {
+    public CompletableFuture<OpenAiData<FineTuningCheckpoint>> listFineTuningCheckpoints(String fineTuningJobId) {
         return super.call(api.listFineTuningCheckpoints(fineTuningJobId));
     }
 
-    public CompletableFuture<OpenAiList<FineTuningCheckpoint>> listFineTuningCheckpoints(String fineTuningJobId, String after, Integer limit) {
+    public CompletableFuture<OpenAiData<FineTuningCheckpoint>> listFineTuningCheckpoints(String fineTuningJobId, String after, Integer limit) {
         return super.call(api.listFineTuningCheckpoints(fineTuningJobId, after, limit));
     }
 
@@ -228,11 +226,11 @@ public class OpenAiService extends LlmService {
         return super.call(api.cancelBatch(batchId));
     }
 
-    public CompletableFuture<OpenAiList<Batch>> listBatches() {
+    public CompletableFuture<OpenAiData<Batch>> listBatches() {
         return super.call(api.listBatches());
     }
 
-    public CompletableFuture<OpenAiList<Batch>> listBatches(String after, Integer limit) {
+    public CompletableFuture<OpenAiData<Batch>> listBatches(String after, Integer limit) {
         return super.call(api.listBatches(after, limit));
     }
 
@@ -251,7 +249,7 @@ public class OpenAiService extends LlmService {
         return super.call(api.uploadFile(builder.build()));
     }
 
-    public CompletableFuture<OpenAiList<org.haifan.merlin.model.openai.endpoints.files.File>> listFiles() {
+    public CompletableFuture<OpenAiData<org.haifan.merlin.model.openai.endpoints.files.File>> listFiles() {
         return super.call(api.listFiles());
     }
 
@@ -333,7 +331,7 @@ public class OpenAiService extends LlmService {
      * @return a list of model object.
      * @see Model
      */
-    public CompletableFuture<OpenAiList<Model>> listModels() {
+    public CompletableFuture<OpenAiData<Model>> listModels() {
         return super.call(api.listModels());
     }
 
@@ -375,11 +373,11 @@ public class OpenAiService extends LlmService {
         return super.call(api.createAssistant(request));
     }
 
-    public CompletableFuture<OpenAiList<Assistant>> listAssistants() {
+    public CompletableFuture<OpenAiData<Assistant>> listAssistants() {
         return super.call(api.listAssistants());
     }
 
-    public CompletableFuture<OpenAiList<Assistant>> listAssistants(Map<String, String> queryMap) {
+    public CompletableFuture<OpenAiData<Assistant>> listAssistants(Map<String, String> queryMap) {
         return super.call(api.listAssistants(queryMap));
     }
 
@@ -423,11 +421,11 @@ public class OpenAiService extends LlmService {
         return super.call(api.createMessage(threadId, request));
     }
 
-    public CompletableFuture<OpenAiList<MessageObject>> listMessages(String threadId) {
+    public CompletableFuture<OpenAiData<MessageObject>> listMessages(String threadId) {
         return super.call(api.listMessages(threadId));
     }
 
-    public CompletableFuture<OpenAiList<MessageObject>> listMessages(String threadId, Map<String, String> queryMap) {
+    public CompletableFuture<OpenAiData<MessageObject>> listMessages(String threadId, Map<String, String> queryMap) {
         return super.call(api.listMessages(threadId, queryMap));
     }
 
@@ -455,11 +453,11 @@ public class OpenAiService extends LlmService {
         return super.call(api.createThreadAndRun(request));
     }
 
-    public CompletableFuture<OpenAiList<Run>> listRuns(String threadId) {
+    public CompletableFuture<OpenAiData<Run>> listRuns(String threadId) {
         return super.call(api.listRuns(threadId));
     }
 
-    public CompletableFuture<OpenAiList<Run>> listRuns(String threadId, Map<String, String> queryMap) {
+    public CompletableFuture<OpenAiData<Run>> listRuns(String threadId, Map<String, String> queryMap) {
         return super.call(api.listRuns(threadId, queryMap));
     }
 
@@ -483,11 +481,11 @@ public class OpenAiService extends LlmService {
     // ASSISTANTS - Run Steps
     // ===============================
 
-    public CompletableFuture<OpenAiList<RunStep>> listRunSteps(@Path("thread_id") String threadId, @Path("run_id") String runId) {
+    public CompletableFuture<OpenAiData<RunStep>> listRunSteps(@Path("thread_id") String threadId, @Path("run_id") String runId) {
         return super.call(api.listRunSteps(threadId, runId));
     }
 
-    public CompletableFuture<OpenAiList<RunStep>> listRunSteps(@Path("thread_id") String threadId, @Path("run_id") String runId, @QueryMap Map<String, String> queryMap) {
+    public CompletableFuture<OpenAiData<RunStep>> listRunSteps(@Path("thread_id") String threadId, @Path("run_id") String runId, @QueryMap Map<String, String> queryMap) {
         return super.call(api.listRunSteps(threadId, runId, queryMap));
     }
 
@@ -503,11 +501,11 @@ public class OpenAiService extends LlmService {
         return super.call(api.createVectorStore(vectorStoreRequest));
     }
 
-    public CompletableFuture<OpenAiList<VectorStore>> listVectorStores() {
+    public CompletableFuture<OpenAiData<VectorStore>> listVectorStores() {
         return super.call(api.listVectorStores());
     }
 
-    public CompletableFuture<OpenAiList<VectorStore>> listVectorStores(Map<String, String> queryMap) {
+    public CompletableFuture<OpenAiData<VectorStore>> listVectorStores(Map<String, String> queryMap) {
         return super.call(api.listVectorStores(queryMap));
     }
 
@@ -536,11 +534,11 @@ public class OpenAiService extends LlmService {
         return super.call(api.createVectorStoreFile(vectorStoreId, request));
     }
 
-    public CompletableFuture<OpenAiList<VectorStoreFile>> listVectorStoreFiles(String vectorStoreId) {
+    public CompletableFuture<OpenAiData<VectorStoreFile>> listVectorStoreFiles(String vectorStoreId) {
         return super.call(api.listVectorStoreFiles(vectorStoreId));
     }
 
-    public CompletableFuture<OpenAiList<VectorStoreFile>> listVectorStoreFiles(String vectorStoreId, Map<String, String> queryMap) {
+    public CompletableFuture<OpenAiData<VectorStoreFile>> listVectorStoreFiles(String vectorStoreId, Map<String, String> queryMap) {
         return super.call(api.listVectorStoreFiles(vectorStoreId, queryMap));
     }
 
@@ -568,11 +566,11 @@ public class OpenAiService extends LlmService {
         return super.call(api.cancelVectorStoreFileBatch(vectorStoreId, batchId));
     }
 
-    public CompletableFuture<OpenAiList<VectorStoreFileBatch>> listVectorStoreFileBatch(String vectorStoreId, String batchId) {
+    public CompletableFuture<OpenAiData<VectorStoreFileBatch>> listVectorStoreFileBatch(String vectorStoreId, String batchId) {
         return super.call(api.listVectorStoreFileBatch(vectorStoreId, batchId));
     }
 
-    public CompletableFuture<OpenAiList<VectorStoreFileBatch>> listVectorStoreFileBatch(String vectorStoreId, String batchId, Map<String, String> queryMap) {
+    public CompletableFuture<OpenAiData<VectorStoreFileBatch>> listVectorStoreFileBatch(String vectorStoreId, String batchId, Map<String, String> queryMap) {
         return super.call(api.listVectorStoreFileBatch(vectorStoreId, batchId, queryMap));
     }
 }

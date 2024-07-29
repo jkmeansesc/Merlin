@@ -1,11 +1,16 @@
 package org.haifan.merlin.utils;
 
+import okhttp3.ResponseBody;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -58,5 +63,15 @@ public class TestHelper {
             throw new IOException("Resource not found: " + path);
         }
         return new File(resourceUrl.getFile());
+    }
+
+    public static Path audioToFile(ResponseBody body, Path path) throws IOException {
+        if (body == null) {
+            throw new IOException("Null response body");
+        }
+        try (InputStream inputStream = body.byteStream()) {
+            Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
+        }
+        return path;
     }
 }

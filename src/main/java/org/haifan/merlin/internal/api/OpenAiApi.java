@@ -18,7 +18,7 @@ import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileBatch;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreRequest;
 import org.haifan.merlin.model.openai.DeletionStatus;
-import org.haifan.merlin.model.openai.OpenAiList;
+import org.haifan.merlin.model.openai.OpenAiData;
 import org.haifan.merlin.model.openai.endpoints.audio.SpeechRequest;
 import org.haifan.merlin.model.openai.endpoints.audio.Transcription;
 import org.haifan.merlin.model.openai.endpoints.audio.Translation;
@@ -78,7 +78,7 @@ public interface OpenAiApi {
     // ===============================
 
     @POST("/v1/embeddings")
-    Call<Embedding> createEmbeddings(@Body EmbeddingRequest request);
+    Call<OpenAiData<Embedding>> createEmbeddings(@Body EmbeddingRequest request);
 
     // ===============================
     // ENDPOINTS - Fine-tuning
@@ -88,22 +88,22 @@ public interface OpenAiApi {
     Call<FineTuningJob> createFineTuningJob(@Body FineTuningJobRequest request);
 
     @GET("/v1/fine_tuning/jobs")
-    Call<OpenAiList<FineTuningJob>> listFineTuningJobs();
+    Call<OpenAiData<FineTuningJob>> listFineTuningJobs();
 
     @GET("/v1/fine_tuning/jobs")
-    Call<OpenAiList<FineTuningJob>> listFineTuningJobs(@Query("after") String after, @Query("limit") Integer limit);
+    Call<OpenAiData<FineTuningJob>> listFineTuningJobs(@Query("after") String after, @Query("limit") Integer limit);
 
     @GET("v1/fine_tuning/jobs/{fine_tuning_job_id}/events")
-    Call<OpenAiList<FineTuningEvent>> listFineTuningEvents(@Path("fine_tuning_job_id") String fineTuningJobId);
+    Call<OpenAiData<FineTuningEvent>> listFineTuningEvents(@Path("fine_tuning_job_id") String fineTuningJobId);
 
     @GET("v1/fine_tuning/jobs/{fine_tuning_job_id}/events")
-    Call<OpenAiList<FineTuningEvent>> listFineTuningEvents(@Path("fine_tuning_job_id") String fineTuningJobId, @Query("after") String after, @Query("limit") Integer limit);
+    Call<OpenAiData<FineTuningEvent>> listFineTuningEvents(@Path("fine_tuning_job_id") String fineTuningJobId, @Query("after") String after, @Query("limit") Integer limit);
 
     @GET("v1/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints")
-    Call<OpenAiList<FineTuningCheckpoint>> listFineTuningCheckpoints(@Path("fine_tuning_job_id") String fineTuningJobId);
+    Call<OpenAiData<FineTuningCheckpoint>> listFineTuningCheckpoints(@Path("fine_tuning_job_id") String fineTuningJobId);
 
     @GET("v1/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints")
-    Call<OpenAiList<FineTuningCheckpoint>> listFineTuningCheckpoints(@Path("fine_tuning_job_id") String fineTuningJobId, @Query("after") String after, @Query("limit") Integer limit);
+    Call<OpenAiData<FineTuningCheckpoint>> listFineTuningCheckpoints(@Path("fine_tuning_job_id") String fineTuningJobId, @Query("after") String after, @Query("limit") Integer limit);
 
     @GET("/v1/fine_tuning/jobs/{fine_tuning_job_id}")
     Call<FineTuningJob> retrieveFineTuningJob(@Path("fine_tuning_job_id") String fineTuningJobId);
@@ -125,10 +125,10 @@ public interface OpenAiApi {
     Call<Batch> cancelBatch(@Path("batch_id") String batchId);
 
     @GET("/v1/batches")
-    Call<OpenAiList<Batch>> listBatches();
+    Call<OpenAiData<Batch>> listBatches();
 
     @GET("/v1/batches")
-    Call<OpenAiList<Batch>> listBatches(@Query("after") String after, @Query("limit") Integer limit);
+    Call<OpenAiData<Batch>> listBatches(@Query("after") String after, @Query("limit") Integer limit);
 
     // ===============================
     // ENDPOINTS - Files
@@ -138,7 +138,7 @@ public interface OpenAiApi {
     Call<File> uploadFile(@Body RequestBody requestBody);
 
     @GET("/v1/files")
-    Call<OpenAiList<File>> listFiles();
+    Call<OpenAiData<File>> listFiles();
 
     @GET("/v1/files/{file_id}")
     Call<File> retrieveFile(@Path(Fields.FILE_ID) String fileId);
@@ -167,7 +167,7 @@ public interface OpenAiApi {
     // ENDPOINTS - Models
     // ===============================
     @GET("/v1/models")
-    Call<OpenAiList<Model>> listModels();
+    Call<OpenAiData<Model>> listModels();
 
     @GET("/v1/models/{model}")
     Call<Model> retrieveModel(@Path(Fields.MODEL) String model);
@@ -190,11 +190,11 @@ public interface OpenAiApi {
 
     @GET("/v1/assistants")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<Assistant>> listAssistants();
+    Call<OpenAiData<Assistant>> listAssistants();
 
     @GET("/v1/assistants")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<Assistant>> listAssistants(@QueryMap Map<String, String> queryMap);
+    Call<OpenAiData<Assistant>> listAssistants(@QueryMap Map<String, String> queryMap);
 
     @GET("/v1/assistants/{assistant_id}")
     @Headers("OpenAI-Beta: assistants=v2")
@@ -239,11 +239,11 @@ public interface OpenAiApi {
 
     @GET("/v1/threads/{thread_id}/messages")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<MessageObject>> listMessages(@Path("thread_id") String threadId);
+    Call<OpenAiData<MessageObject>> listMessages(@Path("thread_id") String threadId);
 
     @GET("/v1/threads/{thread_id}/messages")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<MessageObject>> listMessages(@Path("thread_id") String threadId, @QueryMap Map<String, String> queryMap);
+    Call<OpenAiData<MessageObject>> listMessages(@Path("thread_id") String threadId, @QueryMap Map<String, String> queryMap);
 
     @GET("/v1/threads/{thread_id}/messages/{message_id}")
     @Headers("OpenAI-Beta: assistants=v2")
@@ -271,11 +271,11 @@ public interface OpenAiApi {
 
     @GET("/v1/threads/{thread_id}/runs")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<Run>> listRuns(@Path("thread_id") String threadId);
+    Call<OpenAiData<Run>> listRuns(@Path("thread_id") String threadId);
 
     @GET("/v1/threads/{thread_id}/runs")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<Run>> listRuns(@Path("thread_id") String threadId, @QueryMap Map<String, String> queryMap);
+    Call<OpenAiData<Run>> listRuns(@Path("thread_id") String threadId, @QueryMap Map<String, String> queryMap);
 
     @GET("/v1/threads/{thread_id}/runs/{run_id}")
     @Headers("OpenAI-Beta: assistants=v2")
@@ -299,11 +299,11 @@ public interface OpenAiApi {
 
     @GET("/v1/threads/{thread_id}/runs/{run_id}/steps")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<RunStep>> listRunSteps(@Path("thread_id") String threadId, @Path("run_id") String runId);
+    Call<OpenAiData<RunStep>> listRunSteps(@Path("thread_id") String threadId, @Path("run_id") String runId);
 
     @GET("/v1/threads/{thread_id}/runs/{run_id}/steps")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<RunStep>> listRunSteps(@Path("thread_id") String threadId, @Path("run_id") String runId, @QueryMap Map<String, String> queryMap);
+    Call<OpenAiData<RunStep>> listRunSteps(@Path("thread_id") String threadId, @Path("run_id") String runId, @QueryMap Map<String, String> queryMap);
 
     @GET("/v1/threads/{thread_id}/runs/{run_id}/steps/{step_id}")
     @Headers("OpenAI-Beta: assistants=v2")
@@ -319,11 +319,11 @@ public interface OpenAiApi {
 
     @GET("/v1/vector_stores")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<VectorStore>> listVectorStores();
+    Call<OpenAiData<VectorStore>> listVectorStores();
 
     @GET("/v1/vector_stores")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<VectorStore>> listVectorStores(@QueryMap Map<String, String> queryMap);
+    Call<OpenAiData<VectorStore>> listVectorStores(@QueryMap Map<String, String> queryMap);
 
     @GET("/v1/vector_stores/{vector_store_id}")
     @Headers("OpenAI-Beta: assistants=v2")
@@ -348,11 +348,11 @@ public interface OpenAiApi {
 
     @GET("/v1/vector_stores/{vector_store_id}/files")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<VectorStoreFile>> listVectorStoreFiles(@Path("vector_store_id") String vectorStoreId);
+    Call<OpenAiData<VectorStoreFile>> listVectorStoreFiles(@Path("vector_store_id") String vectorStoreId);
 
     @GET("/v1/vector_stores/{vector_store_id}/files")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<VectorStoreFile>> listVectorStoreFiles(@Path("vector_store_id") String vectorStoreId, @QueryMap Map<String, String> queryMap);
+    Call<OpenAiData<VectorStoreFile>> listVectorStoreFiles(@Path("vector_store_id") String vectorStoreId, @QueryMap Map<String, String> queryMap);
 
     @GET("/v1/vector_stores/{vector_store_id}/files/{file_id}")
     @Headers("OpenAI-Beta: assistants=v2")
@@ -380,9 +380,9 @@ public interface OpenAiApi {
 
     @GET("/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}/files")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<VectorStoreFileBatch>> listVectorStoreFileBatch(@Path("vector_store_id") String vectorStoreId, @Path("batch_id") String batchId);
+    Call<OpenAiData<VectorStoreFileBatch>> listVectorStoreFileBatch(@Path("vector_store_id") String vectorStoreId, @Path("batch_id") String batchId);
 
     @GET("/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}/files")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<OpenAiList<VectorStoreFileBatch>> listVectorStoreFileBatch(@Path("vector_store_id") String vectorStoreId, @Path("batch_id") String batchId, @QueryMap Map<String, String> queryMap);
+    Call<OpenAiData<VectorStoreFileBatch>> listVectorStoreFileBatch(@Path("vector_store_id") String vectorStoreId, @Path("batch_id") String batchId, @QueryMap Map<String, String> queryMap);
 }
