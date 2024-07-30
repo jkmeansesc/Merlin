@@ -1,11 +1,12 @@
 package org.haifan.merlin.service;
 
 import okhttp3.ResponseBody;
-import org.haifan.merlin.client.Merlin;
 import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 import org.haifan.merlin.model.openai.*;
 import org.haifan.merlin.model.openai.Function;
+import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
+import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
 import org.haifan.merlin.model.openai.endpoints.audio.*;
 import org.haifan.merlin.model.openai.endpoints.batch.Batch;
 import org.haifan.merlin.model.openai.endpoints.batch.BatchRequest;
@@ -18,7 +19,11 @@ import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningEvent;
 import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningJob;
 import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningJobRequest;
 import org.haifan.merlin.model.openai.endpoints.images.Image;
+import org.haifan.merlin.model.openai.endpoints.images.ImageEditRequest;
 import org.haifan.merlin.model.openai.endpoints.images.ImageRequest;
+import org.haifan.merlin.model.openai.endpoints.images.ImageVariationRequest;
+import org.haifan.merlin.model.openai.endpoints.models.Model;
+import org.haifan.merlin.model.openai.endpoints.moderations.ModerationList;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
 import org.haifan.merlin.utils.TestHelper;
 import org.haifan.merlin.annotations.UseWireMock;
@@ -70,7 +75,7 @@ class OpenAiServiceTest {
         this.config = new LlmConfig(Provider.OPENAI, baseUrl, apiKey);
         this.config.setTimeOut(Duration.ofSeconds(60));
         this.config.setLogLevel(LlmConfig.Level.BODY);
-        this.service = new OpenAiService(config);
+        this.service = Merlin.builder().openai(config).build().getService(OpenAiService.class);
     }
 
     @Test
@@ -92,17 +97,7 @@ class OpenAiServiceTest {
         @Test
         @UseRelay
         void createSpeech() throws IOException {
-            ResponseBody response = Merlin.<OpenAiService>builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .createSpeech(SpeechRequest
-                            .builder()
-                            .model("tts-1")
-                            .input("The quick brown fox jumped over the lazy dog.")
-                            .voice("alloy")
-                            .build())
-                    .join();
+            ResponseBody response = service.createSpeech(SpeechRequest.builder().model("tts-1").input("The quick brown fox jumped over the lazy dog.").voice("alloy").build()).join();
             Path mp3 = TestHelper.audioToFile(response, Paths.get("src/test/resources/openai/output.mp3"));
             assertTrue(mp3.toFile().exists());
         }
@@ -110,16 +105,9 @@ class OpenAiServiceTest {
         @Test
         @UseWireMock
         void createTranscription() {
-            TranscriptionRequest request = TranscriptionRequest.builder()
-                    .model("whisper-1")
-                    .build();
+            TranscriptionRequest request = TranscriptionRequest.builder().model("whisper-1").build();
 
-            Transcription response = Merlin.<OpenAiService>builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .createTranscription(request, "src/test/resources/openai/output.mp3")
-                    .join();
+            Transcription response = service.createTranscription(request, "src/test/resources/openai/output.mp3").join();
             assertNotNull(response.getText());
             System.out.println(DefaultObjectMapper.print(response));
         }
@@ -127,17 +115,9 @@ class OpenAiServiceTest {
         @Test
         @UseWireMock
         void createTranslation() {
-            TranslationRequest request = TranslationRequest.builder()
-                    .model("whisper-1")
-                    .prompt("translate into mandarine")
-                    .build();
+            TranslationRequest request = TranslationRequest.builder().model("whisper-1").prompt("translate into mandarine").temperature(0.5).build();
 
-            Translation response = Merlin.<OpenAiService>builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .createTranslation(request, "src/test/resources/openai/output.mp3")
-                    .join();
+            Translation response = service.createTranslation(request, "src/test/resources/openai/output.mp3").join();
 
             assertNotNull(response.getText());
             System.out.println(DefaultObjectMapper.print(response));
@@ -165,29 +145,7 @@ class OpenAiServiceTest {
             Map<String, Integer> logitBias = new HashMap<>();
             logitBias.put("logitBias", 1);
 
-            ChatCompletionRequest request = ChatCompletionRequest.builder()
-                    .messages(messages)
-                    .model("model")
-                    .frequencyPenalty(0.1)
-                    .logitBias(logitBias)
-                    .logprobs(false)
-                    .topLogprobs(1)
-                    .maxTokens(400)
-                    .n(5)
-                    .presencePenalty(1.1)
-                    .responseFormat(new ResponseFormat("type"))
-                    .seed(1)
-                    .serviceTier("auto")
-                    .stop(Arrays.stream(new String[]{"1", "2"}).toList())
-                    .stream(false)
-                    .streamOptions(new ChatCompletionRequest.StreamOptions())
-                    .temperature(11.0)
-                    .topP(10.1)
-                    .tools(tools)
-                    .toolChoice(new ToolChoice("auto"))
-                    .parallelToolCalls(false)
-                    .user("user")
-                    .build();
+            ChatCompletionRequest request = ChatCompletionRequest.builder().messages(messages).model("model").frequencyPenalty(0.1).logitBias(logitBias).logprobs(false).topLogprobs(1).maxTokens(400).n(5).presencePenalty(1.1).responseFormat(new ResponseFormat("type")).seed(1).serviceTier("auto").stop(Arrays.stream(new String[]{"1", "2"}).toList()).stream(false).streamOptions(new ChatCompletionRequest.StreamOptions()).temperature(11.0).topP(10.1).tools(tools).toolChoice(new ToolChoice("auto")).parallelToolCalls(false).user("user").build();
 
             assertEquals("model", request.getModel());
             System.out.println(DefaultObjectMapper.print(request));
@@ -199,16 +157,8 @@ class OpenAiServiceTest {
             List<OpenAiMessage> messages = new ArrayList<>();
             messages.add(new OpenAiMessage(OpenAiMessage.Role.USER, "Are you there?"));
 
-            ChatCompletionRequest request = ChatCompletionRequest.builder()
-                    .model("gpt-4o")
-                    .messages(messages)
-                    .build();
-            ChatCompletion response = Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .createChatCompletion(request)
-                    .join();
+            ChatCompletionRequest request = ChatCompletionRequest.builder().model("gpt-4o").messages(messages).build();
+            ChatCompletion response = service.createChatCompletion(request).join();
 
             assertNotNull(response.getChoices().get(0).getMessage());
             System.out.println(DefaultObjectMapper.print(response));
@@ -221,37 +171,25 @@ class OpenAiServiceTest {
             List<OpenAiMessage> messages = new ArrayList<>();
             messages.add(new OpenAiMessage(OpenAiMessage.Role.USER, "Hi, are you there?"));
 
-            ChatCompletionRequest request = ChatCompletionRequest.builder()
-                    .model("gpt-3.5-turbo-0125")
-                    .messages(messages)
-                    .build();
+            ChatCompletionRequest request = ChatCompletionRequest.builder().model("gpt-3.5-turbo-0125").messages(messages).build();
 
             AtomicBoolean isDone = new AtomicBoolean(false);
             AtomicReference<Throwable> e = new AtomicReference<>();
             CompletableFuture<Void> future = new CompletableFuture<>();
 
-            Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .streamChatCompletion(request)
-                    .start(
-                            chunk -> {
-                                System.out.println("Received chunk: " + chunk);
-                                OpenAiMessage message = chunk.getChoices().get(0).getMessage();
-                                messages.add(message); // not accumulated but small chunks
-                            },
-                            error -> {
-                                System.err.println("Error occurred: " + error.getMessage());
-                                e.set(error);
-                                future.completeExceptionally(error);
-                            },
-                            () -> {
-                                System.out.println("Streaming completed");
-                                isDone.set(true);
-                                future.complete(null);
-                            }
-                    );
+            service.streamChatCompletion(request).start(chunk -> {
+                System.out.println("Received chunk: " + chunk);
+                OpenAiMessage message = chunk.getChoices().get(0).getMessage();
+                messages.add(message); // not accumulated but small chunks
+            }, error -> {
+                System.err.println("Error occurred: " + error.getMessage());
+                e.set(error);
+                future.completeExceptionally(error);
+            }, () -> {
+                System.out.println("Streaming completed");
+                isDone.set(true);
+                future.complete(null);
+            });
             future.join();
             if (e.get() != null) {
                 fail("Stream completed with an error: " + e.get().getMessage());
@@ -269,67 +207,39 @@ class OpenAiServiceTest {
         void createEmbeddings() {
 
             // Single string
-            EmbeddingRequest request = EmbeddingRequest.builder()
-                    .input("This is a test string")
-                    .model("text-embedding-ada-002")
-                    .encodingFormat("float")
-                    .build();
+            EmbeddingRequest request = EmbeddingRequest.builder().input("This is a test string").model("text-embedding-ada-002").encodingFormat("float").build();
 
             // Array of strings
             List<String> stringList = Arrays.asList("String 1", "String 2", "String 3");
-            EmbeddingRequest request2 = EmbeddingRequest.builder()
-                    .input(stringList)
-                    .model("text-embedding-ada-002")
-                    .build();
+            EmbeddingRequest request2 = EmbeddingRequest.builder().input(stringList).model("text-embedding-ada-002").build();
 
             System.out.println(DefaultObjectMapper.print(request2));
 
             // Array of integers
             List<Integer> intList = Arrays.asList(1, 2, 3, 4, 5);
-            EmbeddingRequest request3 = EmbeddingRequest.builder()
-                    .input(intList)
-                    .model("text-embedding-ada-002")
-                    .build();
+            EmbeddingRequest request3 = EmbeddingRequest.builder().input(intList).model("text-embedding-ada-002").build();
 
             System.out.println(DefaultObjectMapper.print(request3));
 
             // Array of arrays of integers
-            List<List<Integer>> nestedList = Arrays.asList(
-                    Arrays.asList(1, 2, 3),
-                    Arrays.asList(4, 5, 6),
-                    Arrays.asList(7, 8, 9)
-            );
+            List<List<Integer>> nestedList = Arrays.asList(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6), Arrays.asList(7, 8, 9));
 
-            EmbeddingRequest request4 = EmbeddingRequest.builder()
-                    .input(nestedList)
-                    .model("text-embedding-ada-002")
-                    .build();
+            EmbeddingRequest request4 = EmbeddingRequest.builder().input(nestedList).model("text-embedding-ada-002").build();
 
             System.out.println(DefaultObjectMapper.print(request4));
 
-            EmbeddingRequest request5 = EmbeddingRequest.builder()
-                    .input(new Integer[]{1, 2, 3})
-                    .model("text-embedding-ada-002")
-                    .build();
+            EmbeddingRequest request5 = EmbeddingRequest.builder().input(new Integer[]{1, 2, 3}).model("text-embedding-ada-002").build();
 
             System.out.println(DefaultObjectMapper.print(request5));
 
-            EmbeddingRequest request6 = EmbeddingRequest.builder()
-                    .input(new String[]{"string1", "string2", "string3"})
-                    .model("text-embedding-ada-002")
-                    .build();
+            EmbeddingRequest request6 = EmbeddingRequest.builder().input(new String[]{"string1", "string2", "string3"}).model("text-embedding-ada-002").build();
 
             System.out.println(DefaultObjectMapper.print(request6));
 
-            OpenAiData<Embedding> response = Merlin.<OpenAiService>builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .createEmbeddings(request)
-                    .join();
+            OpenAiData<Embedding> response = service.createEmbeddings(request).join();
 
             assertNotNull(response.getData(), "Data should not be null");
-            assertTrue(response.getData().size() > 1, "Should receive at least one embedding");
+            assertFalse(response.getData().isEmpty(), "Should receive at least one embedding");
         }
     }
 
@@ -338,17 +248,9 @@ class OpenAiServiceTest {
         @Test
         @UseWireMock
         void createFineTuningJob() {
-            FineTuningJobRequest request = FineTuningJobRequest.builder()
-                    .model("gpt-4o-mini")
-                    .trainingFile("file-BK7bzQj3FfZFXr7DbL6xJwfo")
-                    .build();
+            FineTuningJobRequest request = FineTuningJobRequest.builder().model("gpt-4o-mini").trainingFile("file-BK7bzQj3FfZFXr7DbL6xJwfo").build();
 
-            FineTuningJob response = Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .createFineTuningJob(request)
-                    .join();
+            FineTuningJob response = service.createFineTuningJob(request).join();
             assertNotNull(response.getStatus(), "Status should not be null");
             assertNotNull(response.getTrainingFile());
             System.out.println(DefaultObjectMapper.print(response));
@@ -356,22 +258,12 @@ class OpenAiServiceTest {
 
         @Test
         void listFineTuningJobs() {
-            OpenAiData<FineTuningJob> response = Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .listFineTuningJobs()
-                    .join();
+            OpenAiData<FineTuningJob> response = service.listFineTuningJobs().join();
 
             assertEquals("list", response.getObject(), "object should be list");
             System.out.println(DefaultObjectMapper.print(response));
 
-            OpenAiData<FineTuningJob> response_1 = Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .listFineTuningJobs(null, 2)
-                    .join();
+            OpenAiData<FineTuningJob> response_1 = service.listFineTuningJobs(null, 2).join();
 
             System.out.println(DefaultObjectMapper.print(response_1));
         }
@@ -379,55 +271,30 @@ class OpenAiServiceTest {
         @Test
         @UseWireMock
         void listFineTuningEvents() {
-            OpenAiData<FineTuningEvent> response = Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .listFineTuningEvents("ftjob-abc123")
-                    .join();
+            OpenAiData<FineTuningEvent> response = service.listFineTuningEvents("ftjob-abc123").join();
             assertEquals("list", response.getObject(), "object should be list");
             assertNotNull(response.getData(), "Data should not be null");
 
             System.out.println(DefaultObjectMapper.print(response));
 
-            Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .listFineTuningEvents("ftjob-abc123", "test", 2)
-                    .join();
+            service.listFineTuningEvents("ftjob-abc123", "test", 2).join();
         }
 
         @Test
         @UseWireMock
         void listFineTuningCheckpoints() {
-            OpenAiData<FineTuningCheckpoint> response = Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .listFineTuningCheckpoints("ftjob-abc123")
-                    .join();
+            OpenAiData<FineTuningCheckpoint> response = service.listFineTuningCheckpoints("ftjob-abc123").join();
 
             assertNotNull(response.getData(), "Data should not be null");
             System.out.println(DefaultObjectMapper.print(response));
 
-            Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .listFineTuningCheckpoints("ftjob-abc123", null, 2)
-                    .join();
+            service.listFineTuningCheckpoints("ftjob-abc123", null, 2).join();
         }
 
         @Test
         @UseWireMock
         void retrieveFineTuningJob() {
-            FineTuningJob response = Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .retrieveFineTuningJob("ftjob-abc123")
-                    .join();
+            FineTuningJob response = service.retrieveFineTuningJob("ftjob-abc123").join();
 
             assertNotNull(response);
             System.out.println(DefaultObjectMapper.print(response));
@@ -436,12 +303,7 @@ class OpenAiServiceTest {
         @Test
         @UseWireMock
         void cancelFineTuningJob() {
-            FineTuningJob response = Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .cancelFineTuningJob("ftjob-abc123")
-                    .join();
+            FineTuningJob response = service.cancelFineTuningJob("ftjob-abc123").join();
             assertNotNull(response);
             assertEquals("cancelled", response.getStatus(), "status should be cancelled");
             System.out.println(DefaultObjectMapper.print(response));
@@ -458,18 +320,9 @@ class OpenAiServiceTest {
             String endpoint = "/v1/chat/completions";
             String completionWindow = "24h";
 
-            BatchRequest request = BatchRequest.builder()
-                    .inputFileId(fileId)
-                    .endpoint(endpoint)
-                    .completionWindow(completionWindow)
-                    .build();
+            BatchRequest request = BatchRequest.builder().inputFileId(fileId).endpoint(endpoint).completionWindow(completionWindow).build();
 
-            Batch response = Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .createBatch(request)
-                    .join();
+            Batch response = service.createBatch(request).join();
 
             assertEquals(fileId, response.getInputFileId(), "input file id mismatch");
             assertEquals(endpoint, response.getEndpoint(), "endpoint mismatch");
@@ -482,12 +335,7 @@ class OpenAiServiceTest {
         @UseWireMock
         void retrieveBatch() {
             String batchId = "batch_abc123";
-            Batch response = Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .retrieveBatch(batchId)
-                    .join();
+            Batch response = service.retrieveBatch(batchId).join();
             assertEquals(batchId, response.getId(), "id mismatch");
             System.out.println(DefaultObjectMapper.print(response));
         }
@@ -496,12 +344,7 @@ class OpenAiServiceTest {
         @UseWireMock
         void cancelBatch() {
             String batchId = "batch_abc123";
-            Batch response = Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .cancelBatch(batchId)
-                    .join();
+            Batch response = service.cancelBatch(batchId).join();
             assertEquals(batchId, response.getId(), "id mismatch");
             System.out.println(DefaultObjectMapper.print(response));
         }
@@ -509,13 +352,8 @@ class OpenAiServiceTest {
         @Test
         @UseWireMock
         void listBatches() {
-            Merlin merlin = Merlin.builder().addService(service).build();
-            merlin.getService(OpenAiService.class)
-                    .listBatches()
-                    .join();
-            OpenAiData<Batch> response = merlin.getService(OpenAiService.class)
-                    .listBatches(null, 2)
-                    .join();
+            service.listBatches().join();
+            OpenAiData<Batch> response = service.listBatches(null, 2).join();
             assertNotNull(response);
             System.out.println(DefaultObjectMapper.print(response));
         }
@@ -530,12 +368,7 @@ class OpenAiServiceTest {
             URL resourceUrl = OpenAiServiceTest.class.getClassLoader().getResource("log4j2.xml");
             assert resourceUrl != null;
             String filePath = Paths.get(resourceUrl.getPath()).toFile().getAbsolutePath();
-            OpenAiFile response = Merlin.<OpenAiService>builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .uploadFile("fine-tune", filePath)
-                    .join();
+            OpenAiFile response = service.uploadFile("fine-tune", filePath).join();
             assertEquals("log4j2.xml", response.getFilename(), "filename mismatch");
             System.out.println(DefaultObjectMapper.print(response));
         }
@@ -543,12 +376,7 @@ class OpenAiServiceTest {
         @Test
         @UseWireMock
         void listFiles() {
-            OpenAiData<OpenAiFile> response = Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .listFiles()
-                    .join();
+            OpenAiData<OpenAiFile> response = service.listFiles().join();
             assertNotNull(response.getData());
             System.out.println(DefaultObjectMapper.print(response));
         }
@@ -557,25 +385,16 @@ class OpenAiServiceTest {
         @UseWireMock
         void retrieveFile() {
             String fileId = "file-EGQhIfguFLF0hHfCu0iVF9xL";
-            OpenAiFile response = Merlin.<OpenAiService>builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .retrieveFile(fileId)
-                    .join();
+            OpenAiFile response = service.retrieveFile(fileId).join();
             assertEquals("log4j2.xml", response.getFilename(), "filename mismatch");
             System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void deleteFile() {
             String fileId = "file-EGQhIfguFLF0hHfCu0iVF9xL";
-            DeletionStatus response = Merlin.<OpenAiService>builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .deleteFile(fileId)
-                    .join();
+            DeletionStatus response = service.deleteFile(fileId).join();
             assertTrue(response.isDeleted(), "deleted field should indicate true");
             System.out.println(DefaultObjectMapper.print(response));
         }
@@ -584,12 +403,7 @@ class OpenAiServiceTest {
         @UseWireMock
         void retrieveFileContent() throws IOException {
             String fileId = "file-EGQhIfguFLF0hHfCu0iVF9xL";
-            ResponseBody response = Merlin.<OpenAiService>builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .retrieveFileContent(fileId)
-                    .join();
+            ResponseBody response = service.retrieveFileContent(fileId).join();
             assertNotNull(response);
             Path relativePath = Path.of("openai", "log4j2.xml");
             Path filePath = TestHelper.writeResponseBodyToFile(response, relativePath);
@@ -602,84 +416,156 @@ class OpenAiServiceTest {
         @Test
         @UseWireMock
         void createImage() {
-            ImageRequest request = ImageRequest.builder()
-                    .model("dall-e-3")
-                    .prompt("A cute baby sea otter")
-                    .n(1)
-                    .size("1024x1024")
-                    .build();
-            OpenAiData<Image> response = Merlin.builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .createImage(request)
-                    .join();
+            ImageRequest request = ImageRequest.builder().model("dall-e-3").prompt("A cute baby sea otter").n(1).size("1024x1024").build();
+            OpenAiData<Image> response = service.createImage(request).join();
             assertNotNull(response);
             assertFalse(response.getData().isEmpty());
             System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void createImageEdit() {
+            ImageEditRequest request = ImageEditRequest.builder().prompt("A cute baby sea otter wearing a beret").build();
+            OpenAiData<Image> response = service.createImageEdit(request, "src/test/resources/openai/img-HFqmDa3RTJ09YQm2mHxmjNbq.png", null).join();
+            assertNotNull(response);
+            assertFalse(response.getData().isEmpty());
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void createImageVariation() {
+            ImageVariationRequest request = ImageVariationRequest.builder().model("dall-e-2").n(2).size("1024x1024").responseFormat("url").user("me").build();
+            OpenAiData<Image> response = service.createImageVariation(request, "src/test/resources/openai/img-HFqmDa3RTJ09YQm2mHxmjNbq.png").join();
+
+            assertNotNull(response);
+            assertFalse(response.getData().isEmpty());
+            System.out.println(DefaultObjectMapper.print(response));
         }
     }
 
     @Nested
     class ModelsTest {
         @Test
+        @UseWireMock
         void listModels() {
+            OpenAiData<Model> response = service.listModels().join();
+
+            assertNotNull(response);
+            assertFalse(response.getData().isEmpty());
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void retrieveModel() {
+            String model = "gpt-3.5-turbo-instruct";
+            Model response = service.retrieveModel(model).join();
+            assertNotNull(response);
+            assertEquals(model, response.getId());
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void deleteAFineTunedModel() {
+            String model = "ft:gpt-4o-mini:acemeco:suffix:abc123";
+            DeletionStatus response = service.deleteAFineTunedModel(model).join();
+            assertNotNull(response);
+            assertEquals(model, response.getId());
+            assertTrue(response.isDeleted(), "deleted field should indicate true");
         }
     }
-
 
     @Nested
     class ModerationTest {
         @Test
+        @UseWireMock
         void createModeration() {
-            Merlin.<OpenAiService>builder()
-                    .addService(service)
-                    .build()
-                    .getService(OpenAiService.class)
-                    .createModeration(ModerationRequest.builder()
-                            .input("I want to kill them.")
-                            .model("text-moderation-stable")
-                            .build())
-                    .join();
+            ModerationList response = service.createModeration(ModerationRequest.builder().input("I want to kill them.").model("text-moderation-stable").build()).join();
+            assertNotNull(response);
+            assertFalse(response.getResults().isEmpty());
         }
     }
 
     @Nested
     class AssistantsTest {
         @Test
+        @UseWireMock
         void createAssistant() {
+            List<AssistantTool> tools = new ArrayList<>();
+            tools.add(new CodeInterpreterTool());
+
+            String model = "gpt-4o";
+            String name = "Math Tutor";
+
+            AssistantRequest request = AssistantRequest.builder()
+                    .model(model)
+                    .name(name)
+                    .tools(tools)
+                    .instructions("You are a personal math tutor. When asked a question, write and run Python code to answer the question.")
+                    .build();
+            Assistant response = service.createAssistant(request).join();
+            assertNotNull(response);
+            assertEquals(model, response.getModel(), "model mismatch");
+            assertEquals(name, response.getName(), "name mismatch");
+            assertEquals("code_interpreter", response.getTools().get(0).getType(), "tools mismatch");
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void listAssistants() {
+            Map<String, String> query = new HashMap<>();
+            query.put("limit", "2");
+            query.put("order", "asc");
+            service.listAssistants(query).join();
+            OpenAiData<Assistant> response = service.listAssistants().join();
+            assertNotNull(response);
+            assertNotNull(response.getData());
+            assertEquals("list", response.getObject(), "data should be list");
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void retrieveAssistant() {
+            String assistantId = "asst_abc123";
+            Assistant response = service.retrieveAssistant(assistantId).join();
+            assertNotNull(response);
+            assertEquals(assistantId, response.getId(), "id mismatch");
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void modifyAssistant() {
+            String assistantId = "asst_abc123";
+            String model = "gpt-4o";
+            String instructions = "You are an HR bot, and you have access to files to answer employee questions about company policies. Always response with info from either of the files.";
+            List<AssistantTool> tools = new ArrayList<>();
+            tools.add(new FileSearchTool());
+
+            AssistantRequest request = AssistantRequest.builder()
+                    .model(model)
+                    .tools(tools)
+                    .instructions(instructions)
+                    .tools(tools)
+                    .build();
+            Assistant response = service.modifyAssistant(assistantId, request).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void deleteAssistant() {
+            String assistantId = "asst_abc123";
+            DeletionStatus response = service.deleteAssistant(assistantId).join();
+            assertNotNull(response);
+            assertTrue(response.isDeleted(), "deleted field should indicate true");
+            System.out.println(DefaultObjectMapper.print(response));
         }
     }
 

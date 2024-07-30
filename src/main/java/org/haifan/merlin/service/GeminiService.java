@@ -5,7 +5,6 @@ import org.haifan.merlin.internal.api.GeminiApi;
 import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.interceptors.GeminiInterceptor;
 import org.haifan.merlin.model.gemini.*;
-import org.jetbrains.annotations.TestOnly;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -15,11 +14,11 @@ public class GeminiService extends LlmService {
     private final GeminiApi api;
     public static final String DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com";
 
-    public GeminiService() {
+    GeminiService() {
         this(new LlmConfig(Provider.GOOGLE_GEMINI, DEFAULT_BASE_URL, null));
     }
 
-    public GeminiService(LlmConfig config) {
+    GeminiService(LlmConfig config) {
         super(config, new GeminiInterceptor(config.getToken()));
         this.api = super.retrofit.create(GeminiApi.class);
     }

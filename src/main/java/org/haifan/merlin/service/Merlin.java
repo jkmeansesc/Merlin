@@ -1,10 +1,9 @@
-package org.haifan.merlin.client;
+package org.haifan.merlin.service;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import org.haifan.merlin.internal.constants.Provider;
-import org.haifan.merlin.service.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,17 +37,6 @@ public class Merlin {
         }
 
         /**
-         * Adds an LLM service to the builder.
-         *
-         * @param service the LLM service to add.
-         * @return the current instance of the builder.
-         */
-        public MerlinBuilder addService(LlmService service) {
-            this.services.put(service.getClass(), service);
-            return this;
-        }
-
-        /**
          * Configures the builder to use the OpenAI service with default settings.
          *
          * @return the current instance of the builder.
@@ -66,6 +54,17 @@ public class Merlin {
          */
         public MerlinBuilder openai(String token) {
             LlmConfig config = new LlmConfig(Provider.OPENAI, OpenAiService.DEFAULT_BASE_URL, token);
+            this.services.put(OpenAiService.class, new OpenAiService(config));
+            return this;
+        }
+
+        /**
+         * Configures the builder to use the OpenAI service with a specified token.
+         *
+         * @param config for the OpenAI service.
+         * @return the current instance of the builder.
+         */
+        public MerlinBuilder openai(LlmConfig config) {
             this.services.put(OpenAiService.class, new OpenAiService(config));
             return this;
         }
@@ -118,6 +117,17 @@ public class Merlin {
         }
 
         /**
+         * Configures the builder to use the Google Gemini service with a specified config.
+         *
+         * @param config for the Google Gemini service.
+         * @return the current instance of the builder.
+         */
+        public MerlinBuilder gemini(LlmConfig config) {
+            this.services.put(GeminiService.class, new GeminiService(config));
+            return this;
+        }
+
+        /**
          * Configures the builder to use the Google Gemini service with a specified base URL.
          *
          * @param baseUrl the base URL for the Google Gemini service.
@@ -161,6 +171,17 @@ public class Merlin {
          */
         public MerlinBuilder ollama(String baseUrl) {
             LlmConfig config = new LlmConfig(Provider.OLLAMA, baseUrl, null);
+            this.services.put(OllamaService.class, new OllamaService(config));
+            return this;
+        }
+
+        /**
+         * Configures the builder to use the Ollama service with a specified config.
+         *
+         * @param config for the Ollama service.
+         * @return the current instance of the builder.
+         */
+        public MerlinBuilder ollama(LlmConfig config) {
             this.services.put(OllamaService.class, new OllamaService(config));
             return this;
         }

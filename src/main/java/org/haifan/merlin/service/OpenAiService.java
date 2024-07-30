@@ -70,7 +70,7 @@ public class OpenAiService extends LlmService {
      * Constructs an {@code OpenAiService} instance with the default configuration.
      * Uses the default base URL and retrieves the token from the environment or configuration.
      */
-    public OpenAiService() {
+    OpenAiService() {
         this(new LlmConfig(Provider.OPENAI, DEFAULT_BASE_URL, null));
     }
 
@@ -79,7 +79,7 @@ public class OpenAiService extends LlmService {
      *
      * @param config the configuration for the OpenAI service.
      */
-    public OpenAiService(LlmConfig config) {
+    OpenAiService(LlmConfig config) {
         super(config, new OpenAiInterceptor(config.getToken()));
         this.api = super.retrofit.create(OpenAiApi.class);
     }
@@ -90,6 +90,12 @@ public class OpenAiService extends LlmService {
             return mapper.readValue(json, ChatCompletionChunk.class);
         } catch (JsonProcessingException e) {
             throw new StreamParsingException("Error parsing JSON chunk", e);
+        }
+    }
+
+    private void addIfNotNull(MultipartBody.Builder builder, String name, String value) {
+        if (value != null) {
+            builder.addFormDataPart(name, value);
         }
     }
 
@@ -107,23 +113,14 @@ public class OpenAiService extends LlmService {
     }
 
     public CompletableFuture<Transcription> createTranscription(TranscriptionRequest request, File audio) {
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio)).addFormDataPart(Fields.MODEL, request.getModel());
-
-        if (request.getPrompt() != null) {
-            builder.addFormDataPart(Fields.PROMPT, request.getPrompt());
-        }
-        if (request.getLanguage() != null) {
-            builder.addFormDataPart(Fields.LANGUAGE, request.getLanguage());
-        }
-        if (request.getResponseFormat() != null) {
-            builder.addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat());
-        }
-        if (request.getTemperature() != null) {
-            builder.addFormDataPart(Fields.TEMPERATURE, request.getTemperature().toString());
-        }
-        if (request.getTimestampGranularities() != null) {
-            builder.addFormDataPart(Fields.TIMESTAMP_GRANULARITIES, Arrays.toString(request.getTimestampGranularities()));
-        }
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio))
+                .addFormDataPart(Fields.MODEL, request.getModel());
+        addIfNotNull(builder, Fields.PROMPT, request.getPrompt());
+        addIfNotNull(builder, Fields.LANGUAGE, request.getLanguage());
+        addIfNotNull(builder, Fields.RESPONSE_FORMAT, request.getResponseFormat());
+        addIfNotNull(builder, Fields.TEMPERATURE, request.getTemperature() != null ? request.getTemperature().toString() : null);
+        addIfNotNull(builder, Fields.TIMESTAMP_GRANULARITIES, request.getTimestampGranularities() != null ? Arrays.toString(request.getTimestampGranularities()) : null);
 
         return super.call(api.createTranscription(builder.build()));
     }
@@ -134,18 +131,12 @@ public class OpenAiService extends LlmService {
     }
 
     public CompletableFuture<Translation> createTranslation(TranslationRequest request, File audio) {
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio)).addFormDataPart(Fields.MODEL, request.getModel());
-
-        if (request.getPrompt() != null) {
-            builder.addFormDataPart(Fields.PROMPT, request.getPrompt());
-        }
-        if (request.getResponseFormat() != null) {
-            builder.addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat());
-        }
-        if (request.getTemperature() != null) {
-            builder.addFormDataPart(Fields.TEMPERATURE, request.getTemperature().toString());
-        }
-
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio))
+                .addFormDataPart(Fields.MODEL, request.getModel());
+        addIfNotNull(builder, Fields.PROMPT, request.getPrompt());
+        addIfNotNull(builder, Fields.TEMPERATURE, request.getTemperature() != null ? request.getTemperature().toString() : null);
+        addIfNotNull(builder, Fields.RESPONSE_FORMAT, request.getResponseFormat());
         return super.call(api.createTranslation(builder.build()));
     }
 
@@ -280,21 +271,20 @@ public class OpenAiService extends LlmService {
         return createImageEdit(request, image, mask);
     }
 
-    private CompletableFuture<OpenAiData<Image>> createImageEdit(ImageEditRequest request, File image, File mask) {
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.N, request.getN().toString()) // integer or null
-                .addFormDataPart(Fields.SIZE, request.getSize()) // string or null
-                .addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat()) //string or null
-                .addFormDataPart(Fields.PROMPT, request.getPrompt()).addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(IanaMediaType.IMAGE_ALL)));
+    public CompletableFuture<OpenAiData<Image>> createImageEdit(ImageEditRequest request, File image, File mask) {
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart(Fields.PROMPT, request.getPrompt())
+                .addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(IanaMediaType.IMAGE_ALL)));
 
         if (mask != null) {
             builder.addFormDataPart(Fields.MASK, mask.getName(), RequestBody.create(mask, MediaType.parse(IanaMediaType.IMAGE_ALL)));
         }
-        if (request.getModel() != null) {
-            builder.addFormDataPart(Fields.MODEL, request.getModel());
-        }
-        if (request.getUser() != null) {
-            builder.addFormDataPart(Fields.USER, request.getUser());
-        }
+
+        addIfNotNull(builder, Fields.N, request.getN() != null ? request.getN().toString() : null);
+        addIfNotNull(builder, Fields.SIZE, request.getSize());
+        addIfNotNull(builder, Fields.RESPONSE_FORMAT, request.getResponseFormat());
+        addIfNotNull(builder, Fields.MODEL, request.getModel());
+        addIfNotNull(builder, Fields.USER, request.getUser());
 
         return super.call(api.createImageEdit(builder.build()));
     }
@@ -306,19 +296,15 @@ public class OpenAiService extends LlmService {
 
     public CompletableFuture<OpenAiData<Image>> createImageVariation(ImageVariationRequest request, File image) {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.N, request.getN().toString()) // integer or null
-                .addFormDataPart(Fields.SIZE, request.getSize()) // string or null
-                .addFormDataPart(Fields.RESPONSE_FORMAT, request.getResponseFormat()) // string or null
                 .addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(IanaMediaType.IMAGE_ALL)));
 
-        if (request.getModel() != null) {
-            builder.addFormDataPart(Fields.MODEL, request.getModel());
-        }
+        addIfNotNull(builder, Fields.N, request.getN() != null ? request.getN().toString() : null);
+        addIfNotNull(builder, Fields.SIZE, request.getSize());
+        addIfNotNull(builder, Fields.RESPONSE_FORMAT, request.getResponseFormat());
+        addIfNotNull(builder, Fields.MODEL, request.getModel());
+        addIfNotNull(builder, Fields.USER, request.getUser());
 
-        if (request.getUser() != null) {
-            builder.addFormDataPart(Fields.USER, request.getUser());
-        }
-
-        return super.call(api.createImageVariation(null));
+        return super.call(api.createImageVariation(builder.build()));
     }
 
     // ===============================

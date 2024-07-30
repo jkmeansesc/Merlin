@@ -21,11 +21,11 @@ public class OllamaService extends LlmService {
     private final OllamaApi api;
     private static final String DEFAULT_BASE_URL = "http://localhost:11434/";
 
-    public OllamaService() {
+    OllamaService() {
         this(new LlmConfig(Provider.OLLAMA, DEFAULT_BASE_URL, null));
     }
 
-    public OllamaService(LlmConfig config) {
+    OllamaService(LlmConfig config) {
         super(config, new OllamaInterceptor());
         this.api = super.retrofit.create(OllamaApi.class);
     }
