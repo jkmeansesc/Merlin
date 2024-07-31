@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.haifan.merlin.model.openai.Content;
 import org.haifan.merlin.model.openai.ResponseFormat;
+import org.haifan.merlin.model.openai.Text;
 import org.haifan.merlin.model.openai.ToolChoice;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
 
@@ -30,6 +31,7 @@ public class DefaultObjectMapper {
      * <li>{@link ToolChoice}</li>
      * <li>{@link EmbeddingRequest.Input}</li>
      * <li>{@link Content}</li>
+     * <li>{@link Text}</li>
      * </ul>
      * This method ensures that the {@link ObjectMapper} includes non-null values during serialization.
      *
@@ -52,6 +54,9 @@ public class DefaultObjectMapper {
 
         module.addSerializer(Content.class, new Serializers.ContentSerializer());
         module.addDeserializer(Content.class, new Serializers.ContentDeserializer());
+
+        module.addSerializer(Text.class, new Serializers.TextSerializer());
+        module.addDeserializer(Text.class, new Serializers.TextDeserializer());
 
         mapper.registerModule(module);
         return mapper;

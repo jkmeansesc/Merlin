@@ -1,9 +1,9 @@
 package org.haifan.merlin.internal.interceptors;
 
+import lombok.NonNull;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
@@ -23,7 +23,7 @@ public abstract class AuthenticationInterceptor implements Interceptor {
         this.token = null;
     }
 
-    @NotNull
+    @NonNull
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();

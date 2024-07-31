@@ -1,16 +1,13 @@
 package org.haifan.merlin.model.openai;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 public class Content {
     private String contentStr;
-    private List<ContentPart> contentParts = new ArrayList<>();
+    private List<ContentPart> contentParts;
 
     public Content(String content) {
         this.contentStr = content;

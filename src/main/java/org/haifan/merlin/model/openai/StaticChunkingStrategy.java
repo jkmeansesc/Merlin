@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.haifan.merlin.internal.constants.Fields;
-import org.jetbrains.annotations.NotNull;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -15,7 +14,7 @@ public class StaticChunkingStrategy extends ChunkingStrategy {
     @JsonProperty("static")
     private Static staticStrategy;
 
-    public StaticChunkingStrategy(@NotNull Static staticStrategy) {
+    public StaticChunkingStrategy(@NonNull Static staticStrategy) {
         super(Fields.STATIC);
         this.staticStrategy = staticStrategy;
     }

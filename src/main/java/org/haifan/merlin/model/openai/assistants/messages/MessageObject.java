@@ -6,10 +6,15 @@ import org.haifan.merlin.model.openai.Attachment;
 import org.haifan.merlin.model.openai.ContentPart;
 import org.haifan.merlin.model.openai.IncompleteDetails;
 
+import lombok.*;
+
 import java.util.List;
 import java.util.Map;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MessageObject {
     private String id;
     private String object;

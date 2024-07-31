@@ -3,7 +3,6 @@ package org.haifan.merlin.model.openai;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.*;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -23,12 +22,12 @@ public class OpenAiMessage {
     @JsonProperty("tool_calls")
     private List<ToolCall> toolCalls;
 
-    public OpenAiMessage(@NotNull Role role, String content) {
+    public OpenAiMessage(@NonNull Role role, String content) {
         this.role = role;
         this.content = content;
     }
 
-    public OpenAiMessage(@NotNull Role role, String content, String toolCallId) {
+    public OpenAiMessage(@NonNull Role role, String content, String toolCallId) {
         this.role = role;
         this.content = content;
         this.toolCallId = toolCallId;

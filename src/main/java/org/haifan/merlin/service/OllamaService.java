@@ -2,14 +2,16 @@ package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import org.haifan.merlin.internal.api.OllamaApi;
 import org.haifan.merlin.internal.constants.IanaMediaType;
 import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.interceptors.OllamaInterceptor;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
-import org.haifan.merlin.model.ollama.*;
 import org.haifan.merlin.model.StreamingResponse;
+import org.haifan.merlin.model.ollama.*;
 import retrofit2.Call;
 import retrofit2.http.Body;
 

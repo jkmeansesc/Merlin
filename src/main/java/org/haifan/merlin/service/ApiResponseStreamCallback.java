@@ -1,9 +1,9 @@
 package org.haifan.merlin.service;
 
 import io.reactivex.rxjava3.core.FlowableEmitter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.ResponseBody;
-import org.jetbrains.annotations.NotNull;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.HttpException;
@@ -24,7 +24,7 @@ public class ApiResponseStreamCallback<T> implements Callback<ResponseBody> {
     }
 
     @Override
-    public void onResponse(@NotNull Call<ResponseBody> call, @NotNull Response<ResponseBody> response) {
+    public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
         if (!response.isSuccessful()) {
             log.error("Stream successful but with status code {}", response.code());
             emitter.onError(new HttpException(response));
@@ -57,7 +57,7 @@ public class ApiResponseStreamCallback<T> implements Callback<ResponseBody> {
     }
 
     @Override
-    public void onFailure(@NotNull Call<ResponseBody> call, @NotNull Throwable t) {
+    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
         emitter.onError(t);
     }
 

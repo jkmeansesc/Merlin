@@ -2,11 +2,20 @@ package org.haifan.merlin.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import org.haifan.merlin.internal.api.OpenAiApi;
 import org.haifan.merlin.internal.constants.Fields;
+import org.haifan.merlin.internal.constants.IanaMediaType;
 import org.haifan.merlin.internal.constants.Provider;
+import org.haifan.merlin.internal.interceptors.OpenAiInterceptor;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
+import org.haifan.merlin.internal.utils.FileParser;
+import org.haifan.merlin.model.StreamingResponse;
+import org.haifan.merlin.model.openai.DeletionStatus;
+import org.haifan.merlin.model.openai.OpenAiData;
 import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
 import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
 import org.haifan.merlin.model.openai.assistants.messages.MessageObject;
@@ -15,15 +24,12 @@ import org.haifan.merlin.model.openai.assistants.runs.Run;
 import org.haifan.merlin.model.openai.assistants.runs.RunRequest;
 import org.haifan.merlin.model.openai.assistants.runs.RunStep;
 import org.haifan.merlin.model.openai.assistants.runs.ToolOutputRequest;
-import org.haifan.merlin.model.openai.assistants.threads.ThreadObject;
+import org.haifan.merlin.model.openai.assistants.threads.OpenAiThread;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileBatch;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreRequest;
-import org.haifan.merlin.model.openai.DeletionStatus;
-import org.haifan.merlin.model.openai.OpenAiData;
-import org.haifan.merlin.model.StreamingResponse;
 import org.haifan.merlin.model.openai.endpoints.audio.*;
 import org.haifan.merlin.model.openai.endpoints.batch.Batch;
 import org.haifan.merlin.model.openai.endpoints.batch.BatchRequest;
@@ -44,9 +50,6 @@ import org.haifan.merlin.model.openai.endpoints.images.ImageVariationRequest;
 import org.haifan.merlin.model.openai.endpoints.models.Model;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationList;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
-import org.haifan.merlin.internal.constants.IanaMediaType;
-import org.haifan.merlin.internal.interceptors.OpenAiInterceptor;
-import org.haifan.merlin.internal.utils.FileParser;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Path;
@@ -383,15 +386,15 @@ public class OpenAiService extends LlmService {
     // ASSISTANTS - Threads
     // ===============================
 
-    public CompletableFuture<ThreadObject> createThread(@Body ThreadRequest request) {
+    public CompletableFuture<OpenAiThread> createThread(@Body ThreadRequest request) {
         return super.call(api.createThread(request));
     }
 
-    public CompletableFuture<ThreadObject> retrieveThread(String threadId) {
+    public CompletableFuture<OpenAiThread> retrieveThread(String threadId) {
         return super.call(api.retrieveThread(threadId));
     }
 
-    public CompletableFuture<ThreadObject> modifyThread(String threadId, ThreadRequest request) {
+    public CompletableFuture<OpenAiThread> modifyThread(String threadId, ThreadRequest request) {
         return super.call(api.modifyThread(threadId, request));
     }
 

@@ -3,6 +3,8 @@ package org.haifan.merlin.internal.api;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.internal.constants.Fields;
+import org.haifan.merlin.model.openai.DeletionStatus;
+import org.haifan.merlin.model.openai.OpenAiData;
 import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
 import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
 import org.haifan.merlin.model.openai.assistants.messages.MessageObject;
@@ -11,14 +13,12 @@ import org.haifan.merlin.model.openai.assistants.runs.Run;
 import org.haifan.merlin.model.openai.assistants.runs.RunRequest;
 import org.haifan.merlin.model.openai.assistants.runs.RunStep;
 import org.haifan.merlin.model.openai.assistants.runs.ToolOutputRequest;
-import org.haifan.merlin.model.openai.assistants.threads.ThreadObject;
+import org.haifan.merlin.model.openai.assistants.threads.OpenAiThread;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileBatch;
 import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreRequest;
-import org.haifan.merlin.model.openai.DeletionStatus;
-import org.haifan.merlin.model.openai.OpenAiData;
 import org.haifan.merlin.model.openai.endpoints.audio.SpeechRequest;
 import org.haifan.merlin.model.openai.endpoints.audio.Transcription;
 import org.haifan.merlin.model.openai.endpoints.audio.Translation;
@@ -36,7 +36,6 @@ import org.haifan.merlin.model.openai.endpoints.finetune.FineTuningJobRequest;
 import org.haifan.merlin.model.openai.endpoints.images.Image;
 import org.haifan.merlin.model.openai.endpoints.images.ImageRequest;
 import org.haifan.merlin.model.openai.endpoints.models.Model;
-
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationList;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
 import retrofit2.Call;
@@ -215,15 +214,15 @@ public interface OpenAiApi {
 
     @POST("/v1/threads")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<ThreadObject> createThread(@Body ThreadRequest request);
+    Call<OpenAiThread> createThread(@Body ThreadRequest request);
 
     @GET("/v1/threads/{thread_id}")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<ThreadObject> retrieveThread(@Path("thread_id") String threadId);
+    Call<OpenAiThread> retrieveThread(@Path("thread_id") String threadId);
 
     @POST("/v1/threads/{thread_id}")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<ThreadObject> modifyThread(@Path("thread_id") String threadId, @Body ThreadRequest request);
+    Call<OpenAiThread> modifyThread(@Path("thread_id") String threadId, @Body ThreadRequest request);
 
     @DELETE("/v1/threads/{thread_id}")
     @Headers("OpenAI-Beta: assistants=v2")

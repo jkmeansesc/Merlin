@@ -11,7 +11,7 @@ import java.util.Map;
  * <a href="https://platform.openai.com/docs/api-reference/threads/object">...</a>
  */
 @Data
-public class ThreadObject {
+public class OpenAiThread {
     private String id;
     private String object;
     @JsonProperty("created_at")

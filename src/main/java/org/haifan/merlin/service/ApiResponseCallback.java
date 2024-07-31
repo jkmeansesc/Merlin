@@ -1,6 +1,6 @@
 package org.haifan.merlin.service;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.HttpException;
@@ -17,7 +17,7 @@ public class ApiResponseCallback<T> implements Callback<T> {
     }
 
     @Override
-    public void onResponse(@NotNull Call<T> call, @NotNull Response<T> response) {
+    public void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
         if (response.isSuccessful()) {
             log.info("Call successful with status code: {}", response.code());
             future.complete(response.body());
@@ -28,7 +28,7 @@ public class ApiResponseCallback<T> implements Callback<T> {
     }
 
     @Override
-    public void onFailure(@NotNull Call<T> call, @NotNull Throwable t) {
+    public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
         log.error("API call failed due to exception", t);
         future.completeExceptionally(t);
     }

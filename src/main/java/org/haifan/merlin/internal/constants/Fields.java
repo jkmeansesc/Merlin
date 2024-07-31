@@ -19,10 +19,6 @@ public class Fields {
     public static final String LANGUAGE = "language";
     public static final String TEMPERATURE = "temperature";
     public static final String TIMESTAMP_GRANULARITIES = "timestamp_granularities";
-    public static final String SYSTEM = "system";
-    public static final String ASSISTANT = "assistant";
-    public static final String TOOL = "tool";
-    public static final String TEXT = "text";
     public static final String IMAGE_URL = "image_url";
     public static final String IMAGE_FILE = "image_file";
     public static final String DELTA = "delta";
@@ -34,4 +30,6 @@ public class Fields {
     public static final String OTHER = "other";
     public static final String TOOL_CALLS = "tool_calls";
     public static final String MESSAGE_CREATION = "message_creation";
+    public static final String ANNOTATIONS = "annotations";
+    public static final String VALUE = "value";
 }

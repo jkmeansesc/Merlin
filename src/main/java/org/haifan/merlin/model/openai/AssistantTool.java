@@ -9,7 +9,6 @@ import lombok.NonNull;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "type"
 )
 @JsonSubTypes({

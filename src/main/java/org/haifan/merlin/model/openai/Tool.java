@@ -1,6 +1,7 @@
 package org.haifan.merlin.model.openai;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NonNull;
 
 @Data
 public class Tool {

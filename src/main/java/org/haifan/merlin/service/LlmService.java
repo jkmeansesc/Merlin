@@ -12,8 +12,8 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import org.haifan.merlin.internal.interceptors.AuthenticationInterceptor;
 import org.haifan.merlin.internal.interceptors.SLF4JHttpLogger;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
-
-import retrofit2.*;
+import retrofit2.Call;
+import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.util.Objects;

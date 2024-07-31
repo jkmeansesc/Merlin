@@ -7,10 +7,10 @@ import org.haifan.merlin.model.openai.Content;
 import java.util.List;
 import java.util.Map;
 
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class MessageRequest {
     @NonNull
     private String role;

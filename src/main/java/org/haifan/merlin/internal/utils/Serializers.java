@@ -3,11 +3,9 @@ package org.haifan.merlin.internal.utils;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.databind.*;
+import org.haifan.merlin.internal.constants.Fields;
 import org.haifan.merlin.model.openai.*;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
 
@@ -120,7 +118,11 @@ public class Serializers {
             if (value.getContentStr() != null) {
                 gen.writeString(value.getContentStr());
             } else if (value.getContentParts() != null && !value.getContentParts().isEmpty()) {
-                gen.writeObject(value.getContentParts());
+                gen.writeStartArray();
+                for (ContentPart part : value.getContentParts()) {
+                    serializers.defaultSerializeValue(part, gen);
+                }
+                gen.writeEndArray();
             } else {
                 gen.writeNull();
             }
@@ -130,14 +132,52 @@ public class Serializers {
     public static class ContentDeserializer extends JsonDeserializer<Content> {
         @Override
         public Content deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            List<ContentPart> parts;
             if (p.currentToken() == JsonToken.VALUE_STRING) {
                 return new Content(p.getText());
             } else if (p.currentToken() == JsonToken.START_ARRAY) {
-                parts = ctxt.readValue(p, ctxt.getTypeFactory().constructCollectionType(List.class, ContentPart.class));
+                List<ContentPart> parts = ctxt.readValue(p, ctxt.getTypeFactory().constructCollectionType(List.class, ContentPart.class));
                 return new Content(parts);
             }
             throw new IOException("Invalid Content format");
+        }
+    }
+
+    public static class TextSerializer extends JsonSerializer<Text> {
+        @Override
+        public void serialize(Text value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            if (value.getValue() != null) {
+                gen.writeString(value.getValue());
+            } else {
+                gen.writeNull();
+            }
+        }
+    }
+
+    public static class TextDeserializer extends JsonDeserializer<Text> {
+        @Override
+        public Text deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            if (p.currentToken() == JsonToken.VALUE_STRING) {
+                Text text = new Text();
+                text.setValue(p.getText());
+                return text;
+            } else if (p.currentToken() == JsonToken.START_OBJECT) {
+                ObjectCodec codec = p.getCodec();
+                JsonNode node = codec.readTree(p);
+
+                String value = node.has(Fields.VALUE) ? node.get(Fields.VALUE).asText() : null;
+
+                List<Annotation> annotations = new ArrayList<>();
+                if (node.has(Fields.ANNOTATIONS) && node.get(Fields.ANNOTATIONS).isArray()) {
+                    JsonNode annotationsNode = node.get(Fields.ANNOTATIONS);
+                    for (JsonNode annotationNode : annotationsNode) {
+                        Annotation annotation = codec.treeToValue(annotationNode, Annotation.class);
+                        annotations.add(annotation);
+                    }
+                }
+
+                return new Text(value, annotations);
+            }
+            throw new IOException("Invalid text format");
         }
     }
 }

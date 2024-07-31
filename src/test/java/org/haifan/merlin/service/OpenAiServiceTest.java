@@ -1,16 +1,22 @@
 package org.haifan.merlin.service;
 
 import okhttp3.ResponseBody;
+import org.haifan.merlin.annotations.UseRelay;
+import org.haifan.merlin.annotations.UseWireMock;
 import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
 import org.haifan.merlin.model.openai.*;
-import org.haifan.merlin.model.openai.Function;
 import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
 import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
+import org.haifan.merlin.model.openai.assistants.messages.MessageObject;
+import org.haifan.merlin.model.openai.assistants.messages.MessageRequest;
+import org.haifan.merlin.model.openai.assistants.threads.OpenAiThread;
+import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
 import org.haifan.merlin.model.openai.endpoints.audio.*;
 import org.haifan.merlin.model.openai.endpoints.batch.Batch;
 import org.haifan.merlin.model.openai.endpoints.batch.BatchRequest;
-import org.haifan.merlin.model.openai.endpoints.chat.*;
+import org.haifan.merlin.model.openai.endpoints.chat.ChatCompletion;
+import org.haifan.merlin.model.openai.endpoints.chat.ChatCompletionRequest;
 import org.haifan.merlin.model.openai.endpoints.embeddings.Embedding;
 import org.haifan.merlin.model.openai.endpoints.embeddings.EmbeddingRequest;
 import org.haifan.merlin.model.openai.endpoints.files.OpenAiFile;
@@ -26,11 +32,7 @@ import org.haifan.merlin.model.openai.endpoints.models.Model;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationList;
 import org.haifan.merlin.model.openai.endpoints.moderations.ModerationRequest;
 import org.haifan.merlin.utils.TestHelper;
-import org.haifan.merlin.annotations.UseWireMock;
-import org.haifan.merlin.annotations.UseRelay;
 import org.junit.jupiter.api.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +45,8 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class OpenAiServiceTest {
 
@@ -500,12 +504,7 @@ class OpenAiServiceTest {
             String model = "gpt-4o";
             String name = "Math Tutor";
 
-            AssistantRequest request = AssistantRequest.builder()
-                    .model(model)
-                    .name(name)
-                    .tools(tools)
-                    .instructions("You are a personal math tutor. When asked a question, write and run Python code to answer the question.")
-                    .build();
+            AssistantRequest request = AssistantRequest.builder().model(model).name(name).tools(tools).instructions("You are a personal math tutor. When asked a question, write and run Python code to answer the question.").build();
             Assistant response = service.createAssistant(request).join();
             assertNotNull(response);
             assertEquals(model, response.getModel(), "model mismatch");
@@ -547,12 +546,7 @@ class OpenAiServiceTest {
             List<AssistantTool> tools = new ArrayList<>();
             tools.add(new FileSearchTool());
 
-            AssistantRequest request = AssistantRequest.builder()
-                    .model(model)
-                    .tools(tools)
-                    .instructions(instructions)
-                    .tools(tools)
-                    .build();
+            AssistantRequest request = AssistantRequest.builder().model(model).tools(tools).instructions(instructions).tools(tools).build();
             Assistant response = service.modifyAssistant(assistantId, request).join();
             assertNotNull(response);
             System.out.println(DefaultObjectMapper.print(response));
@@ -572,26 +566,111 @@ class OpenAiServiceTest {
     @Nested
     class ThreadsTest {
         @Test
+        @UseWireMock
         void createThread() {
+
+            MessageRequest userMessage = MessageRequest.builder().role("user").content(new Content("content")).build();
+
+            List<ContentPart> parts = new ArrayList<>();
+            parts.add(ImageFileContentPart.builder().imageFile(ImageFile.builder().fileId("image file id").detail("image file detail").build()).build());
+            parts.add(ImageUrlContentPart.builder().imageUrl(ImageUrl.builder().url("https://example.image.url.com/example.png").detail("image url detail").build()).build());
+            List<Annotation> annotations = new ArrayList<>();
+            annotations.add(Annotation.builder().build());
+            parts.add(TextContentPart.builder().text(Text.builder().value("text content part").annotations(annotations).build()).build());
+
+            MessageRequest assistantMessage = MessageRequest.builder().role("assistant").content(new Content(parts)).build();
+
+            List<MessageRequest> messages = new ArrayList<>();
+            messages.add(userMessage);
+            messages.add(assistantMessage);
+
+            ToolResources toolResources = new ToolResources();
+            ToolResources.CodeInterpreter codeInterpreter = new ToolResources.CodeInterpreter();
+            List<String> fileIds = new ArrayList<>();
+            fileIds.add("fileId_1");
+            fileIds.add("fileId_2");
+            fileIds.add("fileId_3");
+            codeInterpreter.setFileIds(fileIds);
+
+            ToolResources.FileSearch fileSearch = new ToolResources.FileSearch();
+            fileSearch.setVectorStoreIds(List.of("id_1"));
+
+            ToolResources.FileSearch.VectorStoreHelper vectorStoreHelper = new ToolResources.FileSearch.VectorStoreHelper();
+            vectorStoreHelper.setFileIds(List.of("fileId_1"));
+            vectorStoreHelper.setChunkingStrategy(new AutoChunkingStrategy());
+            vectorStoreHelper.setMetadata(new HashMap<>());
+            List<ToolResources.FileSearch.VectorStoreHelper> vectorStoreHelpers = new ArrayList<>();
+            vectorStoreHelpers.add(vectorStoreHelper);
+            fileSearch.setVectorStores(vectorStoreHelpers);
+
+            toolResources.setCodeInterpreter(codeInterpreter);
+            toolResources.setFileSearch(fileSearch);
+
+            ThreadRequest request = ThreadRequest.builder().messages(messages).toolResources(toolResources).metadata(new HashMap<>()).build();
+
+            OpenAiThread response = service.createThread(request).join();
+            assertNotNull(response);
+            assertEquals("thread", response.getObject(), "object should be thread");
+            System.out.println(DefaultObjectMapper.print(response));
+            System.out.println(DefaultObjectMapper.print(request));
         }
 
         @Test
+        @UseWireMock
         void retrieveThread() {
+            String threadId = "thread_abc123";
+            OpenAiThread response = service.retrieveThread(threadId).join();
+            assertNotNull(response);
+            assertEquals(threadId, response.getId(), "id mismatch");
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void modifyThread() {
+            Map<String, Object> metadata = new HashMap<>();
+            metadata.put("modified", true);
+            metadata.put("user", "abc123");
+
+            String threadId = "thread_abc123";
+            ThreadRequest request = ThreadRequest.builder().metadata(metadata).build();
+
+            OpenAiThread response = service.modifyThread(threadId, request).join();
+            assertNotNull(response);
+            assertEquals(threadId, response.getId(), "id mismatch");
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void deleteThread() {
+            String threadId = "thread_abc123";
+            DeletionStatus response = service.deleteThread(threadId).join();
+            assertNotNull(response);
+            assertTrue(response.isDeleted(), "deleted field should indicate true");
+            System.out.println(DefaultObjectMapper.print(response));
         }
     }
 
     @Nested
     class MessagesTest {
         @Test
+        @UseWireMock
         void createMessage() {
+            String threadId = "thread_abc123";
+            MessageRequest request = MessageRequest
+                    .builder()
+                    .role("user")
+                    .content(new Content("content"))
+                    .build();
+            MessageObject response = service.createMessage(threadId, request).join();
+            assertNotNull(response);
+            assertEquals(threadId, response.getThreadId(), "thread id mismatch");
+            System.out.println(DefaultObjectMapper.print(response));
+
+            for (ContentPart part : response.getContent()) {
+                System.out.println("ContentPart type: " + part.getType());
+            }
         }
 
         @Test
