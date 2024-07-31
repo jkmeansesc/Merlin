@@ -369,7 +369,7 @@ public interface OpenAiApi {
 
     @POST("/v1/vector_stores/{vector_store_id}/file_batches")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<VectorStoreFile> createVectorStoreFileBatch(@Path("vector_store_id") String vectorStoreId, @Body VectorStoreRequest request);
+    Call<VectorStoreFileBatch> createVectorStoreFileBatch(@Path("vector_store_id") String vectorStoreId, @Body VectorStoreFileBatchRequest request);
 
     @GET("/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}")
     @Headers("OpenAI-Beta: assistants=v2")

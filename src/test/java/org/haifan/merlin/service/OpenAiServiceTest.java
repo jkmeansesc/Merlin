@@ -1,6 +1,5 @@
 package org.haifan.merlin.service;
 
-import lombok.Builder;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.annotations.UseRelay;
 import org.haifan.merlin.annotations.UseWireMock;
@@ -17,10 +16,7 @@ import org.haifan.merlin.model.openai.assistants.runs.RunStep;
 import org.haifan.merlin.model.openai.assistants.runs.ToolOutputRequest;
 import org.haifan.merlin.model.openai.assistants.threads.OpenAiThread;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
-import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
-import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
-import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileRequest;
-import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreRequest;
+import org.haifan.merlin.model.openai.assistants.vectorstores.*;
 import org.haifan.merlin.model.openai.endpoints.audio.*;
 import org.haifan.merlin.model.openai.endpoints.batch.Batch;
 import org.haifan.merlin.model.openai.endpoints.batch.BatchRequest;
@@ -980,19 +976,49 @@ class OpenAiServiceTest {
     class VectorStoreFileBatchTest {
 
         @Test
+        @UseWireMock
         void createVectorStoreFileBatch() {
+            String vectorStoreId = "vs_abc123";
+            VectorStoreFileBatchRequest request = VectorStoreFileBatchRequest
+                    .builder()
+                    .fileIds(Arrays.asList("file_id_1", "file_id_2", "file_id_3", "file_id_4"))
+                    .build();
+            VectorStoreFileBatch response = service.createVectorStoreFileBatch(vectorStoreId, request).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void retrieveVectorStoreFileBatch() {
+            String vectorStoreId = "vs_abc123";
+            String batchId = "batch_abc123";
+            VectorStoreFileBatch response = service.retrieveVectorStoreFileBatch(vectorStoreId, batchId).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void cancelVectorStoreFileBatch() {
+            String vectorStoreId = "vs_abc123";
+            String batchId = "batch_abc123";
+            VectorStoreFileBatch resposne = service.cancelVectorStoreFileBatch(vectorStoreId, batchId).join();
+            assertNotNull(resposne);
+            System.out.println(DefaultObjectMapper.print(resposne));
         }
 
         @Test
+        @UseWireMock
         void listVectorStoreFileBatch() {
+            String vectorStoreId = "vs_abc123";
+            String batchId = "batch_abc123";
+            Map<String, String> query = new HashMap<>();
+            query.put("limit", "2");
+            service.listVectorStoreFileBatch(vectorStoreId, batchId, query).join();
+            OpenAiData<VectorStoreFileBatch> response = service.listVectorStoreFileBatch(vectorStoreId, batchId).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
     }
 }

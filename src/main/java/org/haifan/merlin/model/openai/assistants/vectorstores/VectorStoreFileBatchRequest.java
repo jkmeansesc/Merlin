@@ -1,21 +1,21 @@
 package org.haifan.merlin.model.openai.assistants.vectorstores;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.haifan.merlin.model.openai.ChunkingStrategy;
 
-/**
- * The request object to create vector store files and batches.
- * <a href="https://platform.openai.com/docs/api-reference/vector-stores-files">...</a>
- */
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VectorStoreFileRequest {
-    @NonNull
-    @JsonProperty("file_id")
-    private String fileId;
+public class VectorStoreFileBatchRequest {
+    @JsonProperty("file_ids")
+    private List<String> fileIds;
     @JsonProperty("chunking_strategy")
     private Class<? extends ChunkingStrategy> chunkingStrategy;
 }

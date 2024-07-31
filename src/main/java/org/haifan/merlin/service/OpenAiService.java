@@ -555,7 +555,7 @@ public class OpenAiService extends LlmService {
     // ASSISTANTS - Vector Stores File Batches
     // ===============================
 
-    public CompletableFuture<VectorStoreFile> createVectorStoreFileBatch(String vectorStoreId, VectorStoreRequest request) {
+    public CompletableFuture<VectorStoreFileBatch> createVectorStoreFileBatch(String vectorStoreId, VectorStoreFileBatchRequest request) {
         return super.call(api.createVectorStoreFileBatch(vectorStoreId, request));
     }
 
