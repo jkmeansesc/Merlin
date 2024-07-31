@@ -37,4 +37,8 @@ public class MessageObject {
     private String runId;
     private List<Attachment> attachments;
     private Map<String, Object> metadata;
+    // Not documented by openai but present in its example
+    // see https://platform.openai.com/docs/api-reference/messages/modifyMessage
+    @JsonProperty("file_ids")
+    private List<String> fileIds;
 }

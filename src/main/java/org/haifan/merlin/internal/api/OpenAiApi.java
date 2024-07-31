@@ -15,10 +15,7 @@ import org.haifan.merlin.model.openai.assistants.runs.RunStep;
 import org.haifan.merlin.model.openai.assistants.runs.ToolOutputRequest;
 import org.haifan.merlin.model.openai.assistants.threads.OpenAiThread;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
-import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
-import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
-import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileBatch;
-import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreRequest;
+import org.haifan.merlin.model.openai.assistants.vectorstores.*;
 import org.haifan.merlin.model.openai.endpoints.audio.SpeechRequest;
 import org.haifan.merlin.model.openai.endpoints.audio.Transcription;
 import org.haifan.merlin.model.openai.endpoints.audio.Translation;
@@ -288,6 +285,11 @@ public interface OpenAiApi {
     @Headers("OpenAI-Beta: assistants=v2")
     Call<Run> submitToolOutputsToRun(@Path("thread_id") String threadId, @Path("run_id") String runId, @Body ToolOutputRequest request);
 
+    @POST("/v1/threads/{thread_id}/runs/{run_id}/submit_tool_outputs")
+    @Streaming
+    @Headers("OpenAI-Beta: assistants=v2")
+    Call<ResponseBody> streamToolOutputsToRun(@Path("thread_id") String threadId, @Path("run_id") String runId, @Body ToolOutputRequest request);
+
     @POST("/v1/threads/{thread_id}/runs/{run_id}/cancel")
     @Headers("OpenAI-Beta: assistants=v2")
     Call<Run> cancelRun(@Path("thread_id") String threadId, @Path("run_id") String runId);
@@ -343,7 +345,7 @@ public interface OpenAiApi {
 
     @POST("/v1/vector_stores/{vector_store_id}/files")
     @Headers("OpenAI-Beta: assistants=v2")
-    Call<VectorStoreFile> createVectorStoreFile(@Path("vector_store_id") String vectorStoreId, @Body VectorStoreRequest request);
+    Call<VectorStoreFile> createVectorStoreFile(@Path("vector_store_id") String vectorStoreId, @Body VectorStoreFileRequest request);
 
     @GET("/v1/vector_stores/{vector_store_id}/files")
     @Headers("OpenAI-Beta: assistants=v2")

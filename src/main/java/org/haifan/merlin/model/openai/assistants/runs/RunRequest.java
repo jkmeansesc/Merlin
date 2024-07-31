@@ -13,7 +13,6 @@ import java.util.Map;
 @AllArgsConstructor
 @Data
 public class RunRequest {
-    @NonNull
     @JsonProperty("assistant_id")
     private String assistantId;
     private String model;

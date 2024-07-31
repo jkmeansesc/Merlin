@@ -12,7 +12,6 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageRequest {
-    @NonNull
     private String role;
     private Content content;
     private List<Attachment> attachments;

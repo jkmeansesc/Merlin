@@ -1,14 +1,16 @@
 package org.haifan.merlin.model.openai;
 
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
 import java.util.Map;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Function {
-    private String description;
     @NonNull
     private String name;
+    private String description;
     private Map<String, Object> parameters;
 }

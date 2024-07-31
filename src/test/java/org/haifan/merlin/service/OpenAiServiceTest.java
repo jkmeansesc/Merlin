@@ -1,5 +1,6 @@
 package org.haifan.merlin.service;
 
+import lombok.Builder;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.annotations.UseRelay;
 import org.haifan.merlin.annotations.UseWireMock;
@@ -10,8 +11,16 @@ import org.haifan.merlin.model.openai.assistants.assistants.Assistant;
 import org.haifan.merlin.model.openai.assistants.assistants.AssistantRequest;
 import org.haifan.merlin.model.openai.assistants.messages.MessageObject;
 import org.haifan.merlin.model.openai.assistants.messages.MessageRequest;
+import org.haifan.merlin.model.openai.assistants.runs.Run;
+import org.haifan.merlin.model.openai.assistants.runs.RunRequest;
+import org.haifan.merlin.model.openai.assistants.runs.RunStep;
+import org.haifan.merlin.model.openai.assistants.runs.ToolOutputRequest;
 import org.haifan.merlin.model.openai.assistants.threads.OpenAiThread;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
+import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
+import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
+import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileRequest;
+import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreRequest;
 import org.haifan.merlin.model.openai.endpoints.audio.*;
 import org.haifan.merlin.model.openai.endpoints.batch.Batch;
 import org.haifan.merlin.model.openai.endpoints.batch.BatchRequest;
@@ -144,7 +153,7 @@ class OpenAiServiceTest {
             assertEquals("assistant", messages.get(3).getRoleAsString(), "Wrong role");
 
             List<Tool> tools = new ArrayList<>();
-            tools.add(new Tool("auto", new Function("function")));
+            tools.add(new Tool("auto", new Function()));
 
             Map<String, Integer> logitBias = new HashMap<>();
             logitBias.put("logitBias", 1);
@@ -658,119 +667,312 @@ class OpenAiServiceTest {
         @UseWireMock
         void createMessage() {
             String threadId = "thread_abc123";
-            MessageRequest request = MessageRequest
-                    .builder()
-                    .role("user")
-                    .content(new Content("content"))
-                    .build();
+            MessageRequest request = MessageRequest.builder().role("user").content(new Content("content")).build();
             MessageObject response = service.createMessage(threadId, request).join();
             assertNotNull(response);
             assertEquals(threadId, response.getThreadId(), "thread id mismatch");
             System.out.println(DefaultObjectMapper.print(response));
 
             for (ContentPart part : response.getContent()) {
+                assertNotNull(part.getType());
                 System.out.println("ContentPart type: " + part.getType());
             }
         }
 
         @Test
+        @UseWireMock
         void listMessages() {
+            String threadId = "thread_abc123";
+            Map<String, String> query = new HashMap<>();
+            query.put("limit", "2");
+            query.put("order", "asc");
+            service.listMessages(threadId, query).join();
+            OpenAiData<MessageObject> response = service.listMessages(threadId).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void retrieveMessage() {
+            String threadId = "thread_abc123";
+            String messageId = "msg_abc123";
+            MessageObject response = service.retrieveMessage(threadId, messageId).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void modifyMessage() {
+            String threadId = "thread_abc123";
+            String messageId = "msg_abc123";
+            Map<String, Object> metadata = new HashMap<>();
+            metadata.put("modified", true);
+            metadata.put("user", "abc123");
+            MessageRequest request = MessageRequest.builder().metadata(metadata).build();
+            MessageObject response = service.modifyMessage(threadId, messageId, request).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void deleteMessage() {
+            String threadId = "thread_abc123";
+            String messageId = "msg_abc123";
+            DeletionStatus response = service.deleteMessage(threadId, messageId).join();
+            assertNotNull(response);
+            assertTrue(response.isDeleted(), "deleted field should indicate true");
+            System.out.println(DefaultObjectMapper.print(response));
         }
     }
 
     @Nested
     class RunsTest {
         @Test
+        @UseWireMock
         void createRun() {
+            String threadId = "thread_abc123";
+            String assistantId = "assistant_abc123";
+            RunRequest request = RunRequest.builder().assistantId(assistantId).build();
+            Run response = service.createRun(threadId, request).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void createThreadAndRun() {
+            String assistantId = "assistant_abc123";
+            RunRequest request = RunRequest.builder().assistantId(assistantId).build();
+            Run response = service.createThreadAndRun(request).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void listRuns() {
+            String threadId = "thread_abc123";
+            Map<String, String> query = new HashMap<>();
+            query.put("limit", "2");
+            service.listRuns(threadId, query).join();
+            OpenAiData<Run> response = service.listRuns(threadId).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void retrieveRun() {
+            String threadId = "thread_abc123";
+            String runId = "run_abc123";
+            Run response = service.retrieveRun(threadId, runId).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void modifyRun() {
+            String threadId = "thread_abc123";
+            String runId = "run_abc123";
+
+            Map<String, Object> metadata = new HashMap<>();
+            metadata.put("modified", true);
+            metadata.put("user", "abc123");
+
+            RunRequest request = RunRequest.builder().metadata(metadata).build();
+            Run response = service.modifyRun(threadId, runId, request).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void submitToolOutputsToRun() {
+            String threadId = "thread_abc123";
+            String runId = "run_abc123";
+            List<ToolOutput> toolOutputs = new ArrayList<>();
+            toolOutputs.add(ToolOutput.builder().toolCallId("abc123").output("output").build());
+            ToolOutputRequest request = ToolOutputRequest.builder().toolOutputs(toolOutputs).build();
+            Run response = service.submitToolOutputsToRun(threadId, runId, request).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @Disabled("Not mocked")
+        void streamToolOutputsToRun() {
+            String threadId = "thread_abc123";
+            String runId = "run_abc123";
+            List<ToolOutput> toolOutputs = new ArrayList<>();
+            toolOutputs.add(ToolOutput.builder().toolCallId("abc123").output("output").build());
+            ToolOutputRequest request = ToolOutputRequest.builder().toolOutputs(toolOutputs).build();
+
+            AtomicBoolean isDone = new AtomicBoolean(false);
+            AtomicReference<Throwable> e = new AtomicReference<>();
+            CompletableFuture<Void> future = new CompletableFuture<>();
+
+            service.streamToolOutputsToRun(threadId, runId, request)
+                    .start(run -> {
+                        System.out.println("Received chunk: " + run);
+                    }, error -> {
+                        System.err.println("Error occurred: " + error.getMessage());
+                        e.set(error);
+                        future.completeExceptionally(error);
+                    }, () -> {
+                        System.out.println("Streaming completed");
+                        isDone.set(true);
+                        future.complete(null);
+                    });
+            future.join();
+            if (e.get() != null) {
+                fail("Stream completed with an error: " + e.get().getMessage());
+            }
+            assertTrue(isDone.get(), "Stream should complete successfully");
+        }
+
+        @Test
+        @UseWireMock
         void cancelRun() {
+            String threadId = "thread_abc123";
+            String runId = "run_abc123";
+            Run response = service.cancelRun(threadId, runId).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
     }
 
     @Nested
     class RunStepsTest {
         @Test
+        @UseWireMock
         void listRunSteps() {
+            String threadId = "thread_abc123";
+            String runId = "run_abc123";
+            Map<String, String> query = new HashMap<>();
+            query.put("limit", "2");
+            service.listRunSteps(threadId, runId, query).join();
+            OpenAiData<RunStep> response = service.listRunSteps(threadId, runId).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void retrieveRunStep() {
+            String threadId = "thread_abc123";
+            String runId = "run_abc123";
+            String stepId = "step_abc123";
+            RunStep response = service.retrieveRunStep(threadId, runId, stepId).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
     }
 
     @Nested
     class VectorStoreTest {
+
         @Test
+        @UseWireMock
         void createVectorStore() {
+            String name = "Support FAQ";
+            VectorStoreRequest request = VectorStoreRequest.builder().name(name).build();
+            VectorStore response = service.createVectorStore(request).join();
+            assertNotNull(response);
+            assertEquals(name, response.getName());
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void listVectorStores() {
+            Map<String, String> query = new HashMap<>();
+            query.put("limit", "2");
+            service.listVectorStores(query).join();
+            OpenAiData<VectorStore> response = service.listVectorStores().join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void retrieveVectorStore() {
+            String vectorId = "vs_3kMYHJNc5til8L7mc2z4m16X";
+            VectorStore response = service.retrieveVectorStore(vectorId).join();
+            assertNotNull(response);
+            assertEquals(vectorId, response.getId(), "Vector id should be the same");
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void modifyVectorStore() {
+            String vectorId = "vs_3kMYHJNc5til8L7mc2z4m16X";
+            String name = "Support FAQ";
+            VectorStoreRequest request = VectorStoreRequest.builder().name(name).build();
+            VectorStore response = service.modifyVectorStore(vectorId, request).join();
+            assertNotNull(response);
+            assertEquals(name, response.getName());
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void deleteVectorStore() {
+            String vectorId = "vs_abc123";
+            DeletionStatus response = service.deleteVectorStore(vectorId).join();
+            assertNotNull(response);
+            assertTrue(response.isDeleted(), "deleted should indicate true");
+            System.out.println(DefaultObjectMapper.print(response));
         }
     }
 
     @Nested
     class VectorStoreFileTest {
         @Test
+        @UseWireMock
         void createVectorStoreFile() {
+            String fileId = "file-abc123";
+            String vectorStoreId = "vs_abc123";
+            VectorStoreFileRequest request = VectorStoreFileRequest.builder().fileId(fileId).build();
+            VectorStoreFile response = service.createVectorStoreFile(vectorStoreId, request).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void listVectorStoreFiles() {
+            String vectorStoreId = "vs_abc123";
+            OpenAiData<VectorStoreFile> response = service.listVectorStoreFiles(vectorStoreId).join();
+            Map<String, String> query = new HashMap<>();
+            query.put("order", "asc");
+            service.listVectorStoreFiles(vectorStoreId, query).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void retrieveVectorStoreFile() {
+            String fileId = "file-abc123";
+            String vectorStoreId = "vs_abc123";
+            VectorStoreFile response = service.retrieveVectorStoreFile(vectorStoreId, fileId).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
 
         @Test
+        @UseWireMock
         void deleteVectorStoreFile() {
+            String fileId = "file-abc123";
+            String vectorStoreId = "vs_abc123";
+            DeletionStatus response = service.deleteVectorStoreFile(vectorStoreId, fileId).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
         }
     }
 

@@ -26,10 +26,7 @@ import org.haifan.merlin.model.openai.assistants.runs.RunStep;
 import org.haifan.merlin.model.openai.assistants.runs.ToolOutputRequest;
 import org.haifan.merlin.model.openai.assistants.threads.OpenAiThread;
 import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
-import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStore;
-import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFile;
-import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreFileBatch;
-import org.haifan.merlin.model.openai.assistants.vectorstores.VectorStoreRequest;
+import org.haifan.merlin.model.openai.assistants.vectorstores.*;
 import org.haifan.merlin.model.openai.endpoints.audio.*;
 import org.haifan.merlin.model.openai.endpoints.batch.Batch;
 import org.haifan.merlin.model.openai.endpoints.batch.BatchRequest;
@@ -91,6 +88,15 @@ public class OpenAiService extends LlmService {
         ObjectMapper mapper = DefaultObjectMapper.get();
         try {
             return mapper.readValue(json, ChatCompletionChunk.class);
+        } catch (JsonProcessingException e) {
+            throw new StreamParsingException("Error parsing JSON chunk", e);
+        }
+    }
+
+    private Run parseRun(String json) {
+        ObjectMapper mapper = DefaultObjectMapper.get();
+        try {
+            return mapper.readValue(json, Run.class);
         } catch (JsonProcessingException e) {
             throw new StreamParsingException("Error parsing JSON chunk", e);
         }
@@ -459,7 +465,14 @@ public class OpenAiService extends LlmService {
     }
 
     public CompletableFuture<Run> submitToolOutputsToRun(String threadId, String runId, ToolOutputRequest request) {
+        request.setStream(false);
         return super.call(api.submitToolOutputsToRun(threadId, runId, request));
+    }
+
+    public StreamingResponse<Run> streamToolOutputsToRun(String threadId, String runId, ToolOutputRequest request) {
+        request.setStream(true);
+        Call<ResponseBody> call = api.streamToolOutputsToRun(threadId, runId, request);
+        return new StreamingResponse<>(super.stream(call, this::parseRun));
     }
 
     public CompletableFuture<Run> cancelRun(String threadId, String runId) {
@@ -514,12 +527,11 @@ public class OpenAiService extends LlmService {
         return super.call(api.deleteVectorStore(vectorStoreId));
     }
 
-
     // ===============================
     // ASSISTANTS - Vector Stores Files
     // ===============================
 
-    public CompletableFuture<VectorStoreFile> createVectorStoreFile(String vectorStoreId, VectorStoreRequest request) {
+    public CompletableFuture<VectorStoreFile> createVectorStoreFile(String vectorStoreId, VectorStoreFileRequest request) {
         return super.call(api.createVectorStoreFile(vectorStoreId, request));
     }
 

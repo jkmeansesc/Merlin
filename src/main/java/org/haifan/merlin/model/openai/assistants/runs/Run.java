@@ -1,13 +1,16 @@
 package org.haifan.merlin.model.openai.assistants.runs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.*;
 import org.haifan.merlin.model.openai.*;
 
 import java.util.List;
 import java.util.Map;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Run {
 
     private String id;
@@ -38,7 +41,7 @@ public class Run {
     private String model;
     private String instructions;
     private List<Tool> tools;
-    private Map<String,Object> metadata;
+    private Map<String, Object> metadata;
     private Usage usage;
     private Double temperature;
     @JsonProperty("top_p")
@@ -55,17 +58,9 @@ public class Run {
     private Boolean parallelToolCalls;
     @JsonProperty("response_format")
     private ResponseFormat responseFormat;
+    // not documented by openai but present in its examples
+    // see https://platform.openai.com/docs/api-reference/runs/listRuns
+    @JsonProperty("tool_resources")
+    private ToolResources toolResources;
 
-    @Data
-    public static class RequiredAction {
-        private String type;
-        @JsonProperty("submit_tool_outputs")
-        private SubmitToolOutputs submitToolOutputs;
-
-        @Data
-        public static class SubmitToolOutputs {
-            @JsonProperty("tool_calls")
-            private List<ToolCall> toolCalls;
-        }
-    }
 }
