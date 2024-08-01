@@ -4,8 +4,12 @@ import org.haifan.merlin.annotations.UseRelay;
 import org.haifan.merlin.annotations.UseWireMock;
 import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.utils.DefaultObjectMapper;
-import org.haifan.merlin.model.gemini.Model;
-import org.haifan.merlin.model.gemini.ModelList;
+import org.haifan.merlin.model.gemini.caching.Content;
+import org.haifan.merlin.model.gemini.caching.Part;
+import org.haifan.merlin.model.gemini.generatingcontent.GenerateContentRequest;
+import org.haifan.merlin.model.gemini.generatingcontent.GenerateContentResponse;
+import org.haifan.merlin.model.gemini.models.Model;
+import org.haifan.merlin.model.gemini.models.ListModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,6 +17,8 @@ import org.junit.jupiter.api.TestInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -68,6 +74,7 @@ class GeminiServiceTest {
     @Nested
     class ModelsTest {
         @Test
+        @UseWireMock
         void getModel() {
             String name = "models/gemini-1.5-pro";
             Model response = service.getModel(name).join();
@@ -80,11 +87,35 @@ class GeminiServiceTest {
         @UseWireMock
         void listModels() {
             service.listModels(10, null).join();
-            ModelList response = service.listModels().join();
+            ListModel response = service.listModels().join();
             response.getModels().forEach(model -> assertNotNull(model.getName()));
             System.out.println(DefaultObjectMapper.print(response));
         }
+    }
 
+    @Nested
+    class GeneratingContentTest {
+
+        @Test
+        void generateContent() {
+            String model = "models/gemini-1.5-pro-001";
+
+            List<Part> parts = new ArrayList<>();
+            parts.add(Part.builder().build());
+
+            List<Content> contents = new ArrayList<>();
+            contents.add(Content.builder().parts(parts).role("user").build());
+
+            GenerateContentRequest request = GenerateContentRequest.builder().contents(contents).build();
+
+            GenerateContentResponse response = service.generateContent(model, request).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
+        }
+
+        @Test
+        void streamGenerateContent() {
+        }
     }
 
     @Test
@@ -99,17 +130,6 @@ class GeminiServiceTest {
     void embedContent() {
     }
 
-    @Test
-    void generateContent() {
-    }
-
-    @Test
-    void testListModels() {
-    }
-
-    @Test
-    void streamGenerateContent() {
-    }
 
     @Test
     void listOperations() {

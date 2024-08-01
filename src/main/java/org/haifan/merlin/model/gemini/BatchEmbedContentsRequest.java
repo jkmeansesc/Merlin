@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.haifan.merlin.model.gemini.embeddings.EmbedContentRequest;
 
 import java.util.List;
 
@@ -17,13 +18,4 @@ import java.util.List;
 @Data
 public class BatchEmbedContentsRequest {
     private List<EmbedContentRequest> requests;
-
-    @Data
-    public static class EmbedContentRequest {
-        private String model;
-        private Content content;
-        private TaskType taskType;
-        private String title;
-        private Integer outputDimensionality;
-    }
 }

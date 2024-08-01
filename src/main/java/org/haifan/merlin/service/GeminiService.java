@@ -1,17 +1,24 @@
 package org.haifan.merlin.service;
 
 import okhttp3.ResponseBody;
-import org.haifan.merlin.internal.api.GeminiApiV1;
+import org.haifan.merlin.internal.api.GeminiApi;
 import org.haifan.merlin.internal.constants.Provider;
 import org.haifan.merlin.internal.interceptors.GeminiInterceptor;
 import org.haifan.merlin.model.gemini.*;
+import org.haifan.merlin.model.gemini.embeddings.EmbedContentRequest;
+import org.haifan.merlin.model.gemini.generatingcontent.GenerateContentRequest;
+import org.haifan.merlin.model.gemini.generatingcontent.GenerateContentResponse;
+import org.haifan.merlin.model.gemini.models.Model;
+import org.haifan.merlin.model.gemini.models.ListModel;
+import org.haifan.merlin.model.gemini.tokens.CountTokensRequest;
+import org.haifan.merlin.model.gemini.tokens.CountTokensResponse;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class GeminiService extends LlmService {
 
-    private final GeminiApiV1 api;
+    private final GeminiApi api;
     public static final String DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com";
 
     GeminiService() {
@@ -20,23 +27,40 @@ public class GeminiService extends LlmService {
 
     GeminiService(LlmConfig config) {
         super(config, new GeminiInterceptor(config.getToken()));
-        this.api = super.retrofit.create(GeminiApiV1.class);
+        this.api = super.retrofit.create(GeminiApi.class);
     }
 
     // ===============================
     // Google Gemini v1
     // ===============================
 
+    // ===============================
+    // Models
+    // ===============================
+
     public CompletableFuture<Model> getModel(String name) {
         return super.call(api.getModel(name));
     }
 
-    public CompletableFuture<ModelList> listModels() {
+    public CompletableFuture<ListModel> listModels() {
         return super.call(api.listModels());
     }
 
-    public CompletableFuture<ModelList> listModels(Integer pageSize, String pageToken) {
+    public CompletableFuture<ListModel> listModels(Integer pageSize, String pageToken) {
         return super.call(api.listModels(pageSize, pageToken));
+    }
+
+    // ===============================
+    // Generating Content
+    // ===============================
+
+    public CompletableFuture<GenerateContentResponse> generateContent(String model, GenerateContentRequest request) {
+        return super.call(api.generateContent(model, request));
+    }
+
+    // TODO: support streaming
+    public CompletableFuture<ResponseBody> streamGenerateContent(String model, GenerateContentRequest request) {
+        return super.call(api.streamGenerateContent(model, request));
     }
 
     public CompletableFuture<BatchEmbedContentsResponse> batchEmbedContents(String model, BatchEmbedContentsRequest request) {
@@ -51,15 +75,6 @@ public class GeminiService extends LlmService {
         return super.call(api.embedContent(model, request));
     }
 
-    public CompletableFuture<GenerateContentResponse> generateContent(String model, GenerateContentRequest request) {
-        return super.call(api.generateContent(model, request));
-    }
-
-
-    // TODO: support streaming
-    public CompletableFuture<ResponseBody> streamGenerateContent(String model, GenerateContentRequest request) {
-        return super.call(api.streamGenerateContent(model, request));
-    }
 
     public CompletableFuture<ListOperationsResponse> listOperations(String name) {
         return super.call(api.listOperations(name));
