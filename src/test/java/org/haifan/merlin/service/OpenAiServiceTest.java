@@ -812,9 +812,7 @@ class OpenAiServiceTest {
             CompletableFuture<Void> future = new CompletableFuture<>();
 
             service.streamToolOutputsToRun(threadId, runId, request)
-                    .start(run -> {
-                        System.out.println("Received chunk: " + run);
-                    }, error -> {
+                    .start(run -> System.out.println("Received chunk: " + run), error -> {
                         System.err.println("Error occurred: " + error.getMessage());
                         e.set(error);
                         future.completeExceptionally(error);

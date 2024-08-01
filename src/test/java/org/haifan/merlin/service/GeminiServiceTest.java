@@ -3,6 +3,8 @@ package org.haifan.merlin.service;
 import org.haifan.merlin.annotations.UseRelay;
 import org.haifan.merlin.annotations.UseWireMock;
 import org.haifan.merlin.internal.constants.Provider;
+import org.haifan.merlin.internal.utils.DefaultObjectMapper;
+import org.haifan.merlin.model.gemini.Model;
 import org.haifan.merlin.model.gemini.ModelList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -43,7 +45,7 @@ class GeminiServiceTest {
             }
         }
 
-        this.config = new LlmConfig(Provider.OPENAI, baseUrl, apiKey);
+        this.config = new LlmConfig(Provider.GOOGLE_GEMINI, baseUrl, apiKey);
         this.config.setLogLevel(LlmConfig.Level.BODY);
         this.service = Merlin.builder().gemini(config).build().getService(GeminiService.class);
     }
@@ -64,11 +66,76 @@ class GeminiServiceTest {
     }
 
     @Nested
-    class V1Test {
+    class ModelsTest {
         @Test
+        void getModel() {
+            String name = "models/gemini-1.5-pro";
+            Model response = service.getModel(name).join();
+            assertNotNull(response);
+            assertEquals(name, response.getName());
+            System.out.println(DefaultObjectMapper.print(response));
+        }
+
+        @Test
+        @UseWireMock
         void listModels() {
+            service.listModels(10, null).join();
             ModelList response = service.listModels().join();
             response.getModels().forEach(model -> assertNotNull(model.getName()));
+            System.out.println(DefaultObjectMapper.print(response));
         }
+
+    }
+
+    @Test
+    void batchEmbedContents() {
+    }
+
+    @Test
+    void countTokens() {
+    }
+
+    @Test
+    void embedContent() {
+    }
+
+    @Test
+    void generateContent() {
+    }
+
+    @Test
+    void testListModels() {
+    }
+
+    @Test
+    void streamGenerateContent() {
+    }
+
+    @Test
+    void listOperations() {
+    }
+
+    @Test
+    void testListOperations() {
+    }
+
+    @Test
+    void deleteOperation() {
+    }
+
+    @Test
+    void cancelTunedModelOperation() {
+    }
+
+    @Test
+    void getTunedModelOperation() {
+    }
+
+    @Test
+    void listTunedModelsOperations() {
+    }
+
+    @Test
+    void testListTunedModelsOperations() {
     }
 }

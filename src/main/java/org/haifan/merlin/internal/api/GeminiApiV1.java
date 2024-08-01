@@ -7,11 +7,20 @@ import retrofit2.http.*;
 
 import java.util.Map;
 
-public interface GeminiApi {
+public interface GeminiApiV1 {
 
     // ===============================
     // Google Gemini v1
     // ===============================
+
+    @GET("/v1/{name}")
+    Call<Model> getModel(@Path(value = "name", encoded = true) String name);
+
+    @GET("/v1/models")
+    Call<ModelList> listModels();
+
+    @GET("/v1/models")
+    Call<ModelList> listModels(@Query("pageSize") Integer pageSize, @Query("pageToken") String pageToken);
 
     @POST("/v1/{model}:batchEmbedContents")
     Call<BatchEmbedContentsResponse> batchEmbedContents(@Path("model") String model, @Body BatchEmbedContentsRequest request);
@@ -24,15 +33,6 @@ public interface GeminiApi {
 
     @POST("/v1/{model}:generateContent")
     Call<GenerateContentResponse> generateContent(@Path("model") String model, @Body GenerateContentRequest request);
-
-    @GET("/v1/{name}")
-    Call<Model> getModel(@Path("name") String name);
-
-    @GET("/v1/models")
-    Call<ModelList> listModels();
-
-    @GET("/v1/models")
-    Call<ModelList> listModels(@Query("pageSize") Integer pageSize, @Query("pageToken") String pageToken);
 
     @POST("/v1/{model}:streamGenerateContent")
     @Streaming
