@@ -8,6 +8,10 @@ import org.haifan.merlin.model.gemini.GeminiData;
 import org.haifan.merlin.model.gemini.caching.CachedContent;
 import org.haifan.merlin.model.gemini.caching.Content;
 import org.haifan.merlin.model.gemini.caching.Part;
+import org.haifan.merlin.model.gemini.embeddings.BatchEmbedContentsRequest;
+import org.haifan.merlin.model.gemini.embeddings.BatchEmbedContentsResponse;
+import org.haifan.merlin.model.gemini.embeddings.EmbedContentRequest;
+import org.haifan.merlin.model.gemini.embeddings.EmbedContentResponse;
 import org.haifan.merlin.model.gemini.files.GeminiFile;
 import org.haifan.merlin.model.gemini.files.UploadMediaRequest;
 import org.haifan.merlin.model.gemini.files.UploadMediaResponse;
@@ -242,7 +246,7 @@ class GeminiServiceTest {
             contents.add(Content.builder().parts(parts).role("user").build());
             CachedContent request = CachedContent.builder().model(model).contents(contents).build();
 
-            CachedContent response = service.createCachedContents(request).join();
+            CachedContent response = service.createCachedContent(request).join();
             assertNotNull(response);
             System.out.println(DefaultObjectMapper.print(response));
         }
@@ -250,8 +254,8 @@ class GeminiServiceTest {
         @Test
         @UseWireMock
         void listCachedContents() {
-            service.listCachedContents(22, null).join();
-            GeminiData<CachedContent> response = service.listCachedContents().join();
+            service.listCachedContent(22, null).join();
+            GeminiData<CachedContent> response = service.listCachedContent().join();
             assertNotNull(response);
             System.out.println(DefaultObjectMapper.print(response));
         }
@@ -264,43 +268,76 @@ class GeminiServiceTest {
             assertNotNull(response);
             System.out.println(DefaultObjectMapper.print(response));
         }
+
+        @Test
+        @UseWireMock
+        void updateCachedContent() {
+            String name = "cachedContents/af8g95pilnab";
+            List<Part> parts = new ArrayList<>();
+            parts.add(Part.builder().text("Write a story about a magic backpack.").build());
+            List<Content> contents = new ArrayList<>();
+            contents.add(Content.builder().parts(parts).role("user").build());
+            CachedContent request = CachedContent.builder().ttl("600s").contents(contents).build();
+
+            service.updateCachedContent(name, request, null).join();
+            CachedContent response = service.updateCachedContent(name, request).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
+        }
+
+        @Test
+        @UseWireMock
+        void deleteCachedContent() {
+            String name = "cachedContents/af8g95pilnab";
+            try {
+                service.deleteCachedContent(name).join();
+            } catch (Exception e) {
+                fail("failed to delete cached content: " + e.getMessage());
+            }
+        }
     }
 
-    @Test
-    void batchEmbedContents() {
-    }
+    @Nested
+    class EmbeddingsTest {
 
+        @Test
+        @UseWireMock
+        void embedContent() {
+            String model = "models/text-embedding-004";
+            List<Part> parts = new ArrayList<>();
+            parts.add(Part.builder().text("Hello World").build());
+            EmbedContentRequest request = EmbedContentRequest
+                    .builder()
+                    .content(Content.builder().parts(parts).build())
+                    .build();
 
-    @Test
-    void embedContent() {
-    }
+            EmbedContentResponse response = service.embedContent(model, request).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
+        }
 
+        @Test
+        @UseWireMock
+        void batchEmbedContents() {
+            String model = "models/text-embedding-004";
 
-    @Test
-    void listOperations() {
-    }
+            List<Part> parts = new ArrayList<>();
+            parts.add(Part.builder().text("Hello World").build());
+            EmbedContentRequest r = EmbedContentRequest
+                    .builder()
+                    .model(model)
+                    .content(Content.builder().parts(parts).build())
+                    .build();
+            List<EmbedContentRequest> requests = new ArrayList<>();
+            requests.add(r);
 
-    @Test
-    void testListOperations() {
-    }
-
-    @Test
-    void deleteOperation() {
-    }
-
-    @Test
-    void cancelTunedModelOperation() {
-    }
-
-    @Test
-    void getTunedModelOperation() {
-    }
-
-    @Test
-    void listTunedModelsOperations() {
-    }
-
-    @Test
-    void testListTunedModelsOperations() {
+            BatchEmbedContentsRequest request = BatchEmbedContentsRequest
+                    .builder()
+                    .requests(requests)
+                    .build();
+            BatchEmbedContentsResponse response = service.batchEmbedContents(model, request).join();
+            assertNotNull(response);
+            System.out.println(DefaultObjectMapper.print(response));
+        }
     }
 }

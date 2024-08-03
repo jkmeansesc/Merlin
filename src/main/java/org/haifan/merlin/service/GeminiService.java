@@ -13,7 +13,10 @@ import org.haifan.merlin.internal.utils.FileParser;
 import org.haifan.merlin.model.StreamingResponse;
 import org.haifan.merlin.model.gemini.*;
 import org.haifan.merlin.model.gemini.caching.CachedContent;
+import org.haifan.merlin.model.gemini.embeddings.BatchEmbedContentsRequest;
+import org.haifan.merlin.model.gemini.embeddings.BatchEmbedContentsResponse;
 import org.haifan.merlin.model.gemini.embeddings.EmbedContentRequest;
+import org.haifan.merlin.model.gemini.embeddings.EmbedContentResponse;
 import org.haifan.merlin.model.gemini.files.GeminiFile;
 import org.haifan.merlin.model.gemini.files.UploadMediaRequest;
 import org.haifan.merlin.model.gemini.files.UploadMediaResponse;
@@ -25,8 +28,6 @@ import org.haifan.merlin.model.gemini.tokens.CountTokensResponse;
 import retrofit2.Call;
 import retrofit2.HttpException;
 import retrofit2.Response;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 import java.io.File;
 import java.io.IOException;
@@ -152,15 +153,15 @@ public class GeminiService extends LlmService {
     // Caching
     // ===============================
 
-    public CompletableFuture<CachedContent> createCachedContents(CachedContent request) {
+    public CompletableFuture<CachedContent> createCachedContent(CachedContent request) {
         return super.call(api.createCachedContents(request));
     }
 
-    public CompletableFuture<GeminiData<CachedContent>> listCachedContents() {
+    public CompletableFuture<GeminiData<CachedContent>> listCachedContent() {
         return super.call(api.listCachedContents());
     }
 
-    public CompletableFuture<GeminiData<CachedContent>> listCachedContents(Integer pageSize, String pageToken) {
+    public CompletableFuture<GeminiData<CachedContent>> listCachedContent(Integer pageSize, String pageToken) {
         return super.call(api.listCachedContents(pageSize, pageToken));
     }
 
@@ -168,19 +169,27 @@ public class GeminiService extends LlmService {
         return super.call(api.getCachedContent(name));
     }
 
-    // ===============================
-    // Tokens
-    // ===============================
-    // ===============================
-    // Tokens
-    // ===============================
-    public CompletableFuture<BatchEmbedContentsResponse> batchEmbedContents(String model, BatchEmbedContentsRequest request) {
-        return super.call(api.batchEmbedContents(model, request));
+    public CompletableFuture<CachedContent> updateCachedContent(String name, CachedContent request) {
+        return super.call(api.updateCachedContent(name, request));
     }
 
+    public CompletableFuture<CachedContent> updateCachedContent(String name, CachedContent request, String updateMask) {
+        return super.call(api.updateCachedContent(name, request, updateMask));
+    }
+
+    public CompletableFuture<Void> deleteCachedContent(String name) {
+        return super.call(api.deleteCachedContent(name));
+    }
+
+    // ===============================
+    // Embeddings
+    // ===============================
 
     public CompletableFuture<EmbedContentResponse> embedContent(String model, EmbedContentRequest request) {
         return super.call(api.embedContent(model, request));
     }
 
+    public CompletableFuture<BatchEmbedContentsResponse> batchEmbedContents(String model, BatchEmbedContentsRequest request) {
+        return super.call(api.batchEmbedContents(model, request));
+    }
 }

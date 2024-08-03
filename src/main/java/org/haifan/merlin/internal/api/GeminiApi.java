@@ -4,7 +4,10 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.haifan.merlin.model.gemini.*;
 import org.haifan.merlin.model.gemini.caching.CachedContent;
+import org.haifan.merlin.model.gemini.embeddings.BatchEmbedContentsRequest;
+import org.haifan.merlin.model.gemini.embeddings.BatchEmbedContentsResponse;
 import org.haifan.merlin.model.gemini.embeddings.EmbedContentRequest;
+import org.haifan.merlin.model.gemini.embeddings.EmbedContentResponse;
 import org.haifan.merlin.model.gemini.files.GeminiFile;
 import org.haifan.merlin.model.gemini.files.UploadMediaRequest;
 import org.haifan.merlin.model.gemini.files.UploadMediaResponse;
@@ -100,15 +103,22 @@ public interface GeminiApi {
     @GET("/v1beta/{name}")
     Call<CachedContent> getCachedContent(@Path(value = "name", encoded = true) String name);
 
-    // ===============================
-    // Tokens
-    // ===============================
-    @POST("/v1beta/{model}:batchEmbedContents")
-    Call<BatchEmbedContentsResponse> batchEmbedContents(@Path(value = "model", encoded = true) String model, @Body BatchEmbedContentsRequest request);
+    @PATCH("/v1beta/{name}")
+    Call<CachedContent> updateCachedContent(@Path(value = "name", encoded = true) String name, @Body CachedContent request);
 
-    @POST("/v1beta/{model=models/*}:embedContent")
+    @PATCH("/v1beta/{name}")
+    Call<CachedContent> updateCachedContent(@Path(value = "name", encoded = true) String name, @Body CachedContent request, @Query("updateMask") String updateMask);
+
+    @DELETE("/v1beta/{name}")
+    Call<Void> deleteCachedContent(@Path(value = "name", encoded = true) String name);
+
+    // ===============================
+    // Embeddings
+    // ===============================
+
+    @POST("/v1beta/{model}:embedContent")
     Call<EmbedContentResponse> embedContent(@Path(value = "model", encoded = true) String model, @Body EmbedContentRequest request);
 
-    @POST("/v1beta/{name}:cancel")
-    Call<Void> cancelTunedModelOperation(@Path("name") String name);
+    @POST("/v1beta/{model}:batchEmbedContents")
+    Call<BatchEmbedContentsResponse> batchEmbedContents(@Path(value = "model", encoded = true) String model, @Body BatchEmbedContentsRequest request);
 }

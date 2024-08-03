@@ -1,6 +1,6 @@
 package org.haifan.merlin.model.gemini.embeddings;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
@@ -9,6 +9,9 @@ import java.util.List;
  * <a href="https://ai.google.dev/api/rest/v1/ContentEmbedding">...</a>
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ContentEmbedding {
     private List<Double> values;
 }
