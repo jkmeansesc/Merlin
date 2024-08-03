@@ -3,6 +3,7 @@ package org.haifan.merlin.internal.utils;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import org.haifan.merlin.internal.constants.IanaMediaType;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,15 +34,34 @@ public class FileParser {
      * @throws FileParserException if an I/O error occurs while reading the file.
      */
     public static RequestBody parseFile(File file) {
+        String mimeType = getMimeType(file);
+        MediaType mediaType = MediaType.parse(mimeType);
+        return RequestBody.create(file, mediaType);
+    }
+
+    /**
+     * Returns the MIME type of the specified file.
+     * <p>
+     * This method attempts to determine the MIME type of the provided file by probing
+     * its content using the {@link Files#probeContentType(java.nio.file.Path)} method.
+     * If the MIME type cannot be determined, it defaults to {@code application/octet-stream}.
+     * </p>
+     *
+     * @param file the file for which to determine the MIME type
+     * @return the MIME type of the file, or {@code application/octet-stream} if the MIME type cannot be determined
+     * @throws NullPointerException if the specified file is {@code null}
+     */
+    public static @NotNull String getMimeType(File file) {
+        String mimeType;
         try {
-            String mimeType = Files.probeContentType(file.toPath());
-            if (mimeType == null) {
-                mimeType = IanaMediaType.OCTET_STREAM;
-            }
-            MediaType mediaType = MediaType.parse(mimeType);
-            return RequestBody.create(file, mediaType);
+            mimeType = Files.probeContentType(file.toPath());
         } catch (IOException e) {
-            throw new FileParserException("Failed to create RequestBody from file: " + file.getName(), e);
+            throw new FileParserException("Failed to retrieve mimeType from file: " + file.getName(), e);
         }
+
+        if (mimeType == null) {
+            mimeType = IanaMediaType.OCTET_STREAM;
+        }
+        return mimeType;
     }
 }

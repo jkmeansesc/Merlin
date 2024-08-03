@@ -13,7 +13,7 @@ import org.haifan.merlin.model.gemini.State;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class File {
+public class GeminiFile {
     private String name;
     private String displayName;
     private String mimeType;

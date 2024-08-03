@@ -1,9 +1,6 @@
 package org.haifan.merlin.model.gemini.generatingcontent;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.haifan.merlin.model.gemini.caching.Content;
 import org.haifan.merlin.model.gemini.caching.Tool;
 import org.haifan.merlin.model.gemini.caching.ToolConfig;
@@ -19,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GenerateContentRequest {
     private String model;
+    @NonNull
     private List<Content> contents;
     private List<Tool> tools;
     private ToolConfig toolConfig;
