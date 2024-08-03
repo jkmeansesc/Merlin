@@ -9,9 +9,8 @@ import org.haifan.merlin.internal.utils.ApiKeyManager;
 import java.time.Duration;
 
 /**
- * Configuration class for setting up Large Language Model (LLM) connections.
- * This class holds configuration details such as the provider, base URL, token, timeout, and log level.
- * It also provides methods to retrieve the appropriate HTTP log level based on the configured log level.
+ * Configuration class for Language Model Services.
+ * Holds configuration settings such as provider, base URL, authentication token, timeout, and logging level.
  */
 @Slf4j
 @Data
@@ -25,6 +24,11 @@ public class LlmConfig {
     private static final Level DEFAULT_LOG_LEVEL = Level.BASIC;
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
 
+    /**
+     * Converts the log level to the corresponding HttpLoggingInterceptor.Level.
+     *
+     * @return the HttpLoggingInterceptor.Level corresponding to the log level
+     */
     HttpLoggingInterceptor.Level getHttpLogLevel() {
         return switch (logLevel) {
             case BASIC -> HttpLoggingInterceptor.Level.BASIC;
@@ -34,6 +38,14 @@ public class LlmConfig {
         };
     }
 
+    /**
+     * Constructs an LlmConfig with the provided provider, base URL, and token.
+     * If the token is not provided, it attempts to read the API key from the environment.
+     *
+     * @param provider the provider of the language model service
+     * @param baseUrl  the base URL of the language model service
+     * @param token    the authentication token (optional)
+     */
     public LlmConfig(Provider provider, String baseUrl, String token) {
         log.info("Initializing config for {}", provider.name());
         this.provider = provider;
@@ -55,6 +67,9 @@ public class LlmConfig {
         this.timeOut = DEFAULT_TIMEOUT;
     }
 
+    /**
+     * Enum representing the logging levels.
+     */
     public enum Level {
         NONE,
         BASIC,

@@ -33,20 +33,39 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Service implementation for interacting with the Gemini Language Model API.
+ * Extends the base LlmService to provide methods for model management and content generation.
+ */
 public class GeminiService extends LlmService {
 
     private final GeminiApi api;
     public static final String DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com";
 
+    /**
+     * Constructs a GeminiService with the default configuration.
+     */
     GeminiService() {
         this(new LlmConfig(Provider.GOOGLE_GEMINI, DEFAULT_BASE_URL, null));
     }
 
+    /**
+     * Constructs a GeminiService with the provided configuration.
+     *
+     * @param config the configuration settings for the service
+     */
     GeminiService(LlmConfig config) {
         super(config, new GeminiInterceptor(config.getToken()));
         this.api = super.retrofit.create(GeminiApi.class);
     }
 
+    /**
+     * Parses a JSON chunk into a GenerateContentResponse object.
+     *
+     * @param json the JSON string to parse
+     * @return the parsed GenerateContentResponse object
+     * @throws StreamParsingException if an error occurs during parsing
+     */
     private GenerateContentResponse parseChunk(String json) {
         ObjectMapper mapper = DefaultObjectMapper.get();
         try {

@@ -10,14 +10,30 @@ import retrofit2.Response;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Callback implementation for handling API responses and completing a CompletableFuture.
+ *
+ * @param <T> the type of the response body
+ */
 @Slf4j
 public class ApiResponseCallback<T> implements Callback<T> {
     private final CompletableFuture<T> future;
 
+    /**
+     * Constructs an ApiResponseCallback with the provided CompletableFuture.
+     *
+     * @param future the CompletableFuture to complete with the API response
+     */
     public ApiResponseCallback(CompletableFuture<T> future) {
         this.future = future;
     }
 
+    /**
+     * Called when the API response is received.
+     *
+     * @param call     the Retrofit call that was executed
+     * @param response the response received from the API
+     */
     @Override
     public void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
         if (response.isSuccessful()) {
@@ -40,6 +56,12 @@ public class ApiResponseCallback<T> implements Callback<T> {
         }
     }
 
+    /**
+     * Called when the API call fails.
+     *
+     * @param call the Retrofit call that was executed
+     * @param t    the throwable that caused the failure
+     */
     @Override
     public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
         log.error("API call failed due to exception", t);

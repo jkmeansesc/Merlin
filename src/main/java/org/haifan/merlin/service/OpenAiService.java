@@ -84,6 +84,13 @@ public class OpenAiService extends LlmService {
         this.api = super.retrofit.create(OpenAiApi.class);
     }
 
+    /**
+     * Parses a JSON chunk into a ChatCompletionChunk object.
+     *
+     * @param json the JSON string to parse
+     * @return the parsed ChatCompletionChunk object
+     * @throws StreamParsingException if an error occurs during parsing
+     */
     private ChatCompletionChunk parseChunk(String json) {
         ObjectMapper mapper = DefaultObjectMapper.get();
         try {
@@ -93,6 +100,13 @@ public class OpenAiService extends LlmService {
         }
     }
 
+    /**
+     * Parses a JSON chunk into a Run object.
+     *
+     * @param json the JSON string to parse
+     * @return the parsed Run object
+     * @throws StreamParsingException if an error occurs during parsing
+     */
     private Run parseRun(String json) {
         ObjectMapper mapper = DefaultObjectMapper.get();
         try {
@@ -102,6 +116,13 @@ public class OpenAiService extends LlmService {
         }
     }
 
+    /**
+     * Adds a form data part to the multipart builder if the value is not null.
+     *
+     * @param builder the MultipartBody.Builder to add the part to
+     * @param name    the name of the form data part
+     * @param value   the value of the form data part
+     */
     private void addIfNotNull(MultipartBody.Builder builder, String name, String value) {
         if (value != null) {
             builder.addFormDataPart(name, value);
@@ -122,9 +143,7 @@ public class OpenAiService extends LlmService {
     }
 
     public CompletableFuture<Transcription> createTranscription(TranscriptionRequest request, File audio) {
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                .addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio))
-                .addFormDataPart(Fields.MODEL, request.getModel());
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio)).addFormDataPart(Fields.MODEL, request.getModel());
         addIfNotNull(builder, Fields.PROMPT, request.getPrompt());
         addIfNotNull(builder, Fields.LANGUAGE, request.getLanguage());
         addIfNotNull(builder, Fields.RESPONSE_FORMAT, request.getResponseFormat());
@@ -140,9 +159,7 @@ public class OpenAiService extends LlmService {
     }
 
     public CompletableFuture<Translation> createTranslation(TranslationRequest request, File audio) {
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                .addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio))
-                .addFormDataPart(Fields.MODEL, request.getModel());
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.FILE, audio.getName(), FileParser.parseFile(audio)).addFormDataPart(Fields.MODEL, request.getModel());
         addIfNotNull(builder, Fields.PROMPT, request.getPrompt());
         addIfNotNull(builder, Fields.TEMPERATURE, request.getTemperature() != null ? request.getTemperature().toString() : null);
         addIfNotNull(builder, Fields.RESPONSE_FORMAT, request.getResponseFormat());
@@ -281,9 +298,7 @@ public class OpenAiService extends LlmService {
     }
 
     public CompletableFuture<OpenAiData<Image>> createImageEdit(ImageEditRequest request, File image, File mask) {
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                .addFormDataPart(Fields.PROMPT, request.getPrompt())
-                .addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(IanaMediaType.IMAGE_ALL)));
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(Fields.PROMPT, request.getPrompt()).addFormDataPart(Fields.IMAGE, image.getName(), RequestBody.create(image, MediaType.parse(IanaMediaType.IMAGE_ALL)));
 
         if (mask != null) {
             builder.addFormDataPart(Fields.MASK, mask.getName(), RequestBody.create(mask, MediaType.parse(IanaMediaType.IMAGE_ALL)));

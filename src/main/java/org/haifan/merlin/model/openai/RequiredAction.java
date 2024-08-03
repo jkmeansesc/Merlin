@@ -2,7 +2,6 @@ package org.haifan.merlin.model.openai;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import org.haifan.merlin.model.openai.assistants.runs.Run;
 
 import java.util.List;
 
