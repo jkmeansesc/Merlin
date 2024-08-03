@@ -140,9 +140,7 @@ class GeminiServiceTest {
             AtomicReference<Throwable> e = new AtomicReference<>();
             CompletableFuture<Void> future = new CompletableFuture<>();
 
-            service.streamGenerateContent(model, request).start(chunk -> {
-                System.out.println("Received chunk: " + chunk);
-            }, error -> {
+            service.streamGenerateContent(model, request).start(chunk -> System.out.println("Received chunk: " + chunk), error -> {
                 System.err.println("Error occurred: " + error.getMessage());
                 e.set(error);
                 future.completeExceptionally(error);
