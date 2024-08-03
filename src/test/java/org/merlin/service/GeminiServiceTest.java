@@ -77,9 +77,9 @@ class GeminiServiceTest {
         assertNotNull(service_1.getRetrofit());
         assertNotNull(service_1.getConfig());
 
-        this.config = new LlmConfig(Provider.GOOGLE_GEMINI, "test baseUrl", "test token");
+        this.config = new LlmConfig(Provider.GOOGLE_GEMINI, "https://test.baseUrl.com", "test token");
         LlmService service_2 = new GeminiService(config);
-        assertEquals("test baseurl", service_2.getConfig().getBaseUrl(), "Wrong baseUrl");
+        assertEquals("https://test.baseUrl.com", service_2.getConfig().getBaseUrl(), "Wrong baseUrl");
         assertEquals("test token", service_2.getConfig().getToken(), "Wrong token");
     }
 
