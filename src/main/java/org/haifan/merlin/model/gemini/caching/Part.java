@@ -3,12 +3,6 @@ package org.haifan.merlin.model.gemini.caching;
 import lombok.*;
 
 /**
- * A datatype containing media that is part of a multi-part Content message.
- * <p>
- * A Part consists of data which has an associated datatype. A Part can only contain one of the accepted types in Part.data.
- * <p>
- * A Part must have a fixed IANA MIME type identifying the type and subtype of the media if the inlineData field is filled with raw bytes.
- * <p>
  * <a href="https://ai.google.dev/api/caching#part">...</a>
  */
 @Data

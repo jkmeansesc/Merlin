@@ -1,15 +1,20 @@
 package org.haifan.merlin.model.openai.endpoints.finetune;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 /**
- * The fine_tuning.job object represents a fine-tuning job that has been created through the API.
  * <a href="https://platform.openai.com/docs/api-reference/fine-tuning/object">...</a>
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FineTuningJob {
     private String id;
     @JsonProperty("created_at")

@@ -1,10 +1,16 @@
 package org.haifan.merlin.model.openai;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Content {
     private String contentStr;
     private List<ContentPart> contentParts;

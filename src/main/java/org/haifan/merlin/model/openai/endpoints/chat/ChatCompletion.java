@@ -1,11 +1,16 @@
 package org.haifan.merlin.model.openai.endpoints.chat;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 
-@EqualsAndHashCode(callSuper = true)
+/**
+ * <a href="https://platform.openai.com/docs/api-reference/chat/object">...</a>
+ */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class ChatCompletion extends BaseChatCompletion {
     // no additional fields
 }

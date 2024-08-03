@@ -6,8 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.haifan.merlin.internal.constants.Fields;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class StaticChunkingStrategy extends ChunkingStrategy {
 
     @NonNull

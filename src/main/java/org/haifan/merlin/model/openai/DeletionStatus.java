@@ -1,11 +1,17 @@
 package org.haifan.merlin.model.openai;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Represents the status of a deletion operation.
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DeletionStatus {
     /**
      * The unique identifier of the deleted object.

@@ -1,7 +1,6 @@
 package org.haifan.merlin.model.gemini.embeddings;
 
 /**
- * Type of task for which the embedding will be used.
  * <a href="https://ai.google.dev/api/rest/v1/TaskType">...</a>
  */
 public enum TaskType {

@@ -12,13 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The request object to create a thread for OpenAI
  * <a href="https://platform.openai.com/docs/api-reference/threads/createThread">...</a>
  */
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class ThreadRequest {
     private List<MessageRequest> messages;
     @JsonProperty("tool_resources")

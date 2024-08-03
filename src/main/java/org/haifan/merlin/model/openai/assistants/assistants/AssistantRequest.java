@@ -10,10 +10,10 @@ import org.haifan.merlin.model.openai.ToolResources;
 import java.util.List;
 import java.util.Map;
 
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class AssistantRequest {
     @NonNull
     private String model;

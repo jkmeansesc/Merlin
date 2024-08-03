@@ -3,9 +3,9 @@ package org.haifan.merlin.model.openai;
 import lombok.*;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ImageUrl {
     @NonNull
     private String url;

@@ -1,8 +1,6 @@
 package org.haifan.merlin.model.gemini.generatingcontent;
 
 /**
- * The category of a rating.
- * These categories cover various kinds of harms that developers may wish to adjust.
  * <a href="https://ai.google.dev/api/rest/v1/HarmCategory">...</a>
  */
 public enum HarmCategory {

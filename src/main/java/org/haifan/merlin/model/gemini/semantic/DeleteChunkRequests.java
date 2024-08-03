@@ -10,8 +10,8 @@ import java.util.List;
 /**
  * <a href="https://ai.google.dev/api/semantic-retrieval/chunks#request-body_7">...</a>
  */
-@Builder
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteChunkRequests {

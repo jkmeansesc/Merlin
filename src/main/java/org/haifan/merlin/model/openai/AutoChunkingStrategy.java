@@ -1,11 +1,11 @@
 package org.haifan.merlin.model.openai;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.haifan.merlin.internal.constants.Fields;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
+@Builder
+@EqualsAndHashCode(callSuper = true)
 public class AutoChunkingStrategy extends ChunkingStrategy {
 
     public AutoChunkingStrategy() {

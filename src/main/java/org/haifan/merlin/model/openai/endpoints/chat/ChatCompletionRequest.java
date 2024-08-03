@@ -10,10 +10,13 @@ import org.haifan.merlin.model.openai.ToolChoice;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * <a href="https://platform.openai.com/docs/api-reference/chat/create">...</a>
+ */
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class ChatCompletionRequest {
 
     @NonNull

@@ -1,15 +1,20 @@
 package org.haifan.merlin.model.openai.endpoints.finetune;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
 /**
- * Fine-tuning job event object.
  * <a href="https://platform.openai.com/docs/api-reference/fine-tuning/event-object">...</a>
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FineTuningEvent {
     private String id;
     @JsonProperty("created_at")

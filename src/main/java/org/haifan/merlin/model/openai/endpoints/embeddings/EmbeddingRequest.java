@@ -6,13 +6,12 @@ import lombok.*;
 import java.util.List;
 
 /**
- * The request model object for creating embeddings for OpenAI.
  * <a href="https://platform.openai.com/docs/api-reference/embeddings/create">...</a>
  */
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class EmbeddingRequest {
 
     @NonNull

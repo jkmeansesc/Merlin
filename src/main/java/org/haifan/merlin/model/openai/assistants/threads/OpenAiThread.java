@@ -1,16 +1,21 @@
 package org.haifan.merlin.model.openai.assistants.threads;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.haifan.merlin.model.openai.ToolResources;
 
 import java.util.Map;
 
 /**
- * Represents a thread that contains messages.
  * <a href="https://platform.openai.com/docs/api-reference/threads/object">...</a>
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OpenAiThread {
     private String id;
     private String object;

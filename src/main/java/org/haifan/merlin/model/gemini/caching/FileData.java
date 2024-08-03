@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * URI based data.
  * <a href="https://ai.google.dev/api/caching#filedata">...</a>
  */
 @Data

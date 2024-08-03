@@ -1,12 +1,17 @@
 package org.haifan.merlin.model.openai.endpoints.finetune;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * The per-line training example of a fine-tuning input file for completions models.
  * <a href="https://platform.openai.com/docs/api-reference/fine-tuning/completions-input">...</a>
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CompletionTrainingFormat {
     private String prompt;
     private String completion;

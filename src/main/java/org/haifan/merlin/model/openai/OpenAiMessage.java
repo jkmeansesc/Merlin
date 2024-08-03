@@ -7,9 +7,9 @@ import lombok.*;
 import java.util.List;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class OpenAiMessage {
     public enum Role {
         SYSTEM, USER, ASSISTANT, TOOL

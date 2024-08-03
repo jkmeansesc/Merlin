@@ -8,10 +8,10 @@ import org.haifan.merlin.model.openai.assistants.threads.ThreadRequest;
 import java.util.List;
 import java.util.Map;
 
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class RunRequest {
     @JsonProperty("assistant_id")
     private String assistantId;
@@ -22,7 +22,7 @@ public class RunRequest {
     @JsonProperty("additional_messages")
     private List<OpenAiMessage> additionalMessages;
     private List<Tool> tools;
-    private Map<String,Object> metadata;
+    private Map<String, Object> metadata;
     private Double temperature;
     @JsonProperty("top_p")
     private Double topP;

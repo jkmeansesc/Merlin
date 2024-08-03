@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.util.Map;
 
 /**
- * A predicted FunctionCall returned from the model that contains a string representing the FunctionDeclaration.name with the arguments and their values.
  * <a href="https://ai.google.dev/api/caching#functioncall">...</a>
  */
 @Data

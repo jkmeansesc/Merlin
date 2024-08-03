@@ -5,7 +5,6 @@ import lombok.*;
 import java.util.List;
 
 /**
- * The base structured datatype containing multi-part content of a message.
  * <a href="https://ai.google.dev/api/rest/v1/Content">...</a>
  */
 @Data

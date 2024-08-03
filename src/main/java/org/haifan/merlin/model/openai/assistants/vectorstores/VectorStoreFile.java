@@ -1,11 +1,17 @@
 package org.haifan.merlin.model.openai.assistants.vectorstores;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.haifan.merlin.model.openai.ChunkingStrategy;
 import org.haifan.merlin.model.openai.LastError;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class VectorStoreFile {
     private String id;
     private String object;

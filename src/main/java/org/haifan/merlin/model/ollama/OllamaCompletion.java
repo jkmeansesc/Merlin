@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-/**
- * Represents the completion response from Ollama.
- */
 @Data
 @Builder
 @NoArgsConstructor

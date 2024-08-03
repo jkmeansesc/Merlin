@@ -1,9 +1,11 @@
 package org.haifan.merlin.model.openai;
 
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ToolCall {
     private Integer index;
 

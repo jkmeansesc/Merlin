@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class OllamaCompletionRequest {
     private String model;
     private String name;

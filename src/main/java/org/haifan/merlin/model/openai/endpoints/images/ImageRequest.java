@@ -4,13 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
- * The request object to create an image from OpenAI.
  * <a href="https://platform.openai.com/docs/api-reference/images">...</a>
  */
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class ImageRequest {
     @NonNull
     private String prompt;

@@ -1,13 +1,18 @@
 package org.haifan.merlin.model.openai.endpoints.finetune;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * The fine_tuning.job.checkpoint object represents a model checkpoint for a fine-tuning job that is ready to use.
  * <a href="https://platform.openai.com/docs/api-reference/fine-tuning/checkpoint-object">...</a>
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FineTuningCheckpoint {
     private String id;
     @JsonProperty("created_at")

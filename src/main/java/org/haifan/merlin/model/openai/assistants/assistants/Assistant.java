@@ -1,7 +1,10 @@
 package org.haifan.merlin.model.openai.assistants.assistants;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.haifan.merlin.model.openai.AssistantTool;
 import org.haifan.merlin.model.openai.ResponseFormat;
 import org.haifan.merlin.model.openai.ToolResources;
@@ -10,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Assistant {
     private String id;
     private String object;

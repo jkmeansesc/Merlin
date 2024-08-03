@@ -1,6 +1,9 @@
 package org.haifan.merlin.model.openai.endpoints.moderations;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -9,6 +12,9 @@ import java.util.List;
  * <a href="https://platform.openai.com/docs/api-reference/moderations/object">...</a>
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ModerationList {
     private String id;
     private String model;

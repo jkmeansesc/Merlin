@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * <a href="https://platform.openai.com/docs/api-reference/batch/object#batch/object-errors">...</a>
  */
@@ -12,9 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Error {
-    private String code;
-    private String message;
-    private String param;
-    private Integer line;
+public class Errors {
+    private String object;
+    private List<Error> data;
 }

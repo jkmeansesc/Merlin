@@ -7,9 +7,9 @@ import org.haifan.merlin.internal.constants.Fields;
 
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class StepDetailsToolCalls extends StepDetails{
+@EqualsAndHashCode(callSuper = true)
+public class StepDetailsToolCalls extends StepDetails {
     @JsonProperty("tool_calls")
     private List<ToolCall> toolCallList;
 

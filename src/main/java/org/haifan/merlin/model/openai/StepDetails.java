@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
         @JsonSubTypes.Type(value = StepDetailsToolCalls.class, name = "tool_calls"),
 })
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public abstract class StepDetails {
     private String type;
 }

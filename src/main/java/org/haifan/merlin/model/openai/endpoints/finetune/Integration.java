@@ -1,11 +1,16 @@
 package org.haifan.merlin.model.openai.endpoints.finetune;
 
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
 import java.util.List;
 
+/**
+ * <a href="https://platform.openai.com/docs/api-reference/fine-tuning/object#fine-tuning/object-integrations">...</a>
+ */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Integration {
     @NonNull
     private String type;

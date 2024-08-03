@@ -10,8 +10,8 @@ import java.util.List;
 /**
  * <a href="https://ai.google.dev/api/semantic-retrieval/corpora#metadatafilter">...</a>
  */
-@Builder
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MetadataFilter {

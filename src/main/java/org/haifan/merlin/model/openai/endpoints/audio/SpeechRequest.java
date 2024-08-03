@@ -4,13 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
- * The request object to generate audio from OpenAI.
  * <a href="https://platform.openai.com/docs/api-reference/audio/createSpeech">...</a>
  */
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class SpeechRequest {
 
     @NonNull

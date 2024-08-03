@@ -1,16 +1,20 @@
 package org.haifan.merlin.model.openai.endpoints.batch;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.Map;
 
 /**
- * The batch object
  * <a href="https://platform.openai.com/docs/api-reference/batch/object">...</a>
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Batch {
     private String id;
     private String object;
@@ -46,17 +50,4 @@ public class Batch {
     @JsonProperty("request_counts")
     private RequestCounts requestCounts;
     private Map<String, Object> metadata;
-
-    @Data
-    public static class RequestCounts {
-        private Integer total;
-        private Integer completed;
-        private Integer failed;
-    }
-
-    @Data
-    public static class Errors {
-        private String object;
-        private List<Error> data;
-    }
 }

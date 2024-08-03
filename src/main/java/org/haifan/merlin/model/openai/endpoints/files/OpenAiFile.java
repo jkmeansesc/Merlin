@@ -1,13 +1,18 @@
 package org.haifan.merlin.model.openai.endpoints.files;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * The File object represents a document that has been uploaded to OpenAI.
  * <a href="https://platform.openai.com/docs/api-reference/files/object">...</a>
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OpenAiFile {
 
     private String id;

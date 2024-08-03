@@ -1,12 +1,12 @@
 package org.haifan.merlin.model.openai;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.haifan.merlin.internal.constants.Fields;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
+@Builder
+@EqualsAndHashCode(callSuper = true)
 public class FileSearchTool extends AssistantTool {
 
     @JsonProperty("file_search")

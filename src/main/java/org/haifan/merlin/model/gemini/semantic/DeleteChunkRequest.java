@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 /**
  * <a href="https://ai.google.dev/api/semantic-retrieval/chunks#deletechunkrequest">...</a>
  */
-@Builder
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteChunkRequest {

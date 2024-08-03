@@ -12,10 +12,10 @@ import org.haifan.merlin.model.openai.ExpiresAfter;
 import java.util.List;
 import java.util.Map;
 
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class VectorStoreRequest {
     @JsonProperty("file_ids")
     private List<String> fileIds;

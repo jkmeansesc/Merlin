@@ -7,13 +7,12 @@ import lombok.*;
 import java.util.List;
 
 /**
- * The request model object for creating a fine-tuning job for OpenAI.
  * <a href="https://platform.openai.com/docs/api-reference/fine-tuning/create">...</a>
  */
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class FineTuningJobRequest {
 
     @NonNull

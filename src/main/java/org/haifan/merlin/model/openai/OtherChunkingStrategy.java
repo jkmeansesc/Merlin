@@ -4,8 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.haifan.merlin.internal.constants.Fields;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class OtherChunkingStrategy extends ChunkingStrategy {
 
     public OtherChunkingStrategy() {

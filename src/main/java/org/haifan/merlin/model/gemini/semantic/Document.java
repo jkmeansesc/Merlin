@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * <a href="https://ai.google.dev/api/semantic-retrieval/documents#resource:-document">...</a>
+ */
 @Data
 @Builder
 @NoArgsConstructor
