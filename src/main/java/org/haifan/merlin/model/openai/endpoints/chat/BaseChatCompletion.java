@@ -3,7 +3,6 @@ package org.haifan.merlin.model.openai.endpoints.chat;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.haifan.merlin.internal.constants.Fields;
@@ -14,7 +13,6 @@ import org.haifan.merlin.model.openai.Usage;
 import java.util.List;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class BaseChatCompletion {

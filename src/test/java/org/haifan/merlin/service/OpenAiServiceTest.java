@@ -549,6 +549,7 @@ class OpenAiServiceTest {
             String model = "gpt-4o";
             String instructions = "You are an HR bot, and you have access to files to answer employee questions about company policies. Always response with info from either of the files.";
             List<AssistantTool> tools = new ArrayList<>();
+            tools.add(new FileSearchTool(new FileSearchTool.FileSearch()));
             tools.add(new FileSearchTool());
 
             AssistantRequest request = AssistantRequest.builder().model(model).tools(tools).instructions(instructions).tools(tools).build();
