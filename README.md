@@ -17,45 +17,36 @@ Merlin is a Java util library that provides an unified interface to interact wit
 > OpenAI: deprecated and legacy features are not supported
 
 > Google Gemini: currently supports `v1` endpoints.
-> TBA
+
+TBA
 
 ## Getting Started
-
-> This section will be updated as the project progresses and in sequential order.
 
 ### Add Merlin to your project
 
 #### Maven
 
 ```xml
-TBA
+<dependency>
+    <groupId>io.github.jkmeansesc</groupId>
+    <artifactId>merlin</artifactId>
+    <version>0.1.0</version>
+</dependency>
 ```
 
 #### Gradle
 
 ```gradle
-TBA
+implementation group: 'io.github.jkmeansesc', name: 'merlin', version: '0.1.0'
 ```
 
 #### Jar
 
 Download the latest JAR file [here](dist/), and import it into your project manually.
 
-### Supply API keys
-
-Merlin supports API key management through environment variables.
-
-| Provider       | Environment Variable |
-| -------------- | -------------------- |
-| OpenAI ChatGPT | `OPENAI_KEY`         |
-| Goole Gemini   | `GOOGLE_GEMINI_KEY`  |
-| Ollama         | Not Applicable       |
-
-Or you can supply an API key directly through initialization.
-
 ### Initialize Merlin
 
-Merlin utilizes builder pattern for a consistent and flexible initialization of all supported LLM services.
+Merlin utilizes builder pattern for a consistent and flexible initialization of all supported LLM services. You can initialize any supported LLM service like this:
 
 ```java
         Merlin merlin = Merlin
@@ -70,13 +61,33 @@ Merlin utilizes builder pattern for a consistent and flexible initialization of 
         OllamaService ollamaService = merlin.getService(OllamaService.class);
 ```
 
-By default, Merlin will look for API keys through environment variables and fall back to direct initialization. If
-neither is found, an Exception will be thrown.
+If you only need a specific service, you can initialize it directly:
 
-## User stories
+```java
+        OpenAiService openAiService = Merlin.openai().build().getService(OpenAiService.class);
+```
 
-> Expected to change during development. Some user stories might be broken down into smaller user stories.
-> I will update the user stories when I finished unit testing.
+Merlin supports API key management through environment variables. By default, Merlin will look for API keys through environment variables and fall back to direct initialization. If neither is found, an Exception will be thrown.
+
+| Provider       | Environment Variable |
+| -------------- | -------------------- |
+| OpenAI ChatGPT | `OPENAI_KEY`         |
+| Goole Gemini   | `GOOGLE_GEMINI_KEY`  |
+| Ollama         | Not Applicable       |
+
+Or you can supply an API key directly through initialization.
+
+## Contributing
+
+Contributions are welcome! Please submit a pull request or open an issue to discuss what you would like to change.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## For dissertation purposes
+
+### User stories
 
 | 1. Basic Integration                                                                                                              | Must have                                                                                                                                                                                                            |
 | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -114,7 +125,7 @@ neither is found, an Exception will be thrown.
 | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | "As a developer, I want to perform asynchronous API calls, so I can improve the responsiveness of my application." | **Acceptance Criteria:** The library should support asynchronous requests and provide callback mechanisms. The library should allow for easy integration with Java’s CompletableFuture or similar concurrency utilities." |
 
-## UML Diagram
+### UML Diagram
 
 ```mermaid
 classDiagram
@@ -182,15 +193,15 @@ classDiagram
     }
 ```
 
-## Dev Logs
+### Dev Logs
 
-### 2024-06-14
+#### 2024-06-14
 
 Project needs more clarifications, needs to show more value.
 
 - [x] write up a document explaining what the project is all about
 
-### 2024-06-20
+#### 2024-06-20
 
 Project is approved. Do this for the next week:
 
@@ -205,7 +216,7 @@ Project is approved. Do this for the next week:
 
 Leave at least 3 weeks to start writing dissertation.
 
-### 2024-07-06
+#### 2024-07-06
 
 - added OpenAI endpoints for images.
 - added OpenAI endpoints for files.
@@ -226,11 +237,11 @@ accordingly.
 - added `FileParser` util to parse a `File` object into a `RequestBody`
 - dropped custom logging interceptor, use `HttpLoggingInterceptor` instead.
 
-### 2024-07-07
+#### 2024-07-07
 
 - added OpenAI endpoints for audios.
 
-### 2024-07-11
+#### 2024-07-11
 
 Chat Completion Object is provided in a single, complete object, received after the model has finished generating the
 entire response. Chat Completion Chunk Object is split into multiple parts (chunks) and sent incrementally, received in
@@ -240,14 +251,14 @@ Trying to find a way to stream and model the endpoints for chat.
 
 Understanding what is backpressure, which is the remote producing response faster than the local can process.
 
-### 2024-07-12
+#### 2024-07-12
 
 - added OpenAI endpoints and models for chat.
 - added OpenAI endpoints and models for embeddings.
 - added OpenAI endpoints and models for fine-tuning.
 - added OpenAI endpoints and models for batch.
 
-### 2024-07-13
+#### 2024-07-13
 
 If a request has query parameters, provide a default method to call without them and one with all of them. When calling
 with query params, set null to the ones you don't need, Retrofit will ignore them in the call.
@@ -260,19 +271,7 @@ Many fields accept both String or a structured object, need to find a way to acc
 
 Figured out how to use Jackson's polymorphic deserialization.
 
-```java
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "type"
-)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = ImageContentPart.class, name = "image_url"),
-        @JsonSubTypes.Type(value = TextContentPart.class, name = "text"),
-})
-```
-
-### 2024-07-14
+#### 2024-07-14
 
 - refactored model classes to accommodate fields accepting multiple types with custom serializers.
 - added Serializers util class to keep custom serializers in one place. Registered custom serializers in the Retrofit
@@ -283,11 +282,11 @@ Figured out how to use Jackson's polymorphic deserialization.
 - added OpenAI endpoints and models for Runs.
 - added OpenAI endpoints and models for Run Step.
 
-### 2024-07-15
+#### 2024-07-15
 
 - finished modeling for OpenAI endpoints
 
-### 2024-07-17
+#### 2024-07-17
 
 - added support for Google Gemini.
 - added Google Gemini endpoints and models for Models.
@@ -295,14 +294,14 @@ Figured out how to use Jackson's polymorphic deserialization.
 
 May need to think about the naming strategy for models since different providers can have the same model names.
 
-### 2024-07-18
+#### 2024-07-18
 
 - added support for Ollama.
 - added Ollama endpoints and models.
 - overhauled Llmconfig, now it can take a default json config or an arbitrary json file path supplied by user.
 - refactored Merlin. Now it puts LlmService into a list.
 
-### 2024-07-22
+#### 2024-07-22
 
 There are still some challenges to solve.
 
@@ -322,7 +321,7 @@ of the models. I can provider ways to initiate parallel calls but the code will 
 
 - updated some logging logic.
 
-### 2024-07-24
+#### 2024-07-24
 
 - added support for connection pool and timeout. It now reads "time_out" field from config file and fallback to default
   of 10 seconds.
@@ -332,11 +331,11 @@ of the models. I can provider ways to initiate parallel calls but the code will 
 - refined Merlin.java. Now it uses Map instead of List.
 - moved internal implementations into an `internal` package
 
-### 2024-07-26
+#### 2024-07-26
 
 - introduce RxJava to handle streaming and backpressure.
 
-### 2024-07-27
+#### 2024-07-27
 
 - overhauled the entire `LlmConfig`. Ditched the reading from a file approach, instead use a config class to manage the
   configuration.
@@ -344,40 +343,32 @@ of the models. I can provider ways to initiate parallel calls but the code will 
 - switched to WireMock for mocking responses.
 - finished unit testing for Ollama.
 
-### 2024-07-29
+#### 2024-07-29
 
 - refactored streaming logic.
 - update OpenAI models.
 - update utility class.
 - fix a problem where OpenAI stream is not handled properly.
 
-### 2024-07-30
+#### 2024-07-30
 
 - update OpenAI unit test.
 - fix a problem where deserialization not setting `type` field for some models.
 - finished unit testing for OpenAI.
 
-### 2024-08-02
+#### 2024-08-02
 
 - update Google Gemini models.
 
-### 2024-08-03
+#### 2024-08-03
 
 - finished unit testing for Google Gemini.
 
-## Future plans
+### Future plans
 
 - [ ] create Server Sent Event (SSE) representations for streaming different LLMs.
 - [ ] parallel calling.
 - [ ] retry logic.
 - [ ] accumulate streaming responses to a single object.
-
-## Contributing
-
-Contributions are welcome! Please submit a pull request or open an issue to discuss what you would like to change.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 [Semantic Versioning](https://semver.org/)
