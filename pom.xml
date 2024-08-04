@@ -2,12 +2,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.merlin</groupId>
+    <groupId>io.github.jkmeansesc</groupId>
     <artifactId>merlin</artifactId>
     <version>0.1.0</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
+    <description>Merlin is a Java utility library that provides a unified interface to interact with LLMs using REST
+        API.
+    </description>
     <url>https://github.com/jkmeansesc/Merlin</url>
 
     <properties>
