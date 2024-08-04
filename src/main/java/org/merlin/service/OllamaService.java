@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 public class OllamaService extends LlmService {
 
     private final OllamaApi api;
-    private static final String DEFAULT_BASE_URL = "http://localhost:11434/";
+    public static final String DEFAULT_BASE_URL = "http://localhost:11434/";
 
     /**
      * Constructs an OllamaService with the default configuration.
