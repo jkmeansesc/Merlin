@@ -3,7 +3,7 @@
 Merlin is a Java util library that provides an unified interface to interact with Large Language Models (LLMs).
 
 | Libraries used                                                   |
-|------------------------------------------------------------------|
+| ---------------------------------------------------------------- |
 | [okhttp](https://github.com/square/okhttp)                       |
 | [log4j](https://logging.apache.org/log4j/2.x/index.html)         |
 | [SLF4J](https://www.slf4j.org/index.html)                        |
@@ -12,9 +12,12 @@ Merlin is a Java util library that provides an unified interface to interact wit
 | [RxJava](https://github.com/ReactiveX/RxJava?tab=readme-ov-file) |
 | [JUnit5](https://junit.org/junit5/)                              |
 
+## Features
+
 > OpenAI: deprecated and legacy features are not supported
 
 > Google Gemini: currently supports `v1` endpoints.
+> TBA
 
 ## Getting Started
 
@@ -34,20 +37,37 @@ TBA
 TBA
 ```
 
+#### Jar
+
+Download the latest JAR file [here](dist/), and import it into your project manually.
+
 ### Supply API keys
 
 Merlin supports API key management through environment variables.
 
 | Provider       | Environment Variable |
-|----------------|----------------------|
+| -------------- | -------------------- |
 | OpenAI ChatGPT | `OPENAI_KEY`         |
 | Goole Gemini   | `GOOGLE_GEMINI_KEY`  |
+| Ollama         | Not Applicable       |
 
-Or you can set the API key directly through initialization.
+Or you can supply an API key directly through initialization.
+
+### Initialize Merlin
+
+Merlin utilizes builder pattern for a consistent and flexible initialization of all supported LLM services.
 
 ```java
-OpenAiService service = new OpenAiService("<your-api-key>");
-GenminiService service = new GeminiService("<your-api-key>");
+        Merlin merlin = Merlin
+                .builder()
+                .openai()
+                .gemini()
+                .ollama()
+                .build();
+
+        OpenAiService openAiService = merlin.getService(OpenAiService.class);
+        GeminiService geminiService = merlin.getService(GeminiService.class);
+        OllamaService ollamaService = merlin.getService(OllamaService.class);
 ```
 
 By default, Merlin will look for API keys through environment variables and fall back to direct initialization. If
@@ -59,39 +79,39 @@ neither is found, an Exception will be thrown.
 > I will update the user stories when I finished unit testing.
 
 | 1. Basic Integration                                                                                                              | Must have                                                                                                                                                                                                            |
-|-----------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | "As a developer, I want to integrate various LLMs into my Java application using Merlin, so I can use multiple AI models easily." | **Acceptance Criteria:** The library should provide a simple API to connect to at least three different LLM providers (e.g., OpenAI, Google Gemini, Ollama). The API should be well-documented with usage examples." |
 
 | 2. Sending Requests                                                                                                                        | Must have                                                                                                                                                                                                               |
-|--------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | "As a developer, I want to send text queries to an LLM and receive responses, so I can utilize the AI capabilities within my application." | **Acceptance Criteria:** The library should support sending a text query to a connected LLM. The library should return the LLM’s response in a standard format. The response time should be optimized for performance." |
 
 | 3. Handling Multiple Models                                                                                        | Must have                                                                                                                  |
-|--------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
 | "As a developer, I want to switch between different LLMs seamlessly, so I can choose the best model for my needs." | **Acceptance Criteria:** The library should support switching between different LLM providers without major code changes." |
 
 | 4. Error Handling                                                                                                                 | Must have                                                                                                                                                                                                          |
-|-----------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | "As a developer, I want robust error handling when making API calls, so I can ensure my application handles failures gracefully." | **Acceptance Criteria:** The library should provide clear error messages for different failure scenarios (e.g., network issues, API rate limits). The library should offer retry mechanisms and fallback options." |
 
 | 5. Logging and Monitoring                                                                                                       | Must have                                                                                                                                                                                                                            |
-|---------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | "As a developer, I want to log API requests and responses, so I can monitor the usage and performance of the LLM integrations." | **Acceptance Criteria:** The library should integrate with a logging framework log4j to log all API interactions. The logs should include relevant information like request timestamps, response times, and any errors encountered." |
 
 | 6. Security                                                                                                   | Must have                                                                                                                                                                                       |
-|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | "As a developer, I want to securely handle API keys and credentials, so I can protect sensitive information." | **Acceptance Criteria:** The library should provide secure methods to store and use API keys. The library should ensure that sensitive information is not logged or exposed in error messages." |
 
 | 7. Configuration Management                                                                                | Must have                                                                                                                                                                  |
-|------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | "As a developer, I want to configure the library easily, so I can adjust settings without modifying code." | **Acceptance Criteria:** The library should support configuration through properties files or environment variables. The configuration options should be well-documented." |
 
 | 8. Documentation                                                                                                                   | Must have                                                                                                                                                                                                                                           |
-|------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | "As a developer, I want comprehensive documentation and example receipes, so I can understand how to use the library effectively." | **Acceptance Criteria:** The library should include a detailed README file with installation instructions. There should be example projects demonstrating common use cases. The API should be well-documented with usage examples for each method." |
 
 | 9. Asynchronous Operations                                                                                         | Must have                                                                                                                                                                                                                 |
-|--------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | "As a developer, I want to perform asynchronous API calls, so I can improve the responsiveness of my application." | **Acceptance Criteria:** The library should support asynchronous requests and provide callback mechanisms. The library should allow for easy integration with Java’s CompletableFuture or similar concurrency utilities." |
 
 ## UML Diagram
@@ -289,10 +309,10 @@ There are still some challenges to solve.
 1. [x] add support for rate limiting, preferably integrate into service initialization.
 2. [x] solve streaming, currently I have a unified `StreamingResponse<T>`, but it's not tested and need refinement.
 3. [x] need to figure out how to handle backpressure when streaming. Backpressure is a term used to describe the
-   situation where the remote is producing responses faster than the local can process. This can lead to memory leaks
-   and other issues.
+       situation where the remote is producing responses faster than the local can process. This can lead to memory leaks
+       and other issues.
 4. [x] google Gemini's documentation has been updated and introduced various new endpoints and dropped support for `v1`,
-   need to update the endpoints completely.
+       need to update the endpoints completely.
 
 Trying to complete the project this week. Then start writing the dissertation.
 
@@ -351,3 +371,13 @@ of the models. I can provider ways to initiate parallel calls but the code will 
 - [ ] parallel calling.
 - [ ] retry logic.
 - [ ] accumulate streaming responses to a single object.
+
+## Contributing
+
+Contributions are welcome! Please submit a pull request or open an issue to discuss what you would like to change.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+[Semantic Versioning](https://semver.org/)
