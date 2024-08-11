@@ -82,14 +82,11 @@ class OllamaServiceTest {
     @Test
     @Disabled("Not mocked")
     void streamCompletion() {
-
         OllamaCompletionRequest request = OllamaCompletionRequest.builder().model("mistral").prompt("Are you there? Say yes if yes and no if no.").build();
-
         List<String> receivedChunks = new ArrayList<>();
         AtomicBoolean isDone = new AtomicBoolean(false);
         AtomicReference<Throwable> e = new AtomicReference<>();
         CompletableFuture<Void> future = new CompletableFuture<>();
-
         service.streamCompletion(request).start(chunk -> {
             System.out.println("Received chunk: " + chunk.getResponse());
             receivedChunks.add(chunk.getResponse());
