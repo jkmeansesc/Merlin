@@ -39,4 +39,4 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GOOGLE_GEMINI_KEY: ${{ secrets.GOOGLE_GEMINI_KEY }}
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=jkmeansesc_Merlin
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pcoverage -Dsonar.projectKey=jkmeansesc_Merlin
