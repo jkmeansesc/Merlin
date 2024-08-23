@@ -59,7 +59,7 @@ class OllamaServiceTest {
 
         this.config = new LlmConfig(Provider.OPENAI, baseUrl, apiKey);
         this.config.setTimeOut(Duration.ofSeconds(60));
-        this.config.setLogLevel(LlmConfig.Level.HEADERS);
+        this.config.setLogLevel(LlmConfig.Level.BASIC);
         service = Merlin.builder().ollama(config).build().getService(OllamaService.class);
     }
 

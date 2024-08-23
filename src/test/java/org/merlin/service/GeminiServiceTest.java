@@ -64,7 +64,7 @@ class GeminiServiceTest {
 
         this.config = new LlmConfig(Provider.GOOGLE_GEMINI, baseUrl, apiKey);
         this.config.setTimeOut(Duration.ofSeconds(60));
-        this.config.setLogLevel(LlmConfig.Level.BODY);
+        this.config.setLogLevel(LlmConfig.Level.BASIC);
         this.service = Merlin.builder().gemini(config).build().getService(GeminiService.class);
     }
 

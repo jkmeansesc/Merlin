@@ -83,7 +83,7 @@ class OpenAiServiceTest {
 
         this.config = new LlmConfig(Provider.OPENAI, baseUrl, apiKey);
         this.config.setTimeOut(Duration.ofSeconds(60));
-        this.config.setLogLevel(LlmConfig.Level.BODY);
+        this.config.setLogLevel(LlmConfig.Level.BASIC);
         this.service = Merlin.builder().openai(config).build().getService(OpenAiService.class);
     }
 
