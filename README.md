@@ -14,11 +14,11 @@ Merlin is a Java util library that provides an unified interface to interact wit
 
 ## Features
 
-> OpenAI: deprecated and legacy features are not supported
-
-> Google Gemini: currently supports `v1` endpoints.
-
-TBA
+- Unified interface for multiple LLM services.
+- Asynchronous API calls.
+- Streaming support for chat completion.
+- Type safe data models.
+- Error handling and logging.
 
 ## Getting Started
 
