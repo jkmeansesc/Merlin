@@ -104,7 +104,7 @@ class OpenAiServiceTest {
     @Nested
     class AudioTest {
         @Test
-        @UseRelay
+        @Disabled("Not mocked")
         void createSpeech() throws IOException {
             ResponseBody response = service.createSpeech(SpeechRequest.builder().model("tts-1").input("The quick brown fox jumped over the lazy dog.").voice("alloy").build()).join();
             Path mp3 = TestHelper.audioToFile(response, Paths.get("src/test/resources/openai/output.mp3"));
@@ -266,6 +266,7 @@ class OpenAiServiceTest {
         }
 
         @Test
+        @UseWireMock
         void listFineTuningJobs() {
             OpenAiData<FineTuningJob> response = service.listFineTuningJobs().join();
 
