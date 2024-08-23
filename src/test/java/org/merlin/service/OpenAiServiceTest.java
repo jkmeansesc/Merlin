@@ -89,16 +89,16 @@ class OpenAiServiceTest {
 
     @Test
     void test_constructor_can_be_initialized() {
-        LlmService service_1 = new OpenAiService();
-        assertNotNull(service_1.getClient());
-        assertNotNull(service_1.getMapper());
-        assertNotNull(service_1.getRetrofit());
-        assertNotNull(service_1.getConfig());
+        LlmService service1 = new OpenAiService();
+        assertNotNull(service1.getClient());
+        assertNotNull(service1.getMapper());
+        assertNotNull(service1.getRetrofit());
+        assertNotNull(service1.getConfig());
 
         this.config = new LlmConfig(Provider.OPENAI, "https://test.baseUrl.com", "test token");
-        LlmService service_2 = new OpenAiService(config);
-        assertEquals("https://test.baseUrl.com", service_2.getConfig().getBaseUrl(), "Wrong baseUrl");
-        assertEquals("test token", service_2.getConfig().getToken(), "Wrong token");
+        LlmService service2 = new OpenAiService(config);
+        assertEquals("https://test.baseUrl.com", service2.getConfig().getBaseUrl(), "Wrong baseUrl");
+        assertEquals("test token", service2.getConfig().getToken(), "Wrong token");
     }
 
     @Nested
@@ -272,9 +272,9 @@ class OpenAiServiceTest {
             assertEquals("list", response.getObject(), "object should be list");
             System.out.println(DefaultObjectMapper.print(response));
 
-            OpenAiData<FineTuningJob> response_1 = service.listFineTuningJobs(null, 2).join();
+            OpenAiData<FineTuningJob> response1 = service.listFineTuningJobs(null, 2).join();
 
-            System.out.println(DefaultObjectMapper.print(response_1));
+            System.out.println(DefaultObjectMapper.print(response1));
         }
 
         @Test
